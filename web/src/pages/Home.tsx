@@ -1,0 +1,144 @@
+import { useNavigate } from 'react-router-dom';
+import { useHimnos } from '../hooks/useHimnos';
+import { Settings, Shuffle, PlusSquare, Inbox, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import HimnoItem from '../components/HimnoItem';
+
+export default function Home() {
+  const { himnos, loading } = useHimnos();
+  const navigate = useNavigate();
+  const [history, setHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    const hist = localStorage.getItem('history');
+    if (hist) {
+      setHistory(JSON.parse(hist));
+    }
+  }, []);
+
+  const getRandomHymn = () => {
+    if (himnos.length > 0) {
+      const randomIndex = Math.floor(Math.random() * himnos.length);
+      navigate(`/himno/${himnos[randomIndex].id}`);
+    }
+  };
+
+  // Map local storage history (id, timestamp) to full Himno objects from useHimnos
+  const historyHimnos = history
+    .map(histItem => himnos.find(h => h.id === histItem.id))
+    .filter((h): h is NonNullable<typeof h> => !!h);
+
+  return (
+    <div className="page-fade-in" style={{ paddingBottom: 100, backgroundColor: 'var(--background)' }}>
+      {/* Top Header Row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 20px 16px 20px' }}>
+        <div>
+          <div className="home-header-greeting">Hola,</div>
+          <h1 className="home-header-title" style={{ color: 'var(--on-background)' }}>¡Es hora de Alabar!</h1>
+        </div>
+        <button onClick={() => navigate('/settings')} className="icon-btn" aria-label="Ajustes" style={{ backgroundColor: 'var(--surface)' }}>
+          <Settings size={26} />
+        </button>
+      </div>
+
+      {/* Grid Cards (Quick Actions) */}
+      <div style={{ display: 'flex', gap: 16, padding: '12px 20px' }}>
+        <div onClick={getRandomHymn} className="home-action-card">
+          <Shuffle size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
+          <div className="home-action-card-content">
+            <Shuffle size={28} style={{ color: 'var(--primary)' }} />
+            <h2 className="home-action-card-title">Himno<br/>al Azar</h2>
+          </div>
+        </div>
+        <div onClick={() => navigate('/nuevos')} className="home-action-card">
+          <PlusSquare size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
+          <div className="home-action-card-content">
+            <PlusSquare size={28} style={{ color: 'var(--primary)' }} />
+            <h2 className="home-action-card-title">Últimos<br/>Agregados</h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Banner 1 */}
+      <div style={{ padding: '16px 20px' }}>
+        <div style={{ 
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.35)), url(/img/img1.jpg)', 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
+          borderRadius: 24, 
+          height: 160, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          padding: 20
+        }}>
+          <div>
+            <h2 style={{ 
+              color: '#FFFFFF', 
+              textAlign: 'center', 
+              fontSize: '1.25rem', 
+              fontWeight: 700, 
+              lineHeight: 1.3,
+              textShadow: '0 2px 4px rgba(0,0,0,0.4)', 
+            }}>
+              Cada Alabanza es una Bendición Especial
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Mis Últimas Alabanzas Section */}
+      <div style={{ padding: '24px 20px 12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--on-background)' }}>
+          Mis Últimas Alabanzas
+        </h2>
+      </div>
+
+      {/* Surface Island for History */}
+      <div className="surface-island">
+        {loading ? (
+          <div style={{ padding: '30px 16px', textAlign: 'center', color: 'var(--outline)' }}>Cargando...</div>
+        ) : historyHimnos.length === 0 ? (
+          <div className="empty-view-container" style={{ padding: '40px 20px' }}>
+            <Inbox size={48} style={{ opacity: 0.5, marginBottom: 12 }} />
+            <p style={{ fontSize: '0.95rem' }}>No hay alabanzas recientes</p>
+          </div>
+        ) : (
+          <div>
+            {historyHimnos.slice(0, 3).map((h, i) => (
+              <div key={h.id}>
+                {i > 0 && <div className="himno-item-divider" style={{ margin: '0 16px' }} />}
+                <HimnoItem himno={h} />
+              </div>
+            ))}
+            
+            <button 
+              onClick={() => navigate('/history')} 
+              style={{ 
+                width: '100%', 
+                background: 'transparent', 
+                border: 'none', 
+                color: 'var(--primary)', 
+                fontWeight: 600, 
+                fontSize: '0.9rem',
+                padding: '14px 16px',
+                textAlign: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              Ver historial completo
+            </button>
+          </div>
+        )}
+      </div>
+
+
+
+      {/* Made with Love Footer */}
+      <div style={{ textAlign: 'center', marginTop: 45, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+        <p style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--outline)' }}>Hecho con mucho</p>
+        <Heart size={20} className="animate-pulse" style={{ color: 'var(--primary)', fill: 'var(--primary)' }} />
+      </div>
+    </div>
+  );
+}

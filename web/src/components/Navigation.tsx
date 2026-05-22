@@ -1,0 +1,55 @@
+import { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Home, Search, Disc, Heart } from 'lucide-react';
+
+export default function Navigation() {
+  const location = useLocation();
+
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Hide bottom nav on detail page to match native android layout on mobile, but keep it on desktop
+  if (location.pathname.startsWith('/himno/') && !isDesktop) {
+    return null;
+  }
+
+  return (
+    <nav className="bottom-nav">
+      <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <div className="nav-icon-container">
+          <Home size={24} />
+        </div>
+        <span>Inicio</span>
+      </NavLink>
+      <NavLink to="/search" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <div className="nav-icon-container">
+          <Search size={24} />
+        </div>
+        <span>Buscar</span>
+      </NavLink>
+      <NavLink to="/albumes" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <div className="nav-icon-container">
+          <Disc size={24} />
+        </div>
+        <span>Álbumes</span>
+      </NavLink>
+      <NavLink to="/favoritos" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        {({ isActive }) => (
+          <>
+            <div className="nav-icon-container">
+              <Heart size={24} style={{ fill: isActive ? 'currentColor' : 'none' }} />
+            </div>
+            <span>Favoritos</span>
+          </>
+        )}
+      </NavLink>
+    </nav>
+  );
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_inicio">
+
+    <fragment
+        android:id="@+id/navigation_inicio"
+        android:name="com.pluton.himnarioeav.ui.home.HomeFragment"
+        android:label="@string/menu_1"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_buscar"
+        android:name="com.pluton.himnarioeav.ui.buscar.BuscarFragment"
+        android:label="@string/menu_2"
+        tools:layout="@layout/fragment_buscar" />
+
+    <fragment
+        android:id="@+id/navigation_albumes"
+        android:name="com.pluton.himnarioeav.ui.albumes.AlbumesFragment"
+        android:label="@string/menu_3"
+        tools:layout="@layout/fragment_albumes" />
+
+    <fragment
+        android:id="@+id/navigation_favoritos"
+        android:name="com.pluton.himnarioeav.ui.favoritos.favoritosFragment"
+        android:label="@string/menu_4"
+        tools:layout="@layout/fragment_favoritos" />
+</navigation>

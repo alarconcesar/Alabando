@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:background="@color/fondo_principal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/anterior"
+            style="?attr/materialIconButtonStyle"
+            app:iconTint="@color/Negro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:contentDescription="Himno Anterior"
+            app:icon="@drawable/ic_angle_left_solid" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/video"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:background="@drawable/fondo3"
+                app:iconTint="@color/Negro"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:iconSize="28dp"
+                android:padding="8dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="Video"
+                app:icon="@drawable/video" />
+
+            <ImageButton
+                android:id="@+id/play"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@null"
+                android:layout_marginEnd="0dp"
+                android:contentDescription="Play"
+                app:iconTint="@color/Negro"
+                android:visibility="gone"
+                android:src="@drawable/play" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/contenedor_video"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:visibility="gone">
+
+                <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                    android:id="@+id/youtube_player_view"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <Button
+                android:id="@+id/horizontal"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:background="@drawable/fondo3"
+                app:iconTint="@color/Negro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:iconSize="28dp"
+                android:padding="8dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="Video"
+                app:icon="@drawable/horizontal" />
+
+            <Button
+                android:id="@+id/partitura"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:background="@drawable/fondo3"
+                app:iconTint="@color/Negro"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:iconSize="28dp"
+                android:padding="8dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="Partitura"
+                app:icon="@drawable/partitura" />
+
+            <Button
+                android:id="@+id/texto_size"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:background="@drawable/fondo3"
+                app:iconTint="@color/Negro"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:iconSize="28dp"
+                android:padding="8dp"
+                android:contentDescription="Tamaño de Texto"
+                app:icon="@drawable/texto" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/siguiente"
+            style="?attr/materialIconButtonStyle"
+            app:iconTint="@color/Negro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:iconSize="22dp"
+            android:layout_gravity="end"
+            android:contentDescription="Himno Siguiente"
+            app:icon="@drawable/ic_angle_right_solid" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="3px"
+        android:background="@color/barra"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/swipeableView"
+        app:layout_constraintVertical_bias="0.0">
+
+        <Button
+            android:id="@+id/anterior_estrofa"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Estrofa Anterior"
+            app:icon="@drawable/ic_angle_left_solid"
+            app:iconTint="@color/Negro" />
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:overScrollMode="never"
+            android:scrollbarSize="0dp">
+
+            <TextView
+                android:id="@+id/letra_him"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Letra"
+                android:textAlignment="center"
+                android:textIsSelectable="true"
+                android:textSize="19sp" />
+
+        </ScrollView>
+
+        <Button
+            android:id="@+id/siguiente_estrofa"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Estrofa Siguiente"
+            app:icon="@drawable/ic_angle_right_solid"
+            app:iconTint="@color/Negro" />
+
+    </LinearLayout>
+
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/contenedor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/swipeableView" />
+
+    <LinearLayout
+        android:id="@+id/contenedor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/contenedor_texto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_weight="1"
+            android:background="@color/barra"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="280dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tamañotxt"
+                    style="textAppearanceTitleMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Tamaño de Texto"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/sizerestore"
+                    style="?attr/materialIconButtonFilledTonalStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="Configuración"
+                    app:icon="@drawable/ic_restore"
+                    app:iconTint="@color/Negro"
+                    app:layout_constraintBottom_toBottomOf="@+id/tamañotxt"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tamañotxt" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:stepSize="1"
+                    android:value="18"
+                    android:valueFrom="15"
+                    android:valueTo="30"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tamañotxt"
+                    app:thumbHeight="35dp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/swipeableView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/degradado_blanco"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/corazonOff"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:background="@drawable/fondo3"
+            app:iconTint="@color/Negro"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
+            app:iconSize="22dp"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="start"
+            android:contentDescription="Añadir a Favorito"
+            app:icon="@drawable/ic_corazon_off" />
+
+        <Button
+            android:id="@+id/corazonOn"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:background="@drawable/fondo3"
+            app:iconTint="@color/Negro"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
+            app:iconSize="22dp"
+            android:visibility="gone"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="start"
+            android:contentDescription="Quitar Favorito"
+            app:icon="@drawable/ic_corazon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/himnoNumero"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:background="@drawable/fondo2"
+                android:textColor="@color/Negro"
+                android:layout_width="70dp"
+                android:layout_height="33dp"
+                android:clickable="false"
+                android:padding="1dp"
+                android:text="S-999"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/nombre_him"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:fontFamily="@font/lobster_regular"
+                android:text="Nombre"
+                android:textSize="27sp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/compartir"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:background="@drawable/fondo3"
+            app:iconTint="@color/Negro"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="5dp"
+            app:iconSize="22dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="end"
+            android:contentDescription="Compartir"
+            app:icon="@drawable/ic_share" />
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
