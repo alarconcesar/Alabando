@@ -9,6 +9,7 @@ import Albumes from './pages/Albumes';
 import Favoritos from './pages/Favoritos';
 import Nuevos from './pages/Nuevos';
 import History from './pages/History';
+import InstallPrompt from './components/InstallPrompt';
 
 function App() {
   useEffect(() => {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </div>
+        <InstallPrompt />
       </div>
     </Router>
   );

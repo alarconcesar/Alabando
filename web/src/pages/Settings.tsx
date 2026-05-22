@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download, CheckCircle } from 'lucide-react';
+import { useInstallPrompt } from '../components/InstallPrompt';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { canInstall, triggerInstall, isInstalled } = useInstallPrompt();
   const [currentTheme, setCurrentTheme] = useState(
     localStorage.getItem('theme') || 'naranja'
   );
@@ -96,6 +98,58 @@ export default function Settings() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* PWA Install Section */}
+        <div className="settings-group" style={{ marginTop: 40 }}>
+          <h3>Instalar Aplicación</h3>
+          <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
+            Instala Himnario EAV en tu dispositivo para acceder sin conexión.
+          </p>
+          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--surface-variant)' }}>
+            {isInstalled ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <CheckCircle size={24} style={{ color: '#4CAF50', flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontWeight: 600, marginBottom: 2 }}>App instalada</p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--outline)' }}>Himnario EAV ya está instalado en tu dispositivo.</p>
+                </div>
+              </div>
+            ) : canInstall ? (
+              <button
+                onClick={triggerInstall}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  padding: '14px 24px',
+                  backgroundColor: 'var(--primary)',
+                  color: 'var(--on-primary)',
+                  border: 'none',
+                  borderRadius: 12,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                }}
+              >
+                <Download size={20} />
+                Instalar Himnario EAV
+              </button>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Download size={24} style={{ color: 'var(--outline)', flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontWeight: 600, marginBottom: 2 }}>Instalación manual</p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--outline)' }}>
+                    Usa la opción "Agregar a pantalla de inicio" en el menú de tu navegador.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

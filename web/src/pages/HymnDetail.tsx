@@ -194,34 +194,20 @@ export default function HymnDetail() {
           </div>
         )}
 
-        {/* Partitura Lightbox */}
+        {/* Partitura Lightbox (Zoomable) */}
         {zoomedPage && (
           <div 
-            onClick={() => setZoomedPage(null)}
             style={{
               position: 'fixed', inset: 0, zIndex: 9000,
-              backgroundColor: 'rgba(0,0,0,0.92)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'zoom-out', padding: '16px',
+              backgroundColor: 'rgba(0,0,0,0.95)',
+              display: 'flex', flexDirection: 'column',
               animation: 'fadeIn 0.2s ease'
             }}
           >
-            <img 
-              src={zoomedPage}
-              alt="Partitura ampliada"
-              style={{
-                maxWidth: '100%', maxHeight: '100%',
-                borderRadius: 8,
-                objectFit: 'contain',
-                boxShadow: '0 8px 40px rgba(0,0,0,0.6)',
-                touchAction: 'pinch-zoom'
-              }}
-              onClick={e => e.stopPropagation()}
-            />
             <button 
               onClick={() => setZoomedPage(null)}
               style={{
-                position: 'absolute', top: 20, right: 20,
+                position: 'absolute', top: 16, right: 16, zIndex: 9001,
                 background: 'rgba(255,255,255,0.15)', border: 'none',
                 borderRadius: '50%', width: 44, height: 44,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -230,6 +216,30 @@ export default function HymnDetail() {
             >
               ✕
             </button>
+            <div
+              style={{
+                flex: 1,
+                overflow: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y pinch-zoom',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 16,
+              }}
+            >
+              <img 
+                src={zoomedPage}
+                alt="Partitura ampliada"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  borderRadius: 8,
+                  objectFit: 'contain',
+                  touchAction: 'pinch-zoom',
+                }}
+              />
+            </div>
           </div>
         )}
 
