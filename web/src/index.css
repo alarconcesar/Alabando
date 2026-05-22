@@ -466,7 +466,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   width: 100%;
@@ -475,7 +475,7 @@ body {
 }
 
 [data-theme='dark'] .detail-top-bar-wrapper {
-  background-color: rgba(10, 10, 10, 0.8);
+  background-color: rgba(10, 10, 10, 0.97);
 }
 
 .detail-top-bar {
@@ -537,7 +537,7 @@ body {
 
 .hymn-detail-text-body {
   font-size: 19px;
-  line-height: 1.8;
+  line-height: 1.5;
   text-align: center;
   color: var(--on-background);
   width: 100%;
@@ -560,14 +560,14 @@ body {
   left: 0;
   width: 100%;
   z-index: 999;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: background-color var(--transition-speed) ease;
 }
 
 [data-theme='dark'] .detail-bottom-bar-wrapper {
-  background-color: rgba(10, 10, 10, 0.85);
+  background-color: rgba(10, 10, 10, 0.97);
 }
 
 .detail-bottom-bar-divider {
@@ -1005,9 +1005,9 @@ body {
 }
 
 .presentation-slide {
-  font-size: 5vw; /* Scales with screen width */
+  font-size: clamp(18px, 3.5vw, 60px);
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.35;
   text-shadow: 0 4px 16px rgba(0,0,0,0.8);
   max-width: 90%;
   animation: fadeIn 0.3s ease-out forwards;
