@@ -9,7 +9,7 @@ export default function AllHymns() {
   const navigate = useNavigate();
   
   // Filter states
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filterHasAudio, setFilterHasAudio] = useState(false);
   const [filterHasPartitura, setFilterHasPartitura] = useState(false);
   
@@ -21,51 +21,49 @@ export default function AllHymns() {
     setFavorites(favs);
   }, []);
 
-  // Get unique categories from all hymns
-  const categories = useMemo(() => {
-    const cats = new Set<string>();
-    himnos.forEach(h => cats.add(h.categoria));
-    return Array.from(cats).sort();
-  }, [himnos]);
+  // Priority categories for the first row
+  const categories = ['Canticos', 'Suplementarios', 'Nuevos'];
 
-  // Toggle category selection
+  // Toggle category selection (Single Select / Radio behavior)
   const toggleCategory = (category: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
+    setSelectedCategory(prev => prev === category ? null : category);
   };
 
-  // Clear all category filters
-  const clearCategories = () => {
-    setSelectedCategories([]);
+  // Clear all filters
+  const resetFilters = () => {
+    setSelectedCategory(null);
+    setFilterHasAudio(false);
+    setFilterHasPartitura(false);
   };
 
   // Filter hymns based on selected filters (accumulative/AND logic)
   const filteredHimnos = useMemo(() => {
     let result = himnos;
     
-    // Filter by categories (if any selected)
-    if (selectedCategories.length > 0) {
-      result = result.filter(h => selectedCategories.includes(h.categoria));
+    // Filter by single category
+    if (selectedCategory) {
+      result = result.filter(h => {
+        if (selectedCategory === 'Canticos' && h.numero.startsWith('C-')) return true;
+        if (selectedCategory === 'Suplementarios' && h.numero.startsWith('S-')) return true;
+        if (selectedCategory === 'Nuevos' && h.numero.startsWith('N-')) return true;
+        return h.categoria === selectedCategory;
+      });
     }
     
-    // Filter by audio (if enabled)
+    // Filter by audio
     if (filterHasAudio) {
       result = result.filter(h => h.aud && h.aud.length > 0);
     }
     
-    // Filter by partitura (if enabled)
+    // Filter by partitura
     if (filterHasPartitura) {
       result = result.filter(h => h.page && h.page !== 'none');
     }
     
-    // Return sorted by number (default order as in database)
     return result;
-  }, [himnos, selectedCategories, filterHasAudio, filterHasPartitura]);
+  }, [himnos, selectedCategory, filterHasAudio, filterHasPartitura]);
 
-  const hasActiveFilters = selectedCategories.length > 0 || filterHasAudio || filterHasPartitura;
+  const hasActiveFilters = selectedCategory !== null || filterHasAudio || filterHasPartitura;
 
   return (
     <div className="page-fade-in" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 100 }}>
@@ -81,26 +79,24 @@ export default function AllHymns() {
 
       {/* Filter Section */}
       <div style={{ padding: '12px 0' }}>
-        {/* Category Filter Chips */}
-        <div style={{ padding: '0 20px 12px 20px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--outline)', whiteSpace: 'nowrap' }}>
+        {/* Row 1: Categories (Single Select) */}
+        <div style={{ padding: '0 20px 12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--outline)' }}>
             Categoría:
           </span>
-          {selectedCategories.length > 0 && (
+          {hasActiveFilters && (
             <button
-              onClick={clearCategories}
+              onClick={resetFilters}
               style={{
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--primary)',
                 fontSize: '13px',
                 fontWeight: 600,
-                cursor: 'pointer',
-                padding: '4px 8px',
-                whiteSpace: 'nowrap'
+                cursor: 'pointer'
               }}
             >
-              Limpiar
+              Limpiar filtros
             </button>
           )}
         </div>
@@ -110,14 +106,14 @@ export default function AllHymns() {
             <button
               key={cat}
               onClick={() => toggleCategory(cat)}
-              className={`filter-chip ${selectedCategories.includes(cat) ? 'active' : ''}`}
+              className={`filter-chip ${selectedCategory === cat ? 'active' : ''}`}
             >
               {cat}
             </button>
           ))}
         </div>
 
-        {/* Toggle Filters (Audio & Partitura) */}
+        {/* Row 2: Media Filters (Multi Select) */}
         <div style={{ display: 'flex', gap: 12, padding: '12px 20px 0 20px' }}>
           <button
             onClick={() => setFilterHasAudio(!filterHasAudio)}

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
-import { Settings, PlusSquare, Inbox, Heart, Share2, Check, Library } from 'lucide-react';
+import { Settings, PlusSquare, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import HimnoItem from '../components/HimnoItem';
 
@@ -80,11 +80,11 @@ export default function Home() {
             <h2 className="home-action-card-title">Todos los<br/>Himnos</h2>
           </div>
         </div>
-        <div onClick={() => navigate('/nuevos')} className="home-action-card">
-          <PlusSquare size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
+        <div onClick={() => navigate('/search')} className="home-action-card">
+          <Search size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
           <div className="home-action-card-content">
-            <PlusSquare size={28} style={{ color: 'var(--primary)' }} />
-            <h2 className="home-action-card-title">Últimos<br/>Agregados</h2>
+            <Search size={28} style={{ color: 'var(--primary)' }} />
+            <h2 className="home-action-card-title">Buscar</h2>
           </div>
         </div>
       </div>

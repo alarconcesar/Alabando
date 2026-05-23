@@ -14,6 +14,7 @@ export interface Himno {
   letra: string;
   categoria: string;
   page: string;
+  info: string;
   aud?: { src: string; id: string; lang: string }[];
   letra_estructurada?: SeccionLetra[];
 }
