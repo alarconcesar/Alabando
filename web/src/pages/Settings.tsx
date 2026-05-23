@@ -39,7 +39,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="page-enter-active">
+    <div className="page-enter-active" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 120 }}>
       <header className="app-bar">
         <button onClick={() => navigate(-1)} className="icon-btn">
           <ArrowLeft size={24} />
