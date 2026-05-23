@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
-import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X } from 'lucide-react';
+import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 export default function HymnDetail() {
@@ -15,6 +15,7 @@ export default function HymnDetail() {
     return saved ? Number(saved) : 19;
   });
   const [showTextSettings, setShowTextSettings] = useState(false);
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentStanzaIndex, setCurrentStanzaIndex] = useState(0);
@@ -323,9 +324,6 @@ export default function HymnDetail() {
               <button onClick={toggleFavorite} className="detail-top-bar-btn" aria-label="Favorito">
                 <Heart size={20} style={{ fill: isFavorite ? 'var(--primary)' : 'none', color: isFavorite ? 'var(--primary)' : 'var(--on-background)' }} />
               </button>
-              <button onClick={handleShare} className="detail-top-bar-btn" aria-label="Compartir">
-                <Share2 size={20} style={{ color: 'var(--on-background)' }} />
-              </button>
             </div>
           </header>
         </div>
@@ -428,11 +426,11 @@ export default function HymnDetail() {
       </main>
       </div>
 
-      {/* Background overlay when text settings open */}
-      {showTextSettings && (
+      {/* Background overlay when text settings or options menu open */}
+      {(showTextSettings || showOptionsMenu) && (
         <div 
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 998 }}
-          onClick={() => setShowTextSettings(false)}
+          onClick={() => { setShowTextSettings(false); setShowOptionsMenu(false); }}
         />
       )}
 
@@ -474,6 +472,42 @@ export default function HymnDetail() {
           </div>
         )}
 
+        {/* Options Menu */}
+        {showOptionsMenu && (
+          <div className="options-menu">
+            <button 
+              className="options-menu-item"
+              onClick={() => {
+                setShowOptionsMenu(false);
+                handleShare();
+              }}
+            >
+              <Share2 size={20} />
+              <span>Compartir</span>
+            </button>
+            <button 
+              className="options-menu-item"
+              onClick={() => {
+                setShowOptionsMenu(false);
+                setShowTextSettings(true);
+              }}
+            >
+              <Type size={20} />
+              <span>Tamaño de letra</span>
+            </button>
+            <button 
+              className="options-menu-item"
+              onClick={() => {
+                setShowOptionsMenu(false);
+                enterPresentationMode();
+              }}
+            >
+              <Monitor size={20} />
+              <span>Modo presentación</span>
+            </button>
+          </div>
+        )}
+
         <div className="detail-bottom-bar-divider" />
         <div className="detail-bottom-bar">
           <button 
@@ -503,17 +537,11 @@ export default function HymnDetail() {
               <Music size={20} />
             </button>
             <button 
-              className={`detail-bottom-action-btn ${showTextSettings ? 'active' : ''}`}
-              onClick={() => setShowTextSettings(!showTextSettings)}
+              className={`detail-bottom-action-btn ${showOptionsMenu ? 'active' : ''}`}
+              onClick={() => setShowOptionsMenu(!showOptionsMenu)}
+              title="Más opciones"
             >
-              <Type size={20} />
-            </button>
-            <button 
-              className="detail-bottom-action-btn"
-              onClick={enterPresentationMode}
-              title="Modo Presentación"
-            >
-              <Monitor size={20} />
+              <MoreVertical size={20} />
             </button>
           </div>
 
