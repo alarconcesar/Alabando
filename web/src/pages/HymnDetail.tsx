@@ -522,7 +522,7 @@ export default function HymnDetail() {
           <div className="detail-bottom-center-buttons">
             <button 
               className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`}
-              onClick={() => { setShowScore(!showScore); setShowVideo(false); }}
+              onClick={() => setShowScore(!showScore)}
               style={{ opacity: pages.length > 0 ? 1 : 0.3 }}
               disabled={pages.length === 0}
             >
@@ -530,7 +530,7 @@ export default function HymnDetail() {
             </button>
             <button 
               className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`}
-              onClick={() => { setShowVideo(!showVideo); setShowScore(false); }}
+              onClick={() => setShowVideo(!showVideo)}
               style={{ opacity: ytVideo ? 1 : 0.3 }}
               disabled={!ytVideo}
             >
