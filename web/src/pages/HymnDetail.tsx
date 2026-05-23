@@ -269,7 +269,7 @@ export default function HymnDetail() {
 
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
-      <div className="page-enter-active">
+      <div className="page-enter-active" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {/* Top Bar */}
         <div className="detail-top-bar-wrapper">
           <header className="detail-top-bar" style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>
@@ -356,7 +356,7 @@ export default function HymnDetail() {
       )}
 
       {/* Bottom Navigation Control Bar */}
-      <div className="detail-bottom-bar-wrapper">
+      <div className="detail-bottom-bar-wrapper" style={{ marginTop: 'auto' }}>
         
         {/* Text Size Drawer */}
         {showTextSettings && (
