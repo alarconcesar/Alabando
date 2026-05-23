@@ -19,6 +19,7 @@ export default function HymnDetail() {
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentStanzaIndex, setCurrentStanzaIndex] = useState(0);
   const [zoomedPage, setZoomedPage] = useState<string | null>(null);
+  const [zoomScale, setZoomScale] = useState(1);
 
   useEffect(() => {
     localStorage.setItem('fontSize', fontSize.toString());
@@ -188,60 +189,16 @@ export default function HymnDetail() {
                 alt={`Partitura página ${p}`}
                 style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
                 loading="lazy"
-                onClick={() => setZoomedPage(`/partituras/page_${p.trim()}.png`)}
+                onClick={() => {
+                  setZoomScale(1);
+                  setZoomedPage(`/partituras/page_${p.trim()}.png`);
+                }}
               />
             ))}
           </div>
         )}
 
-        {/* Partitura Lightbox (Zoomable) */}
-        {zoomedPage && (
-          <div 
-            style={{
-              position: 'fixed', inset: 0, zIndex: 9000,
-              backgroundColor: 'rgba(0,0,0,0.95)',
-              display: 'flex', flexDirection: 'column',
-              animation: 'fadeIn 0.2s ease'
-            }}
-          >
-            <button 
-              onClick={() => setZoomedPage(null)}
-              style={{
-                position: 'absolute', top: 16, right: 16, zIndex: 9001,
-                background: 'rgba(255,255,255,0.15)', border: 'none',
-                borderRadius: '50%', width: 44, height: 44,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#fff', cursor: 'pointer', fontSize: 20
-              }}
-            >
-              ✕
-            </button>
-            <div
-              style={{
-                flex: 1,
-                overflow: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-x pan-y pinch-zoom',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 16,
-              }}
-            >
-              <img 
-                src={zoomedPage}
-                alt="Partitura ampliada"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  borderRadius: 8,
-                  objectFit: 'contain',
-                  touchAction: 'pinch-zoom',
-                }}
-              />
-            </div>
-          </div>
-        )}
+
 
         {showVideo && ytVideo && (
           <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%', marginBottom: 32, borderRadius: 12, overflow: 'hidden' }}>
@@ -422,6 +379,147 @@ export default function HymnDetail() {
             {stanzas.map((_, i) => (
               <div key={i} className={`presentation-dot ${i === currentStanzaIndex ? 'active' : ''}`} />
             ))}
+          </div>
+        </div>
+      )}
+      {/* Partitura Lightbox (Zoomable with custom controls) */}
+      {zoomedPage && (
+        <div 
+          style={{
+            position: 'fixed', inset: 0, zIndex: 90000,
+            backgroundColor: 'rgba(0,0,0,0.97)',
+            display: 'flex', flexDirection: 'column',
+            animation: 'fadeIn 0.2s ease'
+          }}
+        >
+          {/* Top bar with Close button */}
+          <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 90002 }}>
+            <button 
+              onClick={() => setZoomedPage(null)}
+              style={{
+                background: 'rgba(255,255,255,0.15)', border: 'none',
+                borderRadius: '50%', width: 44, height: 44,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#fff', cursor: 'pointer', fontSize: 20
+              }}
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Main scrollable viewport */}
+          <div
+            style={{
+              flex: 1,
+              overflow: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-x pan-y pinch-zoom',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 16,
+            }}
+          >
+            <div style={{ margin: 'auto', display: 'inline-block', textAlign: 'center' }}>
+              <img 
+                src={zoomedPage}
+                alt="Partitura ampliada"
+                style={{
+                  width: zoomScale > 1 ? `${zoomScale * 100}%` : 'auto',
+                  maxWidth: zoomScale > 1 ? 'none' : '100%',
+                  maxHeight: zoomScale > 1 ? 'none' : '90vh',
+                  height: 'auto',
+                  borderRadius: 8,
+                  objectFit: 'contain',
+                  touchAction: 'pinch-zoom',
+                  display: 'block',
+                  transition: 'width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.5)'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Floating Zoom Controls Bar at the bottom */}
+          <div 
+            style={{
+              position: 'absolute',
+              bottom: 24,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 90002,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
+              background: 'rgba(20, 20, 20, 0.85)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              padding: '8px 16px',
+              borderRadius: 24,
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+              color: '#fff',
+            }}
+          >
+            <button
+              onClick={() => setZoomScale(s => Math.max(1, s - 0.5))}
+              disabled={zoomScale <= 1}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: zoomScale <= 1 ? 'rgba(255,255,255,0.3)' : '#fff',
+                fontSize: 22,
+                fontWeight: 'bold',
+                cursor: zoomScale <= 1 ? 'default' : 'pointer',
+                width: 32,
+                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              −
+            </button>
+            <span style={{ fontSize: 14, fontWeight: 600, minWidth: 48, textAlign: 'center' }}>
+              {Math.round(zoomScale * 100)}%
+            </span>
+            <button
+              onClick={() => setZoomScale(s => Math.min(3, s + 0.5))}
+              disabled={zoomScale >= 3}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: zoomScale >= 3 ? 'rgba(255,255,255,0.3)' : '#fff',
+                fontSize: 22,
+                fontWeight: 'bold',
+                cursor: zoomScale >= 3 ? 'default' : 'pointer',
+                width: 32,
+                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              +
+            </button>
+            {zoomScale > 1 && (
+              <button
+                onClick={() => setZoomScale(1)}
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  border: 'none',
+                  borderRadius: 12,
+                  color: '#fff',
+                  fontSize: 11,
+                  padding: '4px 8px',
+                  cursor: 'pointer',
+                  fontWeight: 600
+                }}
+              >
+                Restablecer
+              </button>
+            )}
           </div>
         </div>
       )}
