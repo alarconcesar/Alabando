@@ -19,6 +19,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
+    localStorage.removeItem('pwa-installed'); // Reset local state if browser allows installation again
     notify();
   });
 
