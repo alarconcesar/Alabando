@@ -15,6 +15,12 @@ function App() {
   useEffect(() => {
     const theme = localStorage.getItem('theme') || 'naranja';
     document.documentElement.setAttribute('data-theme', theme === 'naranja' ? '' : theme);
+    
+    // Dynamic PWA header bar color
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', theme === 'dark' ? '#0A0A0A' : '#FFFFFF');
+    }
   }, []);
 
   return (

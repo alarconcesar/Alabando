@@ -14,6 +14,12 @@ export default function Settings() {
     setCurrentTheme(theme);
     localStorage.setItem('theme', theme);
     document.documentElement.setAttribute('data-theme', theme === 'naranja' ? '' : theme);
+    
+    // Dynamic PWA header bar color
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', theme === 'dark' ? '#0A0A0A' : '#FFFFFF');
+    }
   };
 
   const [fontSize, setFontSize] = useState(() => {
