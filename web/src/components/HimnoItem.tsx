@@ -7,15 +7,20 @@ interface HimnoItemProps {
   himno: Himno;
   onFavoriteToggle?: () => void;
   extraContent?: React.ReactNode;
+  isFavorite?: boolean;
 }
 
-export default function HimnoItem({ himno, onFavoriteToggle, extraContent }: HimnoItemProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+export default function HimnoItem({ himno, onFavoriteToggle, extraContent, isFavorite: isFavoriteProp }: HimnoItemProps) {
+  const [localIsFavorite, setLocalIsFavorite] = useState(false);
 
   useEffect(() => {
-    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-    setIsFavorite(favs.includes(himno.id));
-  }, [himno.id]);
+    if (isFavoriteProp === undefined) {
+      const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+      setLocalIsFavorite(favs.includes(himno.id));
+    }
+  }, [himno.id, isFavoriteProp]);
+
+  const isFavorite = isFavoriteProp !== undefined ? isFavoriteProp : localIsFavorite;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -29,7 +34,9 @@ export default function HimnoItem({ himno, onFavoriteToggle, extraContent }: Him
       newFav = true;
     }
     localStorage.setItem('favorites', JSON.stringify(favs));
-    setIsFavorite(newFav);
+    if (isFavoriteProp === undefined) {
+      setLocalIsFavorite(newFav);
+    }
     if (onFavoriteToggle) {
       onFavoriteToggle();
     }

@@ -9,12 +9,15 @@ export default function Home() {
   const navigate = useNavigate();
   const [history, setHistory] = useState<any[]>([]);
   const [showToast, setShowToast] = useState(false);
+  const [favorites, setFavorites] = useState<number[]>([]);
 
   useEffect(() => {
     const hist = localStorage.getItem('history');
     if (hist) {
       setHistory(JSON.parse(hist));
     }
+    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setFavorites(favs);
   }, []);
 
   const getRandomHymn = () => {
@@ -141,7 +144,14 @@ export default function Home() {
             {historyHimnos.slice(0, 3).map((h, i) => (
               <div key={h.id}>
                 {i > 0 && <div className="himno-item-divider" style={{ margin: '0 16px' }} />}
-                <HimnoItem himno={h} />
+                <HimnoItem 
+                  himno={h} 
+                  isFavorite={favorites.includes(h.id)}
+                  onFavoriteToggle={() => {
+                    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+                    setFavorites(favs);
+                  }}
+                />
               </div>
             ))}
             

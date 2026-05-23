@@ -20,16 +20,33 @@ export default function Search() {
   // Text search query state
   const [textQuery, setTextQuery] = useState('');
 
+  // Load favorites once on mount to pass to HimnoItem
+  const [favorites, setFavorites] = useState<number[]>([]);
+  useEffect(() => {
+    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setFavorites(favs);
+  }, []);
+
   // Normalize string by converting to lowercase and removing accents/diacritics
   const normalizeStr = (str: string) => {
     return str
       .toLowerCase()
-      .replace(/á/g, 'a')
-      .replace(/é/g, 'e')
-      .replace(/í/g, 'i')
-      .replace(/ó/g, 'o')
-      .replace(/ú/g, 'u');
+      .replace(/[áäàâ]/g, 'a')
+      .replace(/[éëèê]/g, 'e')
+      .replace(/[íïìî]/g, 'i')
+      .replace(/[óöòô]/g, 'o')
+      .replace(/[úüùû]/g, 'u');
   };
+
+  // Pre-normalize all hymns once to avoid calling normalizeStr repeatedly in filter loops or during rendering
+  const searchableHimnos = useMemo(() => {
+    return himnos.map(h => ({
+      ...h,
+      nombreNormalized: normalizeStr(h.nombre),
+      letraNormalized: normalizeStr(h.letra),
+      numeroNormalized: normalizeStr(h.numero)
+    }));
+  }, [himnos]);
 
   // 1. Keypad Search matching
   const keypadQuery = text1 + text2;
@@ -37,29 +54,40 @@ export default function Search() {
     if (!keypadQuery) return [];
     
     // Exact match or contains matching
-    const matches = himnos.filter(h => 
-      h.numero.toLowerCase().includes(keypadQuery.toLowerCase())
+    const matches = searchableHimnos.filter(h => 
+      h.numeroNormalized.includes(keypadQuery.toLowerCase())
     );
 
     // Kotlin: take(1) - Only show the first result
     return matches.slice(0, 1);
-  }, [himnos, keypadQuery]);
+  }, [searchableHimnos, keypadQuery]);
 
   // 2. Text Search matching
   const textFilteredResults = useMemo(() => {
-    if (!textQuery.trim()) return [];
+    const query = textQuery.trim();
+    if (!query) return [];
 
-    const normalizedQuery = normalizeStr(textQuery);
-    
-    const matches = himnos.filter(h => 
-      normalizeStr(h.nombre).includes(normalizedQuery) ||
-      normalizeStr(h.letra).includes(normalizedQuery)
-    );
+    const normalizedQuery = normalizeStr(query);
+    const queryLen = query.length;
+
+    // Optimize: If query is 1 or 2 characters, search ONLY in titles/numbers to avoid heavy regex and huge match list.
+    // If query is 3 or more characters, search in lyrics as well.
+    const matches = searchableHimnos.filter(h => {
+      const matchTitleOrNum = 
+        h.nombreNormalized.includes(normalizedQuery) ||
+        h.numeroNormalized.includes(normalizedQuery);
+      
+      if (queryLen < 3) {
+        return matchTitleOrNum;
+      }
+      
+      return matchTitleOrNum || h.letraNormalized.includes(normalizedQuery);
+    });
 
     // Sorted: Matches in the title first, then sorted by hymn number
     return matches.sort((a, b) => {
-      const aTitleMatch = normalizeStr(a.nombre).includes(normalizedQuery);
-      const bTitleMatch = normalizeStr(b.nombre).includes(normalizedQuery);
+      const aTitleMatch = a.nombreNormalized.includes(normalizedQuery);
+      const bTitleMatch = b.nombreNormalized.includes(normalizedQuery);
 
       if (aTitleMatch && !bTitleMatch) return -1;
       if (!aTitleMatch && bTitleMatch) return 1;
@@ -68,7 +96,7 @@ export default function Search() {
       const bNum = parseInt(b.numero.replace(/\D/g, '')) || 0;
       return aNum - bNum;
     });
-  }, [himnos, textQuery]);
+  }, [searchableHimnos, textQuery]);
 
   // Keypad key press handler
   const handleKeyPress = (key: string) => {
@@ -99,10 +127,18 @@ export default function Search() {
   // Handle category filtering
   const finalResults = useMemo(() => {
     if (catFilter) {
-      return himnos.filter(h => h.categoria === catFilter);
+      return searchableHimnos.filter(h => h.categoria === catFilter);
     }
     return searchMode === 'keypad' ? keypadResult : textFilteredResults;
-  }, [searchMode, catFilter, himnos, keypadResult, textFilteredResults]);
+  }, [searchMode, catFilter, searchableHimnos, keypadResult, textFilteredResults]);
+
+  // Sliced results for fast rendering (limit to 100 on text searches)
+  const displayedResults = useMemo(() => {
+    if (searchMode === 'text' && !catFilter) {
+      return finalResults.slice(0, 100);
+    }
+    return finalResults;
+  }, [finalResults, searchMode, catFilter]);
 
   const isKeypadView = searchMode === 'keypad' && !catFilter;
 
@@ -186,7 +222,14 @@ export default function Search() {
             {keypadResult.length > 0 ? (
               <div>
                 <div className="himno-item-divider" />
-                <HimnoItem himno={keypadResult[0]} />
+                <HimnoItem 
+                  himno={keypadResult[0]} 
+                  isFavorite={favorites.includes(keypadResult[0].id)}
+                  onFavoriteToggle={() => {
+                    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+                    setFavorites(favs);
+                  }}
+                />
               </div>
             ) : keypadQuery ? (
               <div style={{ textAlign: 'center', padding: '16px', color: 'var(--outline)', fontSize: '0.95rem' }}>
@@ -269,18 +312,17 @@ export default function Search() {
           <main style={{ marginTop: 8 }}>
             {loading ? (
               <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--outline)' }}>Buscando...</div>
-            ) : finalResults.length > 0 ? (
+            ) : displayedResults.length > 0 ? (
               <div>
                 <div className="himno-item-divider" />
-                {finalResults.map(h => {
+                {displayedResults.map(h => {
                   // Find lyrics snippet with match
                   const normalizedQ = normalizeStr(textQuery);
-                  const matchesTitle = normalizeStr(h.nombre).includes(normalizedQ);
+                  const matchesTitle = h.nombreNormalized.includes(normalizedQ);
                   let lyricsSnippet: React.ReactNode = null;
 
                   if (textQuery.trim() && !matchesTitle) {
-                    const normalizedLetra = normalizeStr(h.letra);
-                    const matchIndex = normalizedLetra.indexOf(normalizedQ);
+                    const matchIndex = h.letraNormalized.indexOf(normalizedQ);
                     if (matchIndex !== -1) {
                       const start = Math.max(0, matchIndex - 30);
                       const end = Math.min(h.letra.length, matchIndex + textQuery.length + 60);
@@ -297,10 +339,23 @@ export default function Search() {
 
                   return (
                     <div key={h.id}>
-                      <HimnoItem himno={h} extraContent={lyricsSnippet} />
+                      <HimnoItem 
+                        himno={h} 
+                        isFavorite={favorites.includes(h.id)}
+                        extraContent={lyricsSnippet}
+                        onFavoriteToggle={() => {
+                          const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+                          setFavorites(favs);
+                        }}
+                      />
                     </div>
                   );
                 })}
+                {finalResults.length > 100 && searchMode === 'text' && !catFilter && (
+                  <div style={{ textAlign: 'center', padding: '24px 16px', color: 'var(--outline)', fontSize: '0.85rem' }}>
+                    Mostrando los primeros 100 resultados de {finalResults.length}. Escribe más letras para refinar la búsqueda.
+                  </div>
+                )}
               </div>
             ) : (textQuery.trim() || catFilter) ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--outline)' }}>

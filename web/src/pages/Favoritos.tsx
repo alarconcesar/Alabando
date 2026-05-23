@@ -55,6 +55,7 @@ export default function Favoritos() {
             <HimnoItem 
               key={h.id} 
               himno={h} 
+              isFavorite={true}
               onFavoriteToggle={() => {
                 const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
                 setFavorites(favs);

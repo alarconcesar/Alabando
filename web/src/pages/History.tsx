@@ -8,12 +8,15 @@ export default function History() {
   const navigate = useNavigate();
   const { himnos, loading } = useHimnos();
   const [history, setHistory] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<number[]>([]);
 
   useEffect(() => {
     const hist = localStorage.getItem('history');
     if (hist) {
       setHistory(JSON.parse(hist));
     }
+    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setFavorites(favs);
   }, []);
 
   const clearHistory = () => {
@@ -65,7 +68,15 @@ export default function History() {
           <div>
             <div className="himno-item-divider" />
             {historyHimnos.map((h, index) => (
-              <HimnoItem key={`${h.id}-${index}`} himno={h} />
+              <HimnoItem 
+                key={`${h.id}-${index}`} 
+                himno={h} 
+                isFavorite={favorites.includes(h.id)}
+                onFavoriteToggle={() => {
+                  const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+                  setFavorites(favs);
+                }}
+              />
             ))}
           </div>
         )}
