@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
-import { Settings, Shuffle, PlusSquare, Inbox, Heart } from 'lucide-react';
+import { Settings, Shuffle, PlusSquare, Inbox, Heart, Share2, Check } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import HimnoItem from '../components/HimnoItem';
 
@@ -8,6 +8,7 @@ export default function Home() {
   const { himnos, loading } = useHimnos();
   const navigate = useNavigate();
   const [history, setHistory] = useState<any[]>([]);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const hist = localStorage.getItem('history');
@@ -20,6 +21,33 @@ export default function Home() {
     if (himnos.length > 0) {
       const randomIndex = Math.floor(Math.random() * himnos.length);
       navigate(`/himno/${himnos[randomIndex].id}`);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Himnario Alabando',
+      text: '¡Canta y alaba con la app de Himnos Alabando!',
+      url: window.location.origin,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // Only ignore abort errors from user canceling the share sheet
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Error al compartir:', err);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.origin);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2500);
+      } catch (err) {
+        console.error('Error al copiar al portapapeles:', err);
+      }
     }
   };
 
@@ -36,9 +64,14 @@ export default function Home() {
           <div className="home-header-greeting">Hola,</div>
           <h1 className="home-header-title" style={{ color: 'var(--on-background)' }}>¡Es hora de Alabar!</h1>
         </div>
-        <button onClick={() => navigate('/settings')} className="icon-btn" aria-label="Ajustes" style={{ backgroundColor: 'var(--surface)' }}>
-          <Settings size={26} />
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button onClick={handleShare} className="icon-btn" aria-label="Compartir" style={{ backgroundColor: 'var(--surface)' }}>
+            <Share2 size={24} />
+          </button>
+          <button onClick={() => navigate('/settings')} className="icon-btn" aria-label="Ajustes" style={{ backgroundColor: 'var(--surface)' }}>
+            <Settings size={24} />
+          </button>
+        </div>
       </div>
 
       {/* Grid Cards (Quick Actions) */}
@@ -138,6 +171,12 @@ export default function Home() {
       <div style={{ textAlign: 'center', marginTop: 45, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
         <p style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--outline)' }}>Hecho con mucho</p>
         <Heart size={20} className="animate-pulse" style={{ color: 'var(--primary)', fill: 'var(--primary)' }} />
+      </div>
+
+      {/* Clipboard Copy Toast Feedback */}
+      <div className={`toast-notification ${showToast ? 'show' : ''}`}>
+        <Check size={18} />
+        <span>¡Enlace copiado al portapapeles!</span>
       </div>
     </div>
   );
