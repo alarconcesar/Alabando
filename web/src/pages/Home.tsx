@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
-import { Settings, Shuffle, PlusSquare, Inbox, Heart, Share2, Check } from 'lucide-react';
+import { Settings, PlusSquare, Inbox, Heart, Share2, Check, Library } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import HimnoItem from '../components/HimnoItem';
 
@@ -20,12 +20,6 @@ export default function Home() {
     setFavorites(favs);
   }, []);
 
-  const getRandomHymn = () => {
-    if (himnos.length > 0) {
-      const randomIndex = Math.floor(Math.random() * himnos.length);
-      navigate(`/himno/${himnos[randomIndex].id}`);
-    }
-  };
 
   const handleShare = async () => {
     const shareData = {
@@ -79,11 +73,11 @@ export default function Home() {
 
       {/* Grid Cards (Quick Actions) */}
       <div style={{ display: 'flex', gap: 16, padding: '12px 20px' }}>
-        <div onClick={getRandomHymn} className="home-action-card">
-          <Shuffle size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
+        <div onClick={() => navigate('/all-hymns')} className="home-action-card">
+          <Library size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
           <div className="home-action-card-content">
-            <Shuffle size={28} style={{ color: 'var(--primary)' }} />
-            <h2 className="home-action-card-title">Himno<br/>al Azar</h2>
+            <Library size={28} style={{ color: 'var(--primary)' }} />
+            <h2 className="home-action-card-title">Todos los<br/>Himnos</h2>
           </div>
         </div>
         <div onClick={() => navigate('/nuevos')} className="home-action-card">

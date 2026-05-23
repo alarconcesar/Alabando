@@ -9,6 +9,7 @@ import Albumes from './pages/Albumes';
 import Favoritos from './pages/Favoritos';
 import Nuevos from './pages/Nuevos';
 import History from './pages/History';
+import AllHymns from './pages/AllHymns';
 import InstallPrompt from './components/InstallPrompt';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
             <Route path="/albumes" element={<Albumes />} />
             <Route path="/favoritos" element={<Favoritos />} />
             <Route path="/nuevos" element={<Nuevos />} />
+            <Route path="/all-hymns" element={<AllHymns />} />
             <Route path="/history" element={<History />} />
             <Route path="/himno/:id" element={<HymnDetail />} />
             <Route path="/settings" element={<Settings />} />
