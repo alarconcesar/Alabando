@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export default function HymnDetail() {
   const { id } = useParams();
@@ -20,6 +20,123 @@ export default function HymnDetail() {
   const [currentStanzaIndex, setCurrentStanzaIndex] = useState(0);
   const [zoomedPage, setZoomedPage] = useState<string | null>(null);
   const [zoomScale, setZoomScale] = useState(1);
+  const [panX, setPanX] = useState(0);
+  const [panY, setPanY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const [pinchStartDist, setPinchStartDist] = useState(0);
+  const [pinchStartScale, setPinchStartScale] = useState(1);
+
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const clampPan = (x: number, y: number, scale: number) => {
+    const limitX = Math.max(0, window.innerWidth * (scale - 0.5));
+    const limitY = Math.max(0, window.innerHeight * (scale - 0.5));
+    return {
+      x: Math.max(-limitX, Math.min(limitX, x)),
+      y: Math.max(-limitY, Math.min(limitY, y))
+    };
+  };
+
+  const getTouchDist = (t1: Touch | React.Touch, t2: Touch | React.Touch) => {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomScale <= 1) return;
+    e.preventDefault();
+    setIsDragging(true);
+    setStartX(e.clientX - panX);
+    setStartY(e.clientY - panY);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || zoomScale <= 1) return;
+    const newPanX = e.clientX - startX;
+    const newPanY = e.clientY - startY;
+    const clamped = clampPan(newPanX, newPanY, zoomScale);
+    setPanX(clamped.x);
+    setPanY(clamped.y);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setStartX(touch.clientX - panX);
+      setStartY(touch.clientY - panY);
+    } else if (e.touches.length === 2) {
+      setIsDragging(false);
+      const dist = getTouchDist(e.touches[0], e.touches[1]);
+      setPinchStartDist(dist);
+      setPinchStartScale(zoomScale);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDragging && zoomScale > 1) {
+      const touch = e.touches[0];
+      const newPanX = touch.clientX - startX;
+      const newPanY = touch.clientY - startY;
+      const clamped = clampPan(newPanX, newPanY, zoomScale);
+      setPanX(clamped.x);
+      setPanY(clamped.y);
+    } else if (e.touches.length === 2 && pinchStartDist > 0) {
+      const dist = getTouchDist(e.touches[0], e.touches[1]);
+      const factor = dist / pinchStartDist;
+      let newScale = pinchStartScale * factor;
+      newScale = Math.min(3, Math.max(1, newScale));
+      setZoomScale(newScale);
+      if (newScale === 1) {
+        setPanX(0);
+        setPanY(0);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setPinchStartDist(0);
+  };
+
+  const handleOpenZoom = (pageUrl: string) => {
+    setZoomScale(1);
+    setPanX(0);
+    setPanY(0);
+    setIsDragging(false);
+    setZoomedPage(pageUrl);
+  };
+
+  useEffect(() => {
+    const node = viewportRef.current;
+    if (!node) return;
+
+    const handleWheelRaw = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = 0.15;
+      setZoomScale(s => {
+        let newScale = s + (e.deltaY < 0 ? zoomFactor : -zoomFactor);
+        newScale = Math.min(3, Math.max(1, newScale));
+        if (newScale === 1) {
+          setPanX(0);
+          setPanY(0);
+        }
+        return newScale;
+      });
+    };
+
+    node.addEventListener('wheel', handleWheelRaw, { passive: false });
+    return () => {
+      node.removeEventListener('wheel', handleWheelRaw);
+    };
+  }, [zoomedPage]);
 
   useEffect(() => {
     localStorage.setItem('fontSize', fontSize.toString());
@@ -189,10 +306,7 @@ export default function HymnDetail() {
                 alt={`Partitura página ${p}`}
                 style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
                 loading="lazy"
-                onClick={() => {
-                  setZoomScale(1);
-                  setZoomedPage(`/partituras/page_${p.trim()}.png`);
-                }}
+                onClick={() => handleOpenZoom(`/partituras/page_${p.trim()}.png`)}
               />
             ))}
           </div>
@@ -389,7 +503,8 @@ export default function HymnDetail() {
             position: 'fixed', inset: 0, zIndex: 90000,
             backgroundColor: 'rgba(0,0,0,0.97)',
             display: 'flex', flexDirection: 'column',
-            animation: 'fadeIn 0.2s ease'
+            animation: 'fadeIn 0.2s ease',
+            userSelect: 'none'
           }}
         >
           {/* Top bar with Close button */}
@@ -408,33 +523,46 @@ export default function HymnDetail() {
             </button>
           </div>
 
-          {/* Main scrollable viewport */}
+          {/* Main viewport for grabbing and dragging */}
           <div
+            ref={viewportRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             style={{
               flex: 1,
-              overflow: 'auto',
-              WebkitOverflowScrolling: 'touch',
-              touchAction: 'pan-x pan-y pinch-zoom',
+              overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               padding: 16,
+              cursor: zoomScale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+              touchAction: 'none'
             }}
           >
-            <div style={{ margin: 'auto', display: 'inline-block', textAlign: 'center' }}>
+            <div 
+              style={{ 
+                transform: `translate(${panX}px, ${panY}px) scale(${zoomScale})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                display: 'inline-block',
+                textAlign: 'center'
+              }}
+            >
               <img 
                 src={zoomedPage}
                 alt="Partitura ampliada"
                 style={{
-                  width: zoomScale > 1 ? `${zoomScale * 100}%` : 'auto',
-                  maxWidth: zoomScale > 1 ? 'none' : '100%',
-                  maxHeight: zoomScale > 1 ? 'none' : '90vh',
-                  height: 'auto',
+                  maxWidth: '100vw',
+                  maxHeight: '85vh',
                   borderRadius: 8,
                   objectFit: 'contain',
-                  touchAction: 'pinch-zoom',
                   display: 'block',
-                  transition: 'width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  pointerEvents: 'none',
                   boxShadow: '0 4px 24px rgba(0,0,0,0.5)'
                 }}
               />
@@ -463,7 +591,14 @@ export default function HymnDetail() {
             }}
           >
             <button
-              onClick={() => setZoomScale(s => Math.max(1, s - 0.5))}
+              onClick={() => setZoomScale(s => {
+                const next = Math.max(1, s - 0.25);
+                if (next === 1) {
+                  setPanX(0);
+                  setPanY(0);
+                }
+                return next;
+              })}
               disabled={zoomScale <= 1}
               style={{
                 background: 'transparent',
@@ -485,7 +620,7 @@ export default function HymnDetail() {
               {Math.round(zoomScale * 100)}%
             </span>
             <button
-              onClick={() => setZoomScale(s => Math.min(3, s + 0.5))}
+              onClick={() => setZoomScale(s => Math.min(3, s + 0.25))}
               disabled={zoomScale >= 3}
               style={{
                 background: 'transparent',
@@ -505,7 +640,11 @@ export default function HymnDetail() {
             </button>
             {zoomScale > 1 && (
               <button
-                onClick={() => setZoomScale(1)}
+                onClick={() => {
+                  setZoomScale(1);
+                  setPanX(0);
+                  setPanY(0);
+                }}
                 style={{
                   background: 'rgba(255,255,255,0.15)',
                   border: 'none',
