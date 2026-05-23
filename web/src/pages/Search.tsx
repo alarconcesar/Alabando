@@ -104,8 +104,20 @@ export default function Search() {
     return searchMode === 'keypad' ? keypadResult : textFilteredResults;
   }, [searchMode, catFilter, himnos, keypadResult, textFilteredResults]);
 
+  const isKeypadView = searchMode === 'keypad' && !catFilter;
+
   return (
-    <div className="page-fade-in" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 100 }}>
+    <div 
+      className="page-fade-in" 
+      style={{ 
+        backgroundColor: 'var(--background)', 
+        minHeight: '100vh', 
+        paddingBottom: isKeypadView ? 0 : 100,
+        overflow: isKeypadView ? 'hidden' : 'visible',
+        height: isKeypadView ? '100vh' : 'auto',
+        boxSizing: 'border-box'
+      }}
+    >
       {/* App Bar */}
       <header className="app-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>
         {catFilter && (
