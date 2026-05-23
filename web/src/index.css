@@ -516,8 +516,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .hymn-detail-title-main {
@@ -539,14 +541,160 @@ body {
   user-select: text;
 }
 
-.hymn-detail-text-body .lyrics-verse {
-  margin-bottom: 24px;
+.hymn-detail-text-body .lyrics-verse-container {
+  margin-bottom: 28px;
+  position: relative;
+  width: 100%;
 }
 
-.hymn-detail-text-body .lyrics-chorus {
-  font-weight: 700;
-  margin-bottom: 24px;
+.hymn-detail-text-body .lyrics-chorus-container {
+  font-weight: 600;
+  margin-bottom: 28px;
+  position: relative;
+  width: 100%;
+  text-align: center;
 }
+
+.hymn-detail-text-body .lyrics-pre-chorus-container {
+  background-color: rgba(142, 36, 170, 0.05); /* Soft purple container */
+  border-left: 4px solid #8e24aa; /* Purple accent */
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin: 32px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[data-theme='dark'] .hymn-detail-text-body .lyrics-pre-chorus-container {
+  background-color: rgba(186, 104, 200, 0.08);
+  border-left: 4px solid #ba68c8;
+}
+
+.hymn-detail-text-body .lyrics-bridge-container {
+  background-color: rgba(230, 81, 0, 0.05); /* Soft amber container */
+  border-left: 4px solid #e65100; /* Amber accent */
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin: 32px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[data-theme='dark'] .hymn-detail-text-body .lyrics-bridge-container {
+  background-color: rgba(255, 183, 77, 0.08);
+  border-left: 4px solid #ffb74d;
+}
+
+.hymn-detail-text-body .lyrics-note-container {
+  font-size: 0.85em;
+  opacity: 0.75;
+  font-style: italic;
+  margin: 36px auto 16px auto;
+  padding: 16px 20px;
+  border-top: 1px solid var(--barra);
+  text-align: center;
+  width: 90%;
+  line-height: 1.6;
+}
+
+.hymn-detail-text-body .lyrics-section-title-container {
+  font-weight: 700;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  color: var(--outline); /* Changed from primary to outline (gray) for subtler look */
+  margin: 36px 0 12px 0; /* Changed bottom margin from 20px to 12px for consistency */
+  text-transform: uppercase;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0.9;
+}
+
+.lyrics-verse-num {
+  font-size: 0.75em;
+  font-weight: 700;
+  color: var(--outline); /* Changed from primary to outline (gray) for subtler look */
+  opacity: 0.8;
+  display: block;
+  margin-bottom: 12px; /* Changed from 6px to 12px to match the section titles spacing */
+  letter-spacing: 0.05em;
+}
+
+.lyrics-voice-badge {
+  display: inline-block;
+  font-size: 0.65em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 100px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Voice Colors */
+.lyrics-voice-badge.voice-hermanos {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid rgba(13, 71, 161, 0.15);
+}
+[data-theme='dark'] .lyrics-voice-badge.voice-hermanos {
+  background-color: rgba(13, 71, 161, 0.35);
+  color: #90caf9;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.lyrics-voice-badge.voice-hermanas {
+  background-color: #fce4ec;
+  color: #880e4f;
+  border: 1px solid rgba(136, 14, 79, 0.15);
+}
+[data-theme='dark'] .lyrics-voice-badge.voice-hermanas {
+  background-color: rgba(136, 14, 79, 0.35);
+  color: #f48fb1;
+  border: 1px solid rgba(244, 143, 177, 0.2);
+}
+
+.lyrics-voice-badge.voice-todos {
+  background-color: var(--primary-container);
+  color: var(--primary);
+  border: 1px solid rgba(252, 113, 36, 0.15);
+}
+[data-theme='dark'] .lyrics-voice-badge.voice-todos {
+  background-color: rgba(252, 113, 36, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(252, 113, 36, 0.2);
+}
+
+.lyrics-voice-badge.voice-generic {
+  background-color: var(--surface-variant);
+  color: var(--outline);
+  border: 1px solid var(--barra);
+}
+
+.presentation-slide .lyrics-voice-badge {
+  font-size: 0.4em;
+  padding: 6px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.presentation-slide .presentation-section-type {
+  font-size: 0.35em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--outline);
+}
+
 
 .detail-bottom-bar-wrapper {
   position: fixed;
@@ -933,12 +1081,14 @@ body {
   }
 
   .hymn-detail-lyrics-container {
+    width: 100%;
     max-width: 680px;
     background-color: var(--surface);
     border-radius: 24px;
     border: 1px solid var(--surface-variant);
     padding: 48px 64px;
     margin: 40px auto 40px auto;
+    box-sizing: border-box;
   }
 }
 

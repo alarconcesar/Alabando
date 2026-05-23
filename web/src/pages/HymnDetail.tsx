@@ -190,8 +190,44 @@ export default function HymnDetail() {
     }
   }, [himno]);
 
-  // Split by the actual stanza delimiter: newline + space + newline
-  const stanzas = himno ? himno.letra.split('\n \n').map(s => s.trim()).filter(s => s.length > 0) : [];
+  // Convert structured lyrics to slide sections for presentation mode, with fallback
+  interface SlideSection {
+    type: 'estrofa' | 'coro' | 'pre-coro' | 'puente';
+    label?: string;
+    number?: number;
+    lines: string[];
+  }
+
+  const slides: SlideSection[] = [];
+  if (himno) {
+    if (himno.letra_estructurada) {
+      himno.letra_estructurada.forEach(sec => {
+        if (['e', 'c', 'p', 'b'].includes(sec.t)) {
+          let typeName: SlideSection['type'] = 'estrofa';
+          if (sec.t === 'c') typeName = 'coro';
+          else if (sec.t === 'p') typeName = 'pre-coro';
+          else if (sec.t === 'b') typeName = 'puente';
+          
+          slides.push({
+            type: typeName,
+            label: sec.lbl,
+            number: sec.n,
+            lines: sec.l
+          });
+        }
+      });
+    } else {
+      const fallbackStanzas = himno.letra.split('\n \n').map(s => s.trim()).filter(s => s.length > 0);
+      fallbackStanzas.forEach(s => {
+        const isChorus = s.toUpperCase().startsWith('CORO');
+        const cleanedText = isChorus ? s.replace(/^CORO\s*/i, '').trim() : s;
+        slides.push({
+          type: isChorus ? 'coro' : 'estrofa',
+          lines: cleanedText.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+        });
+      });
+    }
+  }
 
   const enterPresentationMode = async () => {
     setCurrentStanzaIndex(0);
@@ -224,8 +260,8 @@ export default function HymnDetail() {
   };
 
   const nextStanza = useCallback(() => {
-    setCurrentStanzaIndex(prev => Math.min(prev + 1, stanzas.length - 1));
-  }, [stanzas.length]);
+    setCurrentStanzaIndex(prev => Math.min(prev + 1, slides.length - 1));
+  }, [slides.length]);
 
   const prevStanza = useCallback(() => {
     setCurrentStanzaIndex(prev => Math.max(prev - 1, 0));
@@ -328,20 +364,65 @@ export default function HymnDetail() {
 
         {!showScore && (
           <div className="hymn-detail-text-body" style={{ fontSize: `${fontSize}px` }}>
-            {himno.letra.split('\n \n').map((stanza, i) => {
-              const isChorus = stanza.trim().startsWith('CORO');
-              let content = stanza.trim();
-              if (isChorus) {
-                content = content.replace(/^CORO\s*/i, '');
-              }
-              return (
-                <div key={i} className={isChorus ? 'lyrics-chorus' : 'lyrics-verse'}>
-                  {content.split('\n').map((line, j) => (
-                    <div key={j}>{line}</div>
-                  ))}
-                </div>
-              );
-            })}
+            {himno.letra_estructurada ? (
+              himno.letra_estructurada.map((sec, i) => {
+                let containerClass = 'lyrics-verse-container';
+                let voiceClass = 'voice-generic';
+                
+                if (sec.t === 'c') containerClass = 'lyrics-chorus-container';
+                else if (sec.t === 'p') containerClass = 'lyrics-pre-chorus-container';
+                else if (sec.t === 'b') containerClass = 'lyrics-bridge-container';
+                else if (sec.t === 'n') containerClass = 'lyrics-note-container';
+                else if (sec.t === 's') {
+                  return (
+                    <div key={i} className="lyrics-section-title-container">
+                      {sec.lbl}
+                    </div>
+                  );
+                }
+                
+                if (sec.lbl) {
+                  const lblLower = sec.lbl.toLowerCase();
+                  if (lblLower.includes('hermano')) voiceClass = 'voice-hermanos';
+                  else if (lblLower.includes('hermana')) voiceClass = 'voice-hermanas';
+                  else if (lblLower.includes('todo')) voiceClass = 'voice-todos';
+                }
+                
+                return (
+                  <div key={i} className={containerClass}>
+                    {sec.t === 'e' && sec.n && (
+                      <span className="lyrics-verse-num">{sec.n}</span>
+                    )}
+                    {sec.lbl && (
+                      <div>
+                        <span className={`lyrics-voice-badge ${voiceClass}`}>
+                          {sec.lbl}
+                        </span>
+                      </div>
+                    )}
+                    {sec.l.map((line, j) => (
+                      <div key={j}>{line}</div>
+                    ))}
+                  </div>
+                );
+              })
+            ) : (
+              // Fallback if structured lyrics not available
+              himno.letra.split('\n \n').map((stanza, i) => {
+                const isChorus = stanza.trim().startsWith('CORO');
+                let content = stanza.trim();
+                if (isChorus) {
+                  content = content.replace(/^CORO\s*/i, '');
+                }
+                return (
+                  <div key={i} className={isChorus ? 'lyrics-chorus-container' : 'lyrics-verse-container'}>
+                    {content.split('\n').map((line, j) => (
+                      <div key={j}>{line}</div>
+                    ))}
+                  </div>
+                );
+              })
+            )}
           </div>
         )}
       </main>
@@ -463,18 +544,43 @@ export default function HymnDetail() {
             
             <div className="presentation-slide" key={currentStanzaIndex}>
               {(() => {
-                const raw = stanzas[currentStanzaIndex];
-                const isChorus = raw.startsWith('CORO');
-                const content = raw.replace(/^CORO\s*/i, '');
-                const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                const slide = slides[currentStanzaIndex];
+                if (!slide) return null;
+                
+                // Get type name in Spanish
+                let typeText = '';
+                if (slide.type === 'estrofa') {
+                  typeText = slide.number ? `Estrofa ${slide.number}` : '';
+                } else if (slide.type === 'coro') {
+                  typeText = `Coro ${slide.number || ''}`;
+                } else if (slide.type === 'pre-coro') {
+                  typeText = 'Pre-Coro';
+                } else if (slide.type === 'puente') {
+                  typeText = 'Puente';
+                }
+                
+                // Voice label mapping to CSS class
+                let voiceClass = 'voice-generic';
+                if (slide.label) {
+                  const lblLower = slide.label.toLowerCase();
+                  if (lblLower.includes('hermano')) voiceClass = 'voice-hermanos';
+                  else if (lblLower.includes('hermana')) voiceClass = 'voice-hermanas';
+                  else if (lblLower.includes('todo')) voiceClass = 'voice-todos';
+                }
+                
                 return (
                   <>
-                    {isChorus && (
-                      <div style={{ fontSize: '0.45em', letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.55, marginBottom: '0.6em', fontWeight: 500 }}>
-                        Coro
+                    <div className="presentation-section-type">
+                      {typeText.trim()}
+                    </div>
+                    {slide.label && (
+                      <div>
+                        <span className={`lyrics-voice-badge ${voiceClass}`}>
+                          {slide.label}
+                        </span>
                       </div>
                     )}
-                    {lines.map((line, idx) => (
+                    {slide.lines.map((line, idx) => (
                       <div key={idx}>{line}</div>
                     ))}
                   </>
@@ -482,7 +588,7 @@ export default function HymnDetail() {
               })()}
             </div>
 
-            {currentStanzaIndex < stanzas.length - 1 && (
+            {currentStanzaIndex < slides.length - 1 && (
               <div className="presentation-touch-area presentation-touch-right" onClick={nextStanza}>
                 <ChevronRight size={48} style={{ opacity: 0.5 }} />
               </div>
@@ -490,7 +596,7 @@ export default function HymnDetail() {
           </div>
           
           <div className="presentation-progress">
-            {stanzas.map((_, i) => (
+            {slides.map((_, i) => (
               <div key={i} className={`presentation-dot ${i === currentStanzaIndex ? 'active' : ''}`} />
             ))}
           </div>

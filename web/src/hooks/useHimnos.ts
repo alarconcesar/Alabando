@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 
+export interface SeccionLetra {
+  t: 'e' | 'c' | 'p' | 'b' | 'n' | 's'; // e=estrofa, c=coro, p=pre-coro, b=puente, n=nota, s=titulo-seccion
+  n?: number;                           // número de sección (opcional)
+  lbl?: string;                         // etiqueta de voz (opcional, ej. "Hermanos:", "Todos:")
+  l: string[];                          // líneas de la letra
+}
+
 export interface Himno {
   id: number;
   numero: string;
@@ -8,7 +15,9 @@ export interface Himno {
   categoria: string;
   page: string;
   aud?: { src: string; id: string; lang: string }[];
+  letra_estructurada?: SeccionLetra[];
 }
+
 
 export function useHimnos() {
   const [himnos, setHimnos] = useState<Himno[]>([]);
