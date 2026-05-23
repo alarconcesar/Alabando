@@ -8,7 +8,16 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['partituras/*.png', 'data/himnos.json'],
+      includeAssets: [
+        'partituras/*.png',
+        'data/himnos.json',
+        'fonts/*.ttf',
+        'img/*.jpg',
+        'favicon.svg',
+        'icons.svg',
+        'pwa-192x192.png',
+        'pwa-512x512.png'
+      ],
       manifest: {
         name: 'Himnario EAV',
         short_name: 'Himnario',
