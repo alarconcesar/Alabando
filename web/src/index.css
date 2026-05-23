@@ -541,7 +541,9 @@ body {
   user-select: text;
 }
 
-.hymn-detail-text-body .lyrics-verse-container {
+.hymn-detail-text-body .lyrics-verse-container,
+.hymn-detail-text-body .lyrics-pre-chorus-container,
+.hymn-detail-text-body .lyrics-bridge-container {
   margin-bottom: 28px;
   position: relative;
   width: 100%;
@@ -553,40 +555,6 @@ body {
   position: relative;
   width: 100%;
   text-align: center;
-}
-
-.hymn-detail-text-body .lyrics-pre-chorus-container {
-  background-color: rgba(142, 36, 170, 0.05); /* Soft purple container */
-  border-left: 4px solid #8e24aa; /* Purple accent */
-  border-radius: 16px;
-  padding: 18px 24px;
-  margin: 32px 0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-[data-theme='dark'] .hymn-detail-text-body .lyrics-pre-chorus-container {
-  background-color: rgba(186, 104, 200, 0.08);
-  border-left: 4px solid #ba68c8;
-}
-
-.hymn-detail-text-body .lyrics-bridge-container {
-  background-color: rgba(230, 81, 0, 0.05); /* Soft amber container */
-  border-left: 4px solid #e65100; /* Amber accent */
-  border-radius: 16px;
-  padding: 18px 24px;
-  margin: 32px 0;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-[data-theme='dark'] .hymn-detail-text-body .lyrics-bridge-container {
-  background-color: rgba(255, 183, 77, 0.08);
-  border-left: 4px solid #ffb74d;
 }
 
 .hymn-detail-text-body .lyrics-note-container {

@@ -171,6 +171,7 @@ def parse_himno_letra(letra, himno_num=None):
         estrofa_match = re.match(r'^ESTROFA\s*(\d+)\b[\.\-\s\)]*(.*)$', line, re.IGNORECASE)
         inline_coro_match = re.match(r'^(CORO|PRE-CORO|PUENTE)\s*(\d*)\s*[\.\-\s\)]*(.*)$', line, re.IGNORECASE)
         
+        inline_header_name = None
         matched_header = False
         s_type = active_type
         s_num = active_num
@@ -206,12 +207,25 @@ def parse_himno_letra(letra, himno_num=None):
             active_type = s_type
             active_num = s_num
             matched_header = True
+            inline_header_name = c_name
             
         if matched_header:
             prev_label = None
             if sections and not sections[-1]['l'] and 'lbl' in sections[-1]:
                 prev_label = sections[-1]['lbl']
                 sections.pop()
+                
+            # If it is an inline chorus, pre-chorus, or bridge and we didn't consume a previous label,
+            # we inject a section title ('s') so that it renders as a header in the UI.
+            if s_type in ['c', 'p', 'b'] and not prev_label:
+                title_lbl = inline_header_name if inline_header_name else s_type.upper()
+                if s_num is not None:
+                    title_lbl += f" {s_num}"
+                sections.append({
+                    't': 's',
+                    'lbl': title_lbl,
+                    'l': []
+                })
                 
             current_section = {
                 't': s_type,
