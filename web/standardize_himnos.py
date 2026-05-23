@@ -140,7 +140,7 @@ def parse_himno_letra(letra, himno_num=None):
             continue
             
         # 3. Standalone section headers like CORO, PRE-CORO, PUENTE, ESTROFA
-        header_match = re.match(r'^(CORO|PRE-CORO|PUENTE|ESTROFA)\s*(\d*)\s*(\[.*\])?$', line, re.IGNORECASE)
+        header_match = re.match(r'^(CORO|PRE-CORO|PUENTE|ESTROFA)\b\s*(\d*)\s*(\[.*\])?$', line, re.IGNORECASE)
         if header_match:
             h_name = header_match.group(1).upper()
             h_num = header_match.group(2)
@@ -169,7 +169,7 @@ def parse_himno_letra(letra, himno_num=None):
         # 4. Inline section headers (e.g. "1 Gloria dad...", "ESTROFA 1 Te elijo...", "CORO ¡Alabadle!...")
         verse_num_match = re.match(r'^(\d+)\b[\.\-\s\)]*(.*)$', line)
         estrofa_match = re.match(r'^ESTROFA\s*(\d+)\b[\.\-\s\)]*(.*)$', line, re.IGNORECASE)
-        inline_coro_match = re.match(r'^(CORO|PRE-CORO|PUENTE)\s*(\d*)\s*[\.\-\s\)]*(.*)$', line, re.IGNORECASE)
+        inline_coro_match = re.match(r'^(CORO|PRE-CORO|PUENTE)\b\s*(\d*)\s*[\.\-\s\)]*(.*)$', line, re.IGNORECASE)
         
         inline_header_name = None
         matched_header = False

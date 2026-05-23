@@ -5846,20 +5846,10 @@
                 "l": [
                     "¡Señor de todos! Oh Jesús,",
                     "Lleno de gloria estás;",
-                    "Renombrado por Tu poder,"
+                    "Renombrado por Tu poder,",
+                    "Corona y majestad."
                 ],
                 "n": 1
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "na y majestad."
-                ]
             },
             {
                 "t": "e",
@@ -6795,14 +6785,9 @@
                 "n": 5
             },
             {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
+                "t": "e",
                 "l": [
-                    "Oh, cómo apreciamos,",
+                    "COROOh, cómo apreciamos,",
                     "Señor, Tu gran dulzor,",
                     "Tu esplendor, belleza,",
                     "Y todo Tu valor."
@@ -13226,23 +13211,13 @@
                 "t": "e",
                 "l": [
                     "Cristo el Salvador en gloria",
-                    "A los cielos ascendió;"
-                ],
-                "n": 1
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nado fue con honra",
+                    "A los cielos ascendió;",
+                    "Coronado fue con honra",
                     "Por el Padre Dios de amor.",
                     "Es Cabeza sobre todo,",
                     "Lo más alto se le dio."
-                ]
+                ],
+                "n": 1
             },
             {
                 "t": "e",
@@ -30441,22 +30416,12 @@
             {
                 "t": "e",
                 "l": [
-                    "Mis lágrimas enjugará,"
-                ],
-                "n": 10
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "na obtendré.",
+                    "Mis lágrimas enjugará,",
+                    "Corona obtendré.",
                     "Y hasta que vuelva mi Señor,",
                     "Fielmente serviré."
-                ]
+                ],
+                "n": 10
             }
         ]
     },
@@ -35781,21 +35746,11 @@
                 "t": "e",
                 "l": [
                     "Muy pronto el día ha de venir:",
-                    "¡Te regocijarás!"
+                    "¡Te regocijarás!",
+                    "Corona y gloria para Ti,",
+                    "¡Tu complemento y par!"
                 ],
                 "n": 11
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "na y gloria para Ti,",
-                    "¡Tu complemento y par!"
-                ]
             },
             {
                 "t": "e",
@@ -38906,23 +38861,13 @@
                     "¡Marchad, marchad, oh santos,",
                     "Con paso y voz triunfal!",
                     "Pues hay combate intenso,",
-                    "Pronto, la paz final."
-                ],
-                "n": 4
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "na de la vida,",
+                    "Pronto, la paz final.",
+                    "Corona de la vida,",
                     "El vencedor tendrá;",
                     "Y con el Rey en gloria",
                     "Por siempre reinará."
-                ]
+                ],
+                "n": 4
             }
         ]
     },
@@ -55173,21 +55118,11 @@
                 "t": "e",
                 "l": [
                     "De Su cabeza, manos, pies,",
-                    "Preciosa sangre allí corrió;"
+                    "Preciosa sangre allí corrió;",
+                    "Corona vil de espinas fue",
+                    "La que por mí Jesús llevó."
                 ],
                 "n": 3
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "na vil de espinas fue",
-                    "La que por mí Jesús llevó."
-                ]
             },
             {
                 "t": "e",
@@ -58638,18 +58573,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             },
@@ -58672,18 +58597,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             },
@@ -58706,18 +58621,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             },
@@ -58740,18 +58645,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             },
@@ -58774,18 +58669,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             },
@@ -58808,18 +58693,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             },
@@ -58842,18 +58717,8 @@
                 "t": "c",
                 "l": [
                     "Cautivado en Su belleza,",
-                    "Constreñido por Su amor,"
-                ]
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "nando el Rey de gloria,",
+                    "Constreñido por Su amor,",
+                    "Coronando el Rey de gloria,",
                     "Ríndele tu corazón."
                 ]
             }
@@ -74053,27 +73918,17 @@
                 "l": [
                     "¿Hoy quién es nuestra alegría?",
                     "¿A quién vamos a exultar?",
-                    "¿Quién es nuestra"
-                ],
-                "n": 1
-            },
-            {
-                "t": "s",
-                "lbl": "CORO",
-                "l": []
-            },
-            {
-                "t": "c",
-                "l": [
-                    "na?",
+                    "¿Quién es nuestra",
+                    "Corona?",
                     "¿A quién las gracias darás?",
                     "Y delante de nuestro Señor",
                     "Jesucristo, Quién nos amó.",
                     "Sois vosotros, ciertamente, nuestra gloria."
-                ]
+                ],
+                "n": 1
             },
             {
-                "t": "c",
+                "t": "e",
                 "l": [
                     "¡Aleluya! Su evangelio vamos a anunciar.",
                     "¡Aleluya! ¡Y así vamos a cooperar!"
