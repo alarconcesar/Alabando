@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
-import { Settings, PlusSquare, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
+import { Settings, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import HimnoItem from '../components/HimnoItem';
 
