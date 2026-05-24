@@ -818,8 +818,6 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 998;
   animation: fadeIn 0.3s ease-out;
 }
@@ -895,19 +893,19 @@ body {
 /* Desktop Styles for Premium Menu */
 @media (min-width: 768px) {
   .options-menu {
-    bottom: 50%;
+    bottom: 92px; /* Anchored above the bottom bar (80px + margin) */
     left: 50%;
-    transform: translate(-50%, 50%);
-    width: 400px;
-    border-radius: 28px;
-    padding: 16px;
-    animation: fadeInScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transform: translateX(-50%);
+    width: 380px;
+    border-radius: 24px;
+    padding: 12px;
+    animation: fadeInScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     border: 1px solid var(--barra);
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
 
   .options-menu-info {
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0;
     border-radius: 16px;
   }
 
@@ -917,14 +915,14 @@ body {
   }
 }
 
-@keyframes fadeInScale {
+@keyframes fadeInScaleUp {
   from {
     opacity: 0;
-    transform: translate(-50%, 60%) scale(0.95);
+    transform: translate(-50%, 10px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 50%) scale(1);
+    transform: translate(-50%, 0) scale(1);
   }
 }
 
