@@ -196,7 +196,6 @@ export default function HymnDetail() {
     }
   }, [himno]);
 
-  // Convert structured lyrics to slide sections for presentation mode, with fallback
   interface SlideSection {
     type: 'estrofa' | 'coro' | 'pre-coro' | 'puente';
     label?: string;
@@ -432,7 +431,7 @@ export default function HymnDetail() {
       {/* Background overlay when text settings or options menu open */}
       {(showTextSettings || showOptionsMenu) && (
         <div 
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 998 }}
+          className="menu-backdrop"
           onClick={() => { setShowTextSettings(false); setShowOptionsMenu(false); }}
         />
       )}
