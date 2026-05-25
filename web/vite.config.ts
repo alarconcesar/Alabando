@@ -9,7 +9,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'partituras/*.png',
         'data/himnos.json',
         'fonts/*.ttf',
         'img/*.jpg',
@@ -18,6 +17,24 @@ export default defineConfig({
         'pwa-192x192.png',
         'pwa-512x512.png'
       ],
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\/partituras\/.*\.png$|^\/partituras\/.*\.png$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'partituras-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'Himnario EAV',
         short_name: 'Himnario',
