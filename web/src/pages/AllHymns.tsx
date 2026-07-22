@@ -14,7 +14,23 @@ export default function AllHymns() {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const categories = ['Canticos', 'Suplementarios', 'Nuevos'];
+  // Derive categories from data: numeric prefix + unique categorias
+  const categories = useMemo(() => {
+    const prefixCats = new Set<string>();
+    const otherCats = new Set<string>();
+
+    himnos.forEach(h => {
+      if (h.numero.startsWith('C-')) prefixCats.add('Canticos');
+      else if (h.numero.startsWith('S-')) prefixCats.add('Suplementarios');
+      else if (h.numero.startsWith('N-')) prefixCats.add('Nuevos');
+      else otherCats.add(h.categoria);
+    });
+
+    // Priority order: Canticos, Suplementarios, Nuevos, then rest alphabetically
+    const priority = ['Canticos', 'Suplementarios', 'Nuevos'];
+    const rest = Array.from(otherCats).sort();
+    return [...priority.filter(c => prefixCats.has(c) || himnos.some(h => h.categoria === c)), ...rest];
+  }, [himnos]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategory(prev => prev === category ? null : category);

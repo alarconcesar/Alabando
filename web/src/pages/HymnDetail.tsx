@@ -5,6 +5,7 @@ import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, Arrow
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getJSON, setJSON } from '../lib/storage';
 import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
+import { useSwipe } from '../hooks/useSwipe';
 
 export default function HymnDetail() {
   const { id } = useParams();
@@ -154,6 +155,12 @@ export default function HymnDetail() {
   const prevHimno = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const nextHimno = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
+  // ── Swipe to navigate between hymns ─────────────────────
+  const swipe = useSwipe({
+    onSwipeLeft: nextHimno ? () => navigate(`/himno/${nextHimno.id}`, { replace: true }) : undefined,
+    onSwipeRight: prevHimno ? () => navigate(`/himno/${prevHimno.id}`, { replace: true }) : undefined,
+  });
+
   const { isFavorite, toggleFavorite } = useFavorites();
 
   // ── favorite helpers ────────────────────────────────────
@@ -298,7 +305,7 @@ export default function HymnDetail() {
 
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
-      <div className="page-enter-active" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div className="page-enter-active" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }} {...swipe}>
         {/* Top Bar */}
         <div className="detail-top-bar-wrapper">
           <header className="detail-top-bar" style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>

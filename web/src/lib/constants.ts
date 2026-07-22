@@ -34,6 +34,8 @@ export const ROUTES = {
 export const THEME_OPTIONS = ['naranja', 'dark'] as const;
 export type Theme = (typeof THEME_OPTIONS)[number];
 
+export type ThemeMode = Theme | 'system';
+
 export function isTheme(value: string): value is Theme {
   return THEME_OPTIONS.includes(value as Theme);
 }

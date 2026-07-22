@@ -4,6 +4,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Navigation from './components/Navigation';
 import InstallPrompt from './components/InstallPrompt';
 import { ROUTES } from './lib/constants';
+import { useTheme } from './hooks/useTheme';
 
 // ── Lazy-loaded pages ────────────────────────────────────
 const Home = lazy(() => import('./pages/Home'));
@@ -23,6 +24,8 @@ const Loading = () => (
 );
 
 function App() {
+  useTheme();
+
   return (
     <Router>
       <div className="app-layout">

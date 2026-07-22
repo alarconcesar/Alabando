@@ -1,26 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Download, CheckCircle, Monitor, Sun, Moon } from 'lucide-react';
 import { useInstallPrompt } from '../components/InstallPrompt';
+import { useTheme } from '../hooks/useTheme';
+import type { ThemeMode } from '../lib/constants';
 
 export default function Settings() {
   const navigate = useNavigate();
   const { canInstall, triggerInstall, isInstalled } = useInstallPrompt();
-  const [currentTheme, setCurrentTheme] = useState(
-    localStorage.getItem('theme') || 'naranja'
-  );
-
-  const changeTheme = (theme: string) => {
-    setCurrentTheme(theme);
-    localStorage.setItem('theme', theme);
-    document.documentElement.setAttribute('data-theme', theme === 'naranja' ? '' : theme);
-    
-    // Dynamic PWA header bar color
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) {
-      meta.setAttribute('content', theme === 'dark' ? '#0A0A0A' : '#FFFFFF');
-    }
-  };
+  const { mode, setMode } = useTheme();
 
   const [fontSize, setFontSize] = useState(() => {
     const saved = localStorage.getItem('fontSize');
@@ -38,6 +26,12 @@ export default function Settings() {
     localStorage.setItem('fontSize', '19');
   };
 
+  const themeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
+    { value: 'naranja', label: 'Claro', icon: <Sun size={18} /> },
+    { value: 'dark', label: 'Oscuro', icon: <Moon size={18} /> },
+    { value: 'system', label: 'Sistema', icon: <Monitor size={18} /> },
+  ];
+
   return (
     <div className="page-enter-active" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 120 }}>
       <header className="app-bar">
@@ -51,22 +45,25 @@ export default function Settings() {
         <div className="settings-group">
           <h3>Tema de la Aplicación</h3>
           <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
-            Personaliza los colores de la aplicación a tu gusto.
+            Elige entre claro, oscuro o que siga la configuración de tu dispositivo.
           </p>
-          
-          <div className="theme-selector">
-            <div 
-              className={`theme-option ${currentTheme === 'naranja' ? 'active' : ''}`}
-              style={{ background: '#FC7124' }}
-              onClick={() => changeTheme('naranja')}
-              title="Claro"
-            />
-            <div 
-              className={`theme-option ${currentTheme === 'dark' ? 'active' : ''}`}
-              style={{ background: '#231917', border: '1px solid #53433F' }}
-              onClick={() => changeTheme('dark')}
-              title="Oscuro"
-            />
+
+          <div className="theme-selector" style={{ display: 'flex', gap: 10 }}>
+            {themeOptions.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setMode(opt.value)}
+                className={`filter-chip ${mode === opt.value ? 'active' : ''}`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '10px 18px', borderRadius: 100,
+                }}
+                title={opt.label}
+              >
+                {opt.icon}
+                <span>{opt.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -75,18 +72,18 @@ export default function Settings() {
           <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
             Ajusta el tamaño del texto para las letras de los himnos.
           </p>
-          
+
           <div style={{ background: 'var(--surface)', padding: '20px 16px', borderRadius: 12, border: '1px solid var(--surface-variant)', display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '14px', fontWeight: 600 }}>Aa</span>
               <span style={{ fontSize: `${fontSize}px`, fontWeight: 600, color: 'var(--primary)' }}>Aa</span>
               <span style={{ fontSize: '30px', fontWeight: 600 }}>Aa</span>
             </div>
-            <input 
-              type="range" 
-              min="14" 
-              max="30" 
-              value={fontSize} 
+            <input
+              type="range"
+              min="14"
+              max="30"
+              value={fontSize}
               onChange={handleFontSizeChange}
               className="text-size-slider"
               style={{ width: '100%' }}
@@ -96,7 +93,7 @@ export default function Settings() {
                 {fontSize === 19 ? 'Tamaño original' : 'Tamaño modificado'}
               </span>
               {fontSize !== 19 && (
-                <button 
+                <button
                   onClick={resetFontSize}
                   style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}
                 >
@@ -107,7 +104,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* PWA Install Section */}
         <div className="settings-group" style={{ marginTop: 40 }}>
           <h3>Instalar Aplicación</h3>
           <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
@@ -126,20 +122,11 @@ export default function Settings() {
               <button
                 onClick={triggerInstall}
                 style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  padding: '14px 24px',
-                  backgroundColor: 'var(--primary)',
-                  color: 'var(--on-primary)',
-                  border: 'none',
-                  borderRadius: 12,
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
+                  width: '100%', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', gap: 10, padding: '14px 24px',
+                  backgroundColor: 'var(--primary)', color: 'var(--on-primary)',
+                  border: 'none', borderRadius: 12, fontSize: '1rem',
+                  fontWeight: 600, cursor: 'pointer', transition: 'transform 0.2s',
                 }}
               >
                 <Download size={20} />
