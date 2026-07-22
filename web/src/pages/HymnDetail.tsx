@@ -156,7 +156,7 @@ export default function HymnDetail() {
   const nextHimno = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
   // ── Swipe to navigate between hymns ─────────────────────
-  const { translateX, isSwiping, onTouchStart, onTouchMove, onTouchEnd } = useSwipe({
+  const { containerRef } = useSwipe({
     onSwipeLeft: nextHimno ? () => navigate(`/himno/${nextHimno.id}`, { replace: true }) : undefined,
     onSwipeRight: prevHimno ? () => navigate(`/himno/${prevHimno.id}`, { replace: true }) : undefined,
   });
@@ -306,16 +306,10 @@ export default function HymnDetail() {
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
       <div
-        className="page-enter-active"
+        ref={containerRef}
         style={{
           display: 'flex', flexDirection: 'column', minHeight: '100vh',
-          transform: translateX !== 0 ? `translateX(${translateX}px)` : undefined,
-          transition: isSwiping ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
-          willChange: translateX !== 0 ? 'transform' : undefined,
         }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
       >
         {/* Top Bar */}
         <div className="detail-top-bar-wrapper">
