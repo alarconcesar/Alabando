@@ -18,6 +18,8 @@ export default function HymnDetail() {
   const [showTextSettings, setShowTextSettings] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  
   const [presentationMode, setPresentationMode] = useState(false);
   const [currentStanzaIndex, setCurrentStanzaIndex] = useState(0);
   const [zoomedPage, setZoomedPage] = useState<string | null>(null);
@@ -291,7 +293,8 @@ export default function HymnDetail() {
   if (!himno) return <div style={{ padding: 20 }}>Himno no encontrado</div>;
 
   const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];
-  const ytVideo = himno.aud && himno.aud.find(a => a.src === 'YT');
+  const ytVideos = himno.aud ? himno.aud.filter(a => a.src === 'YT') : [];
+  const selectedVideo = ytVideos[selectedVideoIndex] ?? null;
 
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
@@ -320,16 +323,37 @@ export default function HymnDetail() {
         <main className="hymn-detail-lyrics-container">
         <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
 
-        {showVideo && ytVideo && (
-          <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%', marginBottom: 32, borderRadius: 12, overflow: 'hidden' }}>
-            <iframe 
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-              src={`https://www.youtube.com/embed/${ytVideo.id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`} 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-            ></iframe>
-          </div>
+        {showVideo && ytVideos.length > 0 && (
+          <>
+            {/* Multi-video selector chips */}
+            {ytVideos.length > 1 && (
+              <div style={{
+                display: 'flex', gap: 8, flexWrap: 'wrap',
+                justifyContent: 'center', marginBottom: 16,
+              }}>
+                {ytVideos.map((v, i) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVideoIndex(i)}
+                    className={`filter-chip ${selectedVideoIndex === i ? 'active' : ''}`}
+                    style={{ fontSize: '13px', padding: '6px 14px' }}
+                  >
+                    Versión {i + 1}{v.lang && v.lang !== 'es' ? ` (${v.lang.toUpperCase()})` : ''}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%', marginBottom: 32, borderRadius: 12, overflow: 'hidden' }}>
+              <iframe 
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`}
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+                key={selectedVideo.id}
+              ></iframe>
+            </div>
+          </>
         )}
 
         {showScore && pages.length > 0 && (
@@ -523,8 +547,8 @@ export default function HymnDetail() {
             <button 
               className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`}
               onClick={() => setShowVideo(!showVideo)}
-              style={{ opacity: ytVideo ? 1 : 0.3 }}
-              disabled={!ytVideo}
+              style={{ opacity: ytVideos.length > 0 ? 1 : 0.3 }}
+              disabled={ytVideos.length === 0}
             >
               <Music size={20} />
             </button>
