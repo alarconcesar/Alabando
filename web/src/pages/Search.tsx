@@ -114,6 +114,21 @@ export default function Search() {
 
   const isKeypadView = searchMode === 'keypad' && !catFilter;
 
+  // Block body scroll when in keypad mode (fixes elastic bounce on iOS/Android)
+  useEffect(() => {
+    if (isKeypadView) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      return () => {
+        document.body.style.overflow = prev;
+        document.body.style.position = '';
+        document.body.style.width = '';
+      };
+    }
+  }, [isKeypadView]);
+
   return (
     <div
       className="page-fade-in"
@@ -123,6 +138,8 @@ export default function Search() {
         overflow: isKeypadView ? 'hidden' : 'visible',
         height: isKeypadView ? '100vh' : 'auto',
         boxSizing: 'border-box',
+        overscrollBehavior: isKeypadView ? 'none' : 'auto',
+        touchAction: isKeypadView ? 'none' : 'auto',
       }}
     >
       <header className="app-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>
