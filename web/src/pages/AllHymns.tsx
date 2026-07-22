@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Music, FileMusic } from 'lucide-react';
 import { useHimnos } from '../hooks/useHimnos';
-import HimnoItem from '../components/HimnoItem';
+import VirtualHymnList from '../components/VirtualHymnList';
 
 export default function AllHymns() {
   const { himnos, loading } = useHimnos();
@@ -11,6 +11,8 @@ export default function AllHymns() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filterHasAudio, setFilterHasAudio] = useState(false);
   const [filterHasPartitura, setFilterHasPartitura] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const categories = ['Canticos', 'Suplementarios', 'Nuevos'];
 
@@ -105,7 +107,7 @@ export default function AllHymns() {
         </div>
       </div>
 
-      <div style={{ padding: '16px 20px 8px 20px' }}>
+      <div ref={containerRef} style={{ padding: '16px 20px 8px 20px' }}>
         <p style={{ fontSize: '14px', color: 'var(--outline)', fontWeight: 500 }}>
           {hasActiveFilters ? (
             <>Mostrando {filteredHimnos.length} de {himnos.length} himnos</>
@@ -128,14 +130,7 @@ export default function AllHymns() {
             <p style={{ fontSize: '14px' }}>Intenta ajustar los filtros</p>
           </div>
         ) : (
-          <div>
-            {filteredHimnos.map((h, index) => (
-              <div key={h.id}>
-                {index > 0 && <div className="himno-item-divider" style={{ margin: '0 16px' }} />}
-                <HimnoItem himno={h} />
-              </div>
-            ))}
-          </div>
+          <VirtualHymnList himnos={filteredHimnos} />
         )}
       </main>
     </div>

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
+import { useDebounce } from '../hooks/useDebounce';
 import { Search as SearchIcon, ArrowLeft, X, Delete, ChevronLeft } from 'lucide-react';
 import HimnoItem from '../components/HimnoItem';
 
@@ -14,6 +15,9 @@ export default function Search() {
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
   const [textQuery, setTextQuery] = useState('');
+
+  // Debounce text search by 300ms to avoid filtering on every keystroke
+  const debouncedQuery = useDebounce(textQuery, 300);
 
   const normalizeStr = (str: string) => {
     return str
@@ -44,7 +48,7 @@ export default function Search() {
   }, [searchableHimnos, keypadQuery]);
 
   const textFilteredResults = useMemo(() => {
-    const query = textQuery.trim();
+    const query = debouncedQuery.trim();
     if (!query) return [];
 
     const normalizedQuery = normalizeStr(query);
@@ -70,7 +74,7 @@ export default function Search() {
       const bNum = parseInt(b.numero.replace(/\D/g, '')) || 0;
       return aNum - bNum;
     });
-  }, [searchableHimnos, textQuery]);
+  }, [searchableHimnos, debouncedQuery]);
 
   const handleKeyPress = (key: string) => {
     if (/^\d$/.test(key)) {
