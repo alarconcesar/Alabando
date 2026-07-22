@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface SwipeConfig {
   onSwipeLeft?: () => void;
@@ -6,44 +6,83 @@ interface SwipeConfig {
   threshold?: number;
 }
 
-/**
- * Hook that detects horizontal swipes on a ref'd element.
- * Ignores vertical scrolling (only triggers on predominantly horizontal moves).
- */
 export function useSwipe({ onSwipeLeft, onSwipeRight, threshold = 80 }: SwipeConfig) {
+  const [translateX, setTranslateX] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearTimers = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  }, []);
+
+  const bounceBack = useCallback(() => {
+    setIsSwiping(false);
+    setTranslateX(0);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => clearTimers, [clearTimers]);
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 1) {
+      clearTimers();
       touchStartRef.current = {
         x: e.touches[0].clientX,
         y: e.touches[0].clientY,
       };
+      setIsSwiping(true);
+    }
+  }, [clearTimers]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.touches.length !== 1) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = currentX - touchStartRef.current.x;
+    const deltaY = currentY - touchStartRef.current.y;
+
+    // Only apply horizontal drag if it's more horizontal than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      setTranslateX(deltaX);
     }
   }, []);
 
-  const onTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      if (!touchStartRef.current || e.changedTouches.length === 0) return;
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.changedTouches.length === 0) return;
 
-      const endX = e.changedTouches[0].clientX;
-      const endY = e.changedTouches[0].clientY;
-      const deltaX = endX - touchStartRef.current.x;
-      const deltaY = endY - touchStartRef.current.y;
+    const endX = e.changedTouches[0].clientX;
+    const deltaX = endX - touchStartRef.current.x;
 
-      touchStartRef.current = null;
+    touchStartRef.current = null;
 
-      // Only trigger if horizontal distance is significant vs vertical
-      if (Math.abs(deltaX) < threshold || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+    if (Math.abs(deltaX) >= threshold) {
+      // Animate off-screen then navigate
+      const direction = deltaX > 0 ? 1 : -1;
+      const offScreen = direction * window.innerWidth;
+      setTranslateX(offScreen);
 
-      if (deltaX > 0) {
-        onSwipeRight?.();
-      } else {
-        onSwipeLeft?.();
-      }
-    },
-    [onSwipeLeft, onSwipeRight, threshold],
-  );
+      timeoutRef.current = setTimeout(() => {
+        setIsSwiping(false);
+        setTranslateX(0);
+        if (deltaX > 0) {
+          onSwipeRight?.();
+        } else {
+          onSwipeLeft?.();
+        }
+      }, 250);
+    } else {
+      // Bounce back
+      bounceBack();
+    }
+  }, [onSwipeLeft, onSwipeRight, threshold, bounceBack]);
 
-  return { onTouchStart, onTouchEnd } as const;
+  return {
+    translateX,
+    isSwiping,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+  } as const;
 }
