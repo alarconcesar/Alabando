@@ -1,25 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { Settings, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import HimnoItem from '../components/HimnoItem';
+import { getJSON } from '../lib/storage';
+import { STORAGE_KEYS } from '../lib/constants';
+import type { HistoryItem } from '../types.d';
 
 export default function Home() {
   const { himnos, loading } = useHimnos();
   const navigate = useNavigate();
-  const [history, setHistory] = useState<any[]>([]);
+  const [history] = useState<HistoryItem[]>(() =>
+    getJSON<HistoryItem[]>(STORAGE_KEYS.HISTORY, []),
+  );
   const [showToast, setShowToast] = useState(false);
-  const [favorites, setFavorites] = useState<number[]>([]);
-
-  useEffect(() => {
-    const hist = localStorage.getItem('history');
-    if (hist) {
-      setHistory(JSON.parse(hist));
-    }
-    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-    setFavorites(favs);
-  }, []);
-
 
   const handleShare = async () => {
     const shareData = {
@@ -32,7 +26,6 @@ export default function Home() {
       try {
         await navigator.share(shareData);
       } catch (err) {
-        // Only ignore abort errors from user canceling the share sheet
         if ((err as Error).name !== 'AbortError') {
           console.error('Error al compartir:', err);
         }
@@ -48,14 +41,13 @@ export default function Home() {
     }
   };
 
-  // Map local storage history (id, timestamp) to full Himno objects from useHimnos
+  // Map local storage history (id, timestamp) to full Himno objects
   const historyHimnos = history
     .map(histItem => himnos.find(h => h.id === histItem.id))
     .filter((h): h is NonNullable<typeof h> => !!h);
 
   return (
     <div className="page-fade-in" style={{ paddingBottom: 100, backgroundColor: 'var(--background)' }}>
-      {/* Top Header Row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 20px 16px 20px' }}>
         <div>
           <div className="home-header-greeting">Hola,</div>
@@ -71,7 +63,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Grid Cards (Quick Actions) */}
       <div style={{ display: 'flex', gap: 16, padding: '12px 20px' }}>
         <div onClick={() => navigate('/all-hymns')} className="home-action-card">
           <Library size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
@@ -89,27 +80,17 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Banner 1 */}
       <div style={{ padding: '16px 20px' }}>
-        <div style={{ 
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.35)), url(/img/img1.jpg)', 
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center', 
-          borderRadius: 24, 
-          height: 160, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          padding: 20
+        <div style={{
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.35)), url(/img/img1.jpg)',
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          borderRadius: 24, height: 160,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
         }}>
           <div>
-            <h2 style={{ 
-              color: '#FFFFFF', 
-              textAlign: 'center', 
-              fontSize: '1.25rem', 
-              fontWeight: 700, 
-              lineHeight: 1.3,
-              textShadow: '0 2px 4px rgba(0,0,0,0.4)', 
+            <h2 style={{
+              color: '#FFFFFF', textAlign: 'center', fontSize: '1.25rem',
+              fontWeight: 700, lineHeight: 1.3, textShadow: '0 2px 4px rgba(0,0,0,0.4)',
             }}>
               Cada Alabanza es una Bendición Especial
             </h2>
@@ -117,14 +98,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Mis Últimas Alabanzas Section */}
       <div style={{ padding: '24px 20px 12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--on-background)' }}>
           Mis Últimas Alabanzas
         </h2>
       </div>
 
-      {/* Surface Island for History */}
       <div className="surface-island">
         {loading ? (
           <div style={{ padding: '30px 16px', textAlign: 'center', color: 'var(--outline)' }}>Cargando...</div>
@@ -138,29 +117,15 @@ export default function Home() {
             {historyHimnos.slice(0, 3).map((h, i) => (
               <div key={h.id}>
                 {i > 0 && <div className="himno-item-divider" style={{ margin: '0 16px' }} />}
-                <HimnoItem 
-                  himno={h} 
-                  isFavorite={favorites.includes(h.id)}
-                  onFavoriteToggle={() => {
-                    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-                    setFavorites(favs);
-                  }}
-                />
+                <HimnoItem himno={h} />
               </div>
             ))}
-            
-            <button 
-              onClick={() => navigate('/history')} 
-              style={{ 
-                width: '100%', 
-                background: 'transparent', 
-                border: 'none', 
-                color: 'var(--primary)', 
-                fontWeight: 600, 
-                fontSize: '0.9rem',
-                padding: '14px 16px',
-                textAlign: 'center',
-                cursor: 'pointer',
+            <button
+              onClick={() => navigate('/history')}
+              style={{
+                width: '100%', background: 'transparent', border: 'none',
+                color: 'var(--primary)', fontWeight: 600, fontSize: '0.9rem',
+                padding: '14px 16px', textAlign: 'center', cursor: 'pointer',
               }}
             >
               Ver historial completo
@@ -169,15 +134,11 @@ export default function Home() {
         )}
       </div>
 
-
-
-      {/* Made with Love Footer */}
       <div style={{ textAlign: 'center', marginTop: 45, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
         <p style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--outline)' }}>Hecho con mucho</p>
         <Heart size={20} className="animate-pulse" style={{ color: 'var(--primary)', fill: 'var(--primary)' }} />
       </div>
 
-      {/* Clipboard Copy Toast Feedback */}
       <div className={`toast-notification ${showToast ? 'show' : ''}`}>
         <Check size={18} />
         <span>¡Enlace copiado al portapapeles!</span>

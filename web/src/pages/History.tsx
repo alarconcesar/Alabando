@@ -1,30 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useHimnos } from '../hooks/useHimnos';
 import HimnoItem from '../components/HimnoItem';
+import { getJSON, removeKey } from '../lib/storage';
+import { STORAGE_KEYS } from '../lib/constants';
+import type { HistoryItem } from '../types.d';
 
 export default function History() {
   const navigate = useNavigate();
   const { himnos, loading } = useHimnos();
-  const [history, setHistory] = useState<any[]>([]);
-  const [favorites, setFavorites] = useState<number[]>([]);
-
-  useEffect(() => {
-    const hist = localStorage.getItem('history');
-    if (hist) {
-      setHistory(JSON.parse(hist));
-    }
-    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-    setFavorites(favs);
-  }, []);
+  const [history, setHistory] = useState<HistoryItem[]>(() =>
+    getJSON<HistoryItem[]>(STORAGE_KEYS.HISTORY, []),
+  );
 
   const clearHistory = () => {
-    localStorage.removeItem('history');
+    removeKey(STORAGE_KEYS.HISTORY);
     setHistory([]);
   };
 
-  // Map local storage history (id, timestamp) to full Himno objects from useHimnos
   const historyHimnos = history
     .map(histItem => himnos.find(h => h.id === histItem.id))
     .filter((h): h is NonNullable<typeof h> => !!h);
@@ -37,18 +31,12 @@ export default function History() {
         </button>
         <h1 style={{ flex: 1, marginLeft: 12, fontSize: '1.25rem', fontWeight: 700 }}>Vistos Recientemente</h1>
         {history.length > 0 && (
-          <button 
-            onClick={clearHistory} 
-            style={{ 
-              background: 'transparent', 
-              border: 'none', 
-              color: 'var(--primary)', 
-              cursor: 'pointer', 
-              fontWeight: 700, 
-              fontSize: '0.95rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4
+          <button
+            onClick={clearHistory}
+            style={{
+              background: 'transparent', border: 'none', color: 'var(--primary)',
+              cursor: 'pointer', fontWeight: 700, fontSize: '0.95rem',
+              display: 'flex', alignItems: 'center', gap: 4,
             }}
           >
             <Trash2 size={18} />
@@ -68,15 +56,7 @@ export default function History() {
           <div>
             <div className="himno-item-divider" />
             {historyHimnos.map((h, index) => (
-              <HimnoItem 
-                key={`${h.id}-${index}`} 
-                himno={h} 
-                isFavorite={favorites.includes(h.id)}
-                onFavoriteToggle={() => {
-                  const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-                  setFavorites(favs);
-                }}
-              />
+              <HimnoItem key={`${h.id}-${index}`} himno={h} />
             ))}
           </div>
         )}

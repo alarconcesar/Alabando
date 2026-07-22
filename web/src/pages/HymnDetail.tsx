@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
+import { useFavorites } from '../hooks/useFavorites';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
@@ -149,26 +150,10 @@ export default function HymnDetail() {
   const prevHimno = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const nextHimno = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
-  useEffect(() => {
-    if (himno) {
-      const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-      setIsFavorite(favs.includes(himno.id));
-    }
-  }, [himno]);
-
-  const toggleFavorite = () => {
-    if (!himno) return;
-    let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-    if (isFavorite) {
-      favs = favs.filter((id: number) => id !== himno.id);
-    } else {
-      favs.push(himno.id);
-    }
-    localStorage.setItem('favorites', JSON.stringify(favs));
-    setIsFavorite(!isFavorite);
-  };
+  // ── favorite helpers ────────────────────────────────────
+  const himnoFav = himno ? isFavorite(himno.id) : false;
 
   const handleShare = () => {
     if (navigator.share && himno) {
@@ -325,8 +310,8 @@ export default function HymnDetail() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button onClick={toggleFavorite} className="detail-top-bar-btn" aria-label="Favorito">
-                <Heart size={20} style={{ fill: isFavorite ? 'var(--primary)' : 'none', color: isFavorite ? 'var(--primary)' : 'var(--on-background)' }} />
+              <button onClick={() => himno && toggleFavorite(himno.id)} className="detail-top-bar-btn" aria-label="Favorito">
+                <Heart size={20} style={{ fill: himnoFav ? 'var(--primary)' : 'none', color: himnoFav ? 'var(--primary)' : 'var(--on-background)' }} />
               </button>
             </div>
           </header>

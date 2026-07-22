@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { ArrowLeft } from 'lucide-react';
@@ -7,14 +6,7 @@ import HimnoItem from '../components/HimnoItem';
 export default function Nuevos() {
   const { himnos, loading } = useHimnos();
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<number[]>([]);
 
-  useEffect(() => {
-    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-    setFavorites(favs);
-  }, []);
-
-  // Asumimos que los últimos 50 himnos del JSON son los agregados más recientemente
   const ultimos = [...himnos].reverse().slice(0, 50);
 
   return (
@@ -32,17 +24,7 @@ export default function Nuevos() {
         ) : (
           <div>
             <div className="himno-item-divider" />
-            {ultimos.map(h => (
-              <HimnoItem 
-                key={h.id} 
-                himno={h} 
-                isFavorite={favorites.includes(h.id)}
-                onFavoriteToggle={() => {
-                  const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-                  setFavorites(favs);
-                }}
-              />
-            ))}
+            {ultimos.map(h => <HimnoItem key={h.id} himno={h} />)}
           </div>
         )}
       </main>
