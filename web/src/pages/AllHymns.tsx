@@ -53,7 +53,12 @@ export default function AllHymns() {
 
   return (
     <div className="page-fade-in" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 100 }}>
-      <header className="app-bar" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        backgroundColor: 'var(--background)',
+        borderBottom: '1px solid var(--barra)',
+      }}>
+      <header className="app-bar" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: 'none' }}>
         <button onClick={() => navigate(-1)} className="icon-btn" aria-label="Atrás">
           <ArrowLeft size={24} />
         </button>
@@ -62,8 +67,8 @@ export default function AllHymns() {
         </h1>
       </header>
 
-      <div style={{ padding: '12px 0' }}>
-        <div style={{ padding: '0 20px 12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ padding: '4px 0 8px 0' }}>
+        <div style={{ padding: '0 20px 8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--outline)' }}>
             Categoría:
           </span>
@@ -89,7 +94,7 @@ export default function AllHymns() {
           ))}
         </div>
 
-        <div style={{ display: 'flex', gap: 12, padding: '12px 20px 0 20px' }}>
+        <div style={{ display: 'flex', gap: 12, padding: '8px 20px 0 20px' }}>
           <button
             onClick={() => setFilterHasAudio(!filterHasAudio)}
             className={`toggle-filter-btn ${filterHasAudio ? 'active' : ''}`}
@@ -107,7 +112,7 @@ export default function AllHymns() {
         </div>
       </div>
 
-      <div ref={containerRef} style={{ padding: '16px 20px 8px 20px' }}>
+      <div ref={containerRef} style={{ padding: '8px 20px' }}>
         <p style={{ fontSize: '14px', color: 'var(--outline)', fontWeight: 500 }}>
           {hasActiveFilters ? (
             <>Mostrando {filteredHimnos.length} de {himnos.length} himnos</>
@@ -115,6 +120,7 @@ export default function AllHymns() {
             <>{himnos.length} himnos en total</>
           )}
         </p>
+      </div>
       </div>
 
       <div className="himno-item-divider" style={{ margin: '0 16px 8px 16px' }} />

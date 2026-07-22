@@ -859,9 +859,18 @@ body {
 /* Filter Components */
 .filter-chips-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   padding: 0 20px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+}
+
+.filter-chips-container::-webkit-scrollbar {
+  display: none;
 }
 
 .filter-chip {
