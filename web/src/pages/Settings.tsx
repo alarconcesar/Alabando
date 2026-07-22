@@ -161,7 +161,7 @@ export default function Settings() {
 
         <div className="settings-group" style={{ marginTop: 40 }}>
           <h3>Acerca de</h3>
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--surface-variant)' }}>
+          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--surface-variant)', marginTop: 12 }}>
             <p style={{ fontWeight: 600, marginBottom: 4 }}>Himnario EAV</p>
             <p style={{ fontSize: '0.9rem', color: 'var(--outline)', marginBottom: 12 }}>Versión PWA 1.0.0</p>
             <p style={{ fontSize: '0.85rem' }}>
