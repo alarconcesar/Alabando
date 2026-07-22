@@ -3,6 +3,8 @@ import { useHimnos } from '../hooks/useHimnos';
 import { useFavorites } from '../hooks/useFavorites';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { getJSON, setJSON } from '../lib/storage';
+import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
 
 export default function HymnDetail() {
   const { id } = useParams();
@@ -174,12 +176,11 @@ export default function HymnDetail() {
   // Save to history on view
   useEffect(() => {
     if (himno) {
-      const historyStr = localStorage.getItem('history') || '[]';
-      let history = JSON.parse(historyStr);
-      history = history.filter((h: any) => h.id !== himno.id);
-      history.unshift({ id: himno.id, nombre: himno.nombre, numero: himno.numero, timestamp: Date.now() });
-      if (history.length > 50) history.pop();
-      localStorage.setItem('history', JSON.stringify(history));
+      const history = getJSON<{ id: number; nombre: string; numero: string; timestamp: number }[]>(STORAGE_KEYS.HISTORY, []);
+      const filtered = history.filter((h: { id: number }) => h.id !== himno.id);
+      filtered.unshift({ id: himno.id, nombre: himno.nombre, numero: himno.numero, timestamp: Date.now() });
+      if (filtered.length > MAX_HISTORY) filtered.pop();
+      setJSON(STORAGE_KEYS.HISTORY, filtered);
     }
   }, [himno]);
 
@@ -228,9 +229,8 @@ export default function HymnDetail() {
       if (document.documentElement.requestFullscreen) {
         await document.documentElement.requestFullscreen();
       }
-      if (screen.orientation && screen.orientation.lock) {
-        // @ts-ignore
-        await screen.orientation.lock('landscape');
+      if (screen.orientation && 'lock' in screen.orientation) {
+        await (screen.orientation as any).lock('landscape').catch(() => {});
       }
     } catch (e) {
       console.warn("Fullscreen or orientation lock failed:", e);
