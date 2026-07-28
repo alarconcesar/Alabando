@@ -41,8 +41,8 @@ export default function Albumes() {
                     className="album-card"
                     style={{
                       borderRadius: 16,
-                      padding: '18px 16px',
-                      minHeight: 115,
+                      padding: '20px 16px',
+                      minHeight: 110,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
@@ -50,13 +50,11 @@ export default function Albumes() {
                       overflow: 'hidden',
                       backgroundColor: 'var(--surface)',
                       border: '1px solid var(--surface-variant)',
-                      borderLeft: `4px solid transparent`,
-                      borderImage: `${gradient} 1`,
                       transition: 'transform 0.2s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.2s ease',
                       cursor: 'pointer',
                     }}
                   >
-                    {/* Accent gradient strip on top */}
+                    {/* Colored top bar */}
                     <div
                       style={{
                         position: 'absolute',
@@ -67,14 +65,12 @@ export default function Albumes() {
                         background: gradient,
                       }}
                     />
-                    <div>
+                    <div style={{ marginTop: 4 }}>
                       <h3 style={{
                         color: 'var(--on-background)',
                         fontSize: '1rem',
                         fontWeight: 700,
                         lineHeight: 1.25,
-                        position: 'relative',
-                        zIndex: 1,
                       }}>
                         {cat}
                       </h3>
@@ -83,8 +79,6 @@ export default function Albumes() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      position: 'relative',
-                      zIndex: 1,
                     }}>
                       <span style={{
                         color: 'var(--outline)',
