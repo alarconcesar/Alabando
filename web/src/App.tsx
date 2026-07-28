@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navigation from './components/Navigation';
 import InstallPrompt from './components/InstallPrompt';
+import PageTransition from './components/PageTransition';
 import { SkeletonHome, SkeletonAlbumes, SkeletonDetail } from './components/Skeletons';
 import { ROUTES } from './lib/constants';
 import { useTheme } from './hooks/useTheme';
@@ -20,7 +21,13 @@ const AllHymns = lazy(() => import('./pages/AllHymns'));
 
 // ── Per-route Suspense wrappers ──────────────────────────
 function LazyPage({ component: Comp, skeleton }: { component: React.ComponentType; skeleton: React.ReactNode }) {
-  return <Suspense fallback={<>{skeleton}</>}><Comp /></Suspense>;
+  return (
+    <Suspense fallback={<>{skeleton}</>}>
+      <PageTransition>
+        <Comp />
+      </PageTransition>
+    </Suspense>
+  );
 }
 
 function SkeletonList({ count = 8 }: { count?: number }) {

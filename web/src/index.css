@@ -957,10 +957,18 @@ body {
 
 /* Animation utilities */
 .page-fade-in, .page-enter-active {
-  animation: pageFadeIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: pageEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes pageFadeIn {
+/* Directional slide-in variants */
+.page-slide-right {
+  animation: slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.page-slide-left {
+  animation: slideInLeft 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes pageEnter {
   0% {
     opacity: 0;
     transform: translateY(12px) scale(0.99);
@@ -968,6 +976,28 @@ body {
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -1036,6 +1066,18 @@ body {
 
 .home-action-card:active {
   transform: scale(0.95);
+}
+
+/* Album Cards */
+.album-card {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+}
+.album-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+}
+.album-card:active {
+  transform: scale(0.96);
 }
 
 .home-action-card-bg-icon {

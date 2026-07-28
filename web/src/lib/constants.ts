@@ -39,3 +39,28 @@ export type ThemeMode = Theme | 'system';
 export function isTheme(value: string): value is Theme {
   return THEME_OPTIONS.includes(value as Theme);
 }
+
+// ── Album Card Gradients ──────────────────────────────────
+export const ALBUM_GRADIENTS: string[] = [
+  'linear-gradient(135deg, #FC7124, #FF9A5C)',
+  'linear-gradient(135deg, #667eea, #764ba2)',
+  'linear-gradient(135deg, #f093fb, #f5576c)',
+  'linear-gradient(135deg, #4facfe, #00f2fe)',
+  'linear-gradient(135deg, #43e97b, #38f9d7)',
+  'linear-gradient(135deg, #fa709a, #fee140)',
+  'linear-gradient(135deg, #a18cd1, #fbc2eb)',
+  'linear-gradient(135deg, #f83600, #f9d423)',
+  'linear-gradient(135deg, #0fd850, #0cbaba)',
+  'linear-gradient(135deg, #e65c00, #F9D423)',
+  'linear-gradient(135deg, #2b5876, #4e4376)',
+  'linear-gradient(135deg, #e8198b, #c7eafd)',
+];
+
+/** Deterministically picks a gradient for a category name */
+export function getAlbumGradient(category: string): string {
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return ALBUM_GRADIENTS[Math.abs(hash) % ALBUM_GRADIENTS.length];
+}
