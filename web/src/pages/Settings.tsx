@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, CheckCircle, Monitor, Sun, Moon } from 'lucide-react';
 import { useInstallPrompt } from '../components/InstallPrompt';
 import { useTheme } from '../hooks/useTheme';
+import { getJSON, setJSON } from '../lib/storage';
+import { STORAGE_KEYS } from '../lib/constants';
 import type { ThemeMode } from '../lib/constants';
 
 export default function Settings() {
@@ -10,20 +12,19 @@ export default function Settings() {
   const { canInstall, triggerInstall, isInstalled } = useInstallPrompt();
   const { mode, setMode } = useTheme();
 
-  const [fontSize, setFontSize] = useState(() => {
-    const saved = localStorage.getItem('fontSize');
-    return saved ? Number(saved) : 19;
-  });
+  const [fontSize, setFontSize] = useState(() =>
+    getJSON<number>(STORAGE_KEYS.FONT_SIZE, 19),
+  );
 
   const handleFontSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const size = Number(e.target.value);
     setFontSize(size);
-    localStorage.setItem('fontSize', size.toString());
+    setJSON(STORAGE_KEYS.FONT_SIZE, size);
   };
 
   const resetFontSize = () => {
     setFontSize(19);
-    localStorage.setItem('fontSize', '19');
+    setJSON(STORAGE_KEYS.FONT_SIZE, 19);
   };
 
   const themeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [

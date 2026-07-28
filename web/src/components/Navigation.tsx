@@ -45,14 +45,10 @@ export default function Navigation() {
         <span>Álbumes</span>
       </NavLink>
       <NavLink to="/favoritos" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
-        {({ isActive }) => (
-          <>
-            <div className={styles['nav-icon-container']}>
-              <Heart size={24} style={{ fill: isActive ? 'currentColor' : 'none' }} />
-            </div>
-            <span>Favoritos</span>
-          </>
-        )}
+        <div className={styles['nav-icon-container']}>
+          <Heart size={24} style={{ fill: location.pathname === '/favoritos' ? 'currentColor' : 'none' }} />
+        </div>
+        <span>Favoritos</span>
       </NavLink>
     </nav>
   );

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { Settings, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HimnoItem from '../components/HimnoItem';
 import { SkeletonHimnoItem } from '../components/Skeletons';
 import { getJSON } from '../lib/storage';
@@ -11,10 +11,19 @@ import type { HistoryItem } from '../types.d';
 export default function Home() {
   const { himnos, loading } = useHimnos();
   const navigate = useNavigate();
-  const [history] = useState<HistoryItem[]>(() =>
+  const [history, setHistory] = useState<HistoryItem[]>(() =>
     getJSON<HistoryItem[]>(STORAGE_KEYS.HISTORY, []),
   );
   const [showToast, setShowToast] = useState(false);
+
+  // Refresh history when storage changes (cross-tab or navigation)
+  useEffect(() => {
+    const handler = () => {
+      setHistory(getJSON<HistoryItem[]>(STORAGE_KEYS.HISTORY, []));
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
 
   const handleShare = async () => {
     const shareData = {
