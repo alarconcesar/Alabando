@@ -1073,11 +1073,12 @@ body {
   transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
 }
 .album-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px var(--shadow-color) !important;
+  border-color: var(--primary-container) !important;
 }
 .album-card:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .home-action-card-bg-icon {

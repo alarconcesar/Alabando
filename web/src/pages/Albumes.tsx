@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { SkeletonAlbumes } from '../components/Skeletons';
 import { Link } from 'react-router-dom';
 import { getAlbumGradient } from '../lib/constants';
-import { Disc3, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export default function Albumes() {
   const { himnos, loading } = useHimnos();
@@ -19,7 +19,7 @@ export default function Albumes() {
   return (
     <div className="page-fade-in" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 100 }}>
       <header className="app-bar" style={{ padding: '16px 20px', borderBottom: 'none' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--on-background)' }}>Álbumes</h1>
+        <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--on-background)' }}>Categorías</h1>
       </header>
 
       <div className="himno-item-divider" style={{ margin: '0 16px 16px 16px' }} />
@@ -40,39 +40,39 @@ export default function Albumes() {
                   <div
                     className="album-card"
                     style={{
-                      background: gradient,
-                      borderRadius: 20,
-                      padding: '20px 16px',
-                      minHeight: 130,
+                      borderRadius: 16,
+                      padding: '18px 16px',
+                      minHeight: 115,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       position: 'relative',
                       overflow: 'hidden',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                      backgroundColor: 'var(--surface)',
+                      border: '1px solid var(--surface-variant)',
+                      borderLeft: `4px solid transparent`,
+                      borderImage: `${gradient} 1`,
                       transition: 'transform 0.2s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.2s ease',
                       cursor: 'pointer',
                     }}
                   >
-                    {/* Decorative icon */}
-                    <Disc3
-                      size={64}
+                    {/* Accent gradient strip on top */}
+                    <div
                       style={{
                         position: 'absolute',
-                        right: -12,
-                        bottom: -12,
-                        opacity: 0.15,
-                        color: '#FFFFFF',
-                        transform: 'rotate(-15deg)',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 4,
+                        background: gradient,
                       }}
                     />
                     <div>
                       <h3 style={{
-                        color: '#FFFFFF',
+                        color: 'var(--on-background)',
                         fontSize: '1rem',
                         fontWeight: 700,
                         lineHeight: 1.25,
-                        textShadow: '0 1px 4px rgba(0,0,0,0.2)',
                         position: 'relative',
                         zIndex: 1,
                       }}>
@@ -87,13 +87,13 @@ export default function Albumes() {
                       zIndex: 1,
                     }}>
                       <span style={{
-                        color: 'rgba(255,255,255,0.85)',
+                        color: 'var(--outline)',
                         fontSize: '0.8rem',
                         fontWeight: 600,
                       }}>
                         {count} {count === 1 ? 'himno' : 'himnos'}
                       </span>
-                      <ChevronRight size={18} style={{ color: 'rgba(255,255,255,0.7)' }} />
+                      <ChevronRight size={16} style={{ color: 'var(--outline)' }} />
                     </div>
                   </div>
                 </Link>
