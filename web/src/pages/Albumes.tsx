@@ -2,7 +2,7 @@ import { useHimnos } from '../hooks/useHimnos';
 import { useMemo } from 'react';
 import { SkeletonAlbumes } from '../components/Skeletons';
 import { Link } from 'react-router-dom';
-import { getAlbumGradient } from '../lib/constants';
+import { getAlbumGradient, getAlbumTint } from '../lib/constants';
 import { ChevronRight } from 'lucide-react';
 
 export default function Albumes() {
@@ -48,24 +48,13 @@ export default function Albumes() {
                       justifyContent: 'space-between',
                       position: 'relative',
                       overflow: 'hidden',
-                      backgroundColor: 'var(--surface)',
+                      background: getAlbumTint(gradient),
                       border: '1px solid var(--surface-variant)',
                       transition: 'transform 0.2s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.2s ease',
                       cursor: 'pointer',
                     }}
                   >
-                    {/* Colored top bar */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 4,
-                        background: gradient,
-                      }}
-                    />
-                    <div style={{ marginTop: 4 }}>
+                    <div>
                       <h3 style={{
                         color: 'var(--on-background)',
                         fontSize: '1rem',

@@ -64,3 +64,22 @@ export function getAlbumGradient(category: string): string {
   }
   return ALBUM_GRADIENTS[Math.abs(hash) % ALBUM_GRADIENTS.length];
 }
+
+/** Extracts the first hex color from a gradient string */
+function extractFirstColor(gradient: string): string {
+  const match = gradient.match(/#[0-9a-fA-F]{6}/);
+  return match ? match[0] : '#FC7124';
+}
+
+/** Converts hex color to rgba with given opacity */
+export function hexToRgba(hex: string, opacity: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+/** Returns a tinted background color (very low opacity) from a gradient */
+export function getAlbumTint(gradient: string): string {
+  return hexToRgba(extractFirstColor(gradient), 0.06);
+}
