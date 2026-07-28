@@ -61,13 +61,14 @@ function HymnPane({ himno, fontSize }: { himno: Himno; fontSize: number }) {
   );
 }
 
-// ── 3-pane absolute carousel (no overflow:hidden — viewport clips edges) ──
+// ── 3-pane carousel (overflow hidden clips sides, body scrolls vertical) ──
 function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   himnos: Himno[];
   currentIndex: number;
   setActiveId: (id: number) => void;
   fontSize: number;
 }) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const [translate, setTranslate] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [animate, setAnimate] = useState(false);
@@ -108,59 +109,54 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     const dy = e.touches[0].clientY - startY.current;
 
     // Mostly vertical → let page scroll through
-    if (Math.abs(dx) < Math.abs(dy) * 1.5) {
-      return;
-    }
+    if (Math.abs(dx) < Math.abs(dy) * 1.5) return;
 
-    e.preventDefault(); // prevent horizontal scroll/overscroll
+    e.preventDefault();
     const b = base.current;
-    setTranslate(Math.max(b - 100, Math.min(b + 100, b + dx)));
+    // Clamp so we don't overscroll when at edges
+    const maxDist = trackRef.current?.clientWidth ?? 300;
+    setTranslate(Math.max(-maxDist, Math.min(maxDist, b + dx)));
   }, [dragging]);
 
   const onEnd = useCallback(() => {
     if (!dragging) return;
     setDragging(false);
 
-    if (translate < -60 && next) {
-      // Swipe left → slide current pane out left, next pane slides in
+    const containerWidth = trackRef.current?.clientWidth ?? window.innerWidth;
+    const threshold = containerWidth * 0.2;
+    if (translate < -threshold && next) {
       setAnimate(true);
-      setTranslate(-window.innerWidth);
+      setTranslate(-containerWidth);
       navTimeoutRef.current = setTimeout(() => { setActiveId(next.id); }, 250);
-    } else if (translate > 60 && prev) {
-      // Swipe right → slide current pane out right, prev pane slides in
+    } else if (translate > threshold && prev) {
       setAnimate(true);
-      setTranslate(window.innerWidth);
+      setTranslate(containerWidth);
       navTimeoutRef.current = setTimeout(() => { setActiveId(prev.id); }, 250);
     } else {
-      // Bounce back
       setAnimate(true);
       setTranslate(0);
     }
   }, [dragging, translate, prev, next, setActiveId]);
 
   return (
-    <div style={{ width: '100%', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
-      <div style={{
-        position: 'relative',
+    <div style={{ width: '100%', overflow: 'hidden', touchAction: 'pan-y', userSelect: 'none' }}>
+      <div ref={trackRef} style={{
+        display: 'flex',
         width: '100%',
-        minHeight: 240,
-        transform: `translateX(${translate}px)`,
+        transform: `translateX(calc(-100% + ${translate}px))`,
         transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
       }}
         onTouchStart={onStart}
         onTouchMove={onMove}
         onTouchEnd={onEnd}
       >
-        {/* Prev pane — absolute, off-screen left */}
-        <div style={{ position: 'absolute', left: '-100vw', top: 0, width: '100vw' }}>
+        <div style={{ flex: '0 0 100%', minWidth: 0 }}>
           {prev ? <HymnPane himno={prev} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
         </div>
-        {/* Current pane — relative, flows in document */}
-        <div style={{ position: 'relative', width: '100vw' }}>
+        <div style={{ flex: '0 0 100%', minWidth: 0 }}>
           <HymnPane himno={himnos[currentIndex]} fontSize={fontSize} />
         </div>
-        {/* Next pane — absolute, off-screen right */}
-        <div style={{ position: 'absolute', right: '-100vw', top: 0, width: '100vw' }}>
+        <div style={{ flex: '0 0 100%', minWidth: 0 }}>
           {next ? <HymnPane himno={next} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
         </div>
       </div>
