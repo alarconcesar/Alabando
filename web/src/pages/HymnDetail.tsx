@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { useFavorites } from '../hooks/useFavorites';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { getJSON, setJSON } from '../lib/storage';
 import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
 import { SkeletonDetail } from '../components/Skeletons';
@@ -77,8 +77,8 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const next = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
-  // Jump to center immediately when index changes
-  useEffect(() => {
+  // Jump to center immediately — useLayoutEffect to avoid flash of wrong content
+  useLayoutEffect(() => {
     setTranslate(centerX);
     base.current = centerX;
     setDragging(false);
