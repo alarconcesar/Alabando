@@ -207,6 +207,7 @@ export default function HymnDetail() {
   const [fontSize, setFontSize] = useState(() => Number(localStorage.getItem('fontSize')) || 19);
   const [showTextSettings, setShowTextSettings] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
 
   // Persist font size
   useEffect(() => {
@@ -387,7 +388,6 @@ export default function HymnDetail() {
 
   const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];
   const ytVideos = himno.aud ? himno.aud.filter(a => a.src === 'YT') : [];
-  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
   const selectedVideo = ytVideos[selectedVideoIndex] ?? null;
 
   return (
