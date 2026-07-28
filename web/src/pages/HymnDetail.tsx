@@ -9,10 +9,28 @@ import { useSwipe } from '../hooks/useSwipe';
 import { SkeletonDetail } from '../components/Skeletons';
 
 export default function HymnDetail() {
-  const { id } = useParams();
+  const { id: urlId } = useParams();
   const navigate = useNavigate();
   const { himnos, loading } = useHimnos();
   
+  // ── Local active hymn (swipe doesn't remount the component) ───────
+  const [activeId, setActiveId] = useState(() => Number(urlId));
+
+  // Sync URL silently when swiping (no remount)
+  useEffect(() => {
+    if (Number(urlId) !== activeId) {
+      navigate(`/himno/${activeId}`, { replace: true });
+    }
+  }, [activeId, navigate]);
+
+  // Sync activeId when user navigates directly (via link/back)
+  useEffect(() => {
+    const parsed = Number(urlId);
+    if (!isNaN(parsed) && parsed !== activeId) {
+      setActiveId(parsed);
+    }
+  }, [urlId]);
+
   const [showScore, setShowScore] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [fontSize, setFontSize] = useState(() => {
@@ -154,7 +172,7 @@ export default function HymnDetail() {
     localStorage.setItem('fontSize', fontSize.toString());
   }, [fontSize]);
 
-  const currentIndex = himnos.findIndex(h => h.id === Number(id));
+  const currentIndex = himnos.findIndex(h => h.id === activeId);
   const himno = himnos[currentIndex];
 
   const prevHimno = currentIndex > 0 ? himnos[currentIndex - 1] : null;
@@ -162,8 +180,8 @@ export default function HymnDetail() {
 
   // ── Swipe to navigate between hymns ─────────────────────
   const { containerRef } = useSwipe({
-    onSwipeLeft: nextHimno ? () => navigate(`/himno/${nextHimno.id}`, { replace: true }) : undefined,
-    onSwipeRight: prevHimno ? () => navigate(`/himno/${prevHimno.id}`, { replace: true }) : undefined,
+    onSwipeLeft: nextHimno ? () => setActiveId(nextHimno.id) : undefined,
+    onSwipeRight: prevHimno ? () => setActiveId(prevHimno.id) : undefined,
   });
 
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -183,7 +201,7 @@ export default function HymnDetail() {
   // Reset scroll to top when changing hymns
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [activeId]);
 
   // Save to history on view
   useEffect(() => {
