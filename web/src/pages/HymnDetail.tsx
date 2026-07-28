@@ -36,6 +36,10 @@ export default function HymnDetail() {
   const [pinchStartDist, setPinchStartDist] = useState(0);
   const [pinchStartScale, setPinchStartScale] = useState(1);
 
+  // ── Favorite animation state ─────────────────────────────
+  const [favBurst, setFavBurst] = useState(false);
+  const [favRipple, setFavRipple] = useState(false);
+
   const viewportRef = useRef<HTMLDivElement>(null);
 
   const clampPan = (x: number, y: number, scale: number) => {
@@ -326,8 +330,9 @@ export default function HymnDetail() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button onClick={() => himno && toggleFavorite(himno.id)} className="detail-top-bar-btn" aria-label="Favorito">
-                <Heart size={20} style={{ fill: himnoFav ? 'var(--primary)' : 'none', color: himnoFav ? 'var(--primary)' : 'var(--on-background)' }} />
+              <button onClick={() => { himno && toggleFavorite(himno.id); if (himno) { setFavBurst(true); if (!himnoFav) setFavRipple(true); setTimeout(() => { setFavBurst(false); setFavRipple(false); }, 500); } }} className="detail-top-bar-btn" aria-label="Favorito" style={{ position: 'relative' }}>
+                {favRipple && <div className="fav-ripple" />}
+                <Heart size={20} key={String(himnoFav) + favBurst} className={favBurst ? 'fav-burst' : ''} style={{ fill: himnoFav ? 'var(--primary)' : 'none', color: himnoFav ? 'var(--primary)' : 'var(--on-background)' }} />
               </button>
             </div>
           </header>

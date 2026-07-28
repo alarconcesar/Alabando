@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import { useState, useCallback } from 'react';
 import type { Himno } from '../types.d';
 import { useFavorites } from '../hooks/useFavorites';
 
@@ -11,12 +12,18 @@ interface HimnoItemProps {
 export default function HimnoItem({ himno, extraContent }: HimnoItemProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const fav = isFavorite(himno.id);
+  const [burst, setBurst] = useState(false);
+  const [ripple, setRipple] = useState(false);
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavorite(himno.id);
-  };
+    // Animate burst + ripple
+    setBurst(true);
+    if (!fav) setRipple(true);
+    setTimeout(() => { setBurst(false); setRipple(false); }, 500);
+  }, [himno.id, toggleFavorite, fav]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -36,9 +43,13 @@ export default function HimnoItem({ himno, extraContent }: HimnoItemProps) {
             onClick={handleFavoriteClick}
             className="himno-item-fav-btn"
             aria-label={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+            style={{ position: 'relative' }}
           >
+            {ripple && <div className="fav-ripple" />}
             <Heart
+              key={String(fav) + burst}
               size={25}
+              className={burst ? 'fav-burst' : ''}
               style={{
                 fill: fav ? 'var(--primary)' : 'none',
                 color: 'var(--primary)',
