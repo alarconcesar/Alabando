@@ -74,20 +74,28 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   const [animate, setAnimate] = useState(false);
   const startX = useRef(0);
   const base = useRef(centerX);
+  const navTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null as unknown as ReturnType<typeof setTimeout>);
 
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const next = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
   // Jump to center immediately — no transition
   useLayoutEffect(() => {
+    clearTimeout(navTimeoutRef.current);
     setAnimate(false);
     setTranslate(centerX);
     base.current = centerX;
     setDragging(false);
   }, [currentIndex, centerX]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => clearTimeout(navTimeoutRef.current);
+  }, []);
+
   const onStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length !== 1) return;
+    clearTimeout(navTimeoutRef.current);
     setDragging(true);
     startX.current = e.touches[0].clientX;
     base.current = translate;
@@ -106,10 +114,21 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
     const offset = translate - centerX;
     if (offset < -100 && next) {
-      setActiveId(next.id);
+      // Swipe left → slide current pane left, next pane enters from right
+      setAnimate(true);
+      setTranslate(centerX - window.innerWidth);
+      navTimeoutRef.current = setTimeout(() => {
+        setActiveId(next.id);
+      }, 250);
     } else if (offset > 100 && prev) {
-      setActiveId(prev.id);
+      // Swipe right → slide current pane right, prev pane enters from left
+      setAnimate(true);
+      setTranslate(0);
+      navTimeoutRef.current = setTimeout(() => {
+        setActiveId(prev.id);
+      }, 250);
     } else {
+      // Bounce back
       setAnimate(true);
       setTranslate(centerX);
     }
