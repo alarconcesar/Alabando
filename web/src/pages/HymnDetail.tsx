@@ -139,11 +139,19 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   }, [dragging, translate, prev, next, setActiveId]);
 
   return (
-    <div style={{ width: '100%', overflow: 'hidden', touchAction: 'pan-y', userSelect: 'none' }}>
+    <div style={{ width: '100%', overflow: 'hidden', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
+      {/* Invisible height driver — solo el himno actual define la altura */}
+      <div style={{ visibility: 'hidden' }}>
+        <HymnPane himno={himnos[currentIndex]} fontSize={fontSize} />
+      </div>
+      {/* Track animado en absolute sobre el driver */}
       <div ref={trackRef} style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
         display: 'flex',
         alignItems: 'flex-start',
-        width: '100%',
         transform: `translateX(calc(-100% + ${translate}px))`,
         transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
       }}
