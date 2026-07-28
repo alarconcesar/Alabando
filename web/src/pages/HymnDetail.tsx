@@ -54,7 +54,7 @@ function HymnLyricsBody({ himno, fontSize }: { himno: Himno; fontSize: number })
 // ── Full hymn pane (title + lyrics) ───────────────────────────────────────
 function HymnPane({ himno, fontSize }: { himno: Himno; fontSize: number }) {
   return (
-    <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 200 }}>
+    <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 100 }}>
       <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
       <HymnLyricsBody himno={himno} fontSize={fontSize} />
     </div>
@@ -443,7 +443,7 @@ export default function HymnDetail() {
 
         {/* ── Score OR Carousel ── */}
         {showScore && pages.length > 0 ? (
-          <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 200 }}>
+          <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 100 }}>
             <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
               {pages.map(p => (
