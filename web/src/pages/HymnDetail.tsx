@@ -70,7 +70,8 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   setActiveId: (id: number) => void;
   fontSize: number;
 }) {
-  const [translate, setTranslate] = useState(0);
+  const getOffset = useCallback(() => -window.innerWidth, []);
+  const [translate, setTranslate] = useState(getOffset);
   const [isDragging, setIsDragging] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const startXRef = useRef(0);
@@ -81,8 +82,8 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
   // Reset position when index changes externally (button nav)
   useEffect(() => {
-    setTranslate(0);
-    baseRef.current = 0;
+    setTranslate(-window.innerWidth);
+    baseRef.current = -window.innerWidth;
     setIsAnimating(false);
     setIsDragging(false);
   }, [currentIndex]);
@@ -97,32 +98,38 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging || e.touches.length !== 1 || isAnimating) return;
     const deltaX = e.touches[0].clientX - startXRef.current;
-    const maxRight = prevHimno ? 250 : 0;
-    const maxLeft = nextHimno ? -250 : 0;
-    setTranslate(Math.max(maxLeft, Math.min(maxRight, baseRef.current + deltaX)));
+    const base = baseRef.current;
+    // Base is -100vw (center). Drag left reveals next, drag right reveals prev
+    const maxLeft = nextHimno ? base - 200 : base;
+    const maxRight = prevHimno ? base + 200 : base;
+    setTranslate(Math.max(maxLeft, Math.min(maxRight, base + deltaX)));
   }, [isDragging, isAnimating, prevHimno, nextHimno]);
 
   const handleTouchEnd = useCallback(() => {
     if (!isDragging || isAnimating) return;
     setIsDragging(false);
 
-    if (translate < -100 && nextHimno) {
+    const center = -window.innerWidth;
+    const offset = translate - center;
+
+    if (offset < -100 && nextHimno) {
+      // Swipe left → go next
       setIsAnimating(true);
-      setTranslate(-window.innerWidth);
+      setTranslate(-2 * window.innerWidth);
       setTimeout(() => {
         setActiveId(nextHimno.id);
-        // Reset happens via useEffect above
       }, 280);
-    } else if (translate > 100 && prevHimno) {
+    } else if (offset > 100 && prevHimno) {
+      // Swipe right → go prev
       setIsAnimating(true);
-      setTranslate(window.innerWidth);
+      setTranslate(0);
       setTimeout(() => {
         setActiveId(prevHimno.id);
       }, 280);
     } else {
-      // Bounce back
+      // Bounce back to center
       setIsAnimating(true);
-      setTranslate(0);
+      setTranslate(center);
       setTimeout(() => setIsAnimating(false), 250);
     }
   }, [isDragging, isAnimating, translate, prevHimno, nextHimno, setActiveId]);
