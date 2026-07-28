@@ -51,7 +51,7 @@ function HymnLyricsBody({ himno, fontSize }: { himno: Himno; fontSize: number })
   );
 }
 
-// ── Full hymn pane ─────────────────────────────────────────────────────────
+// ── Full hymn pane (title + lyrics) ───────────────────────────────────────
 function HymnPane({ himno, fontSize }: { himno: Himno; fontSize: number }) {
   return (
     <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 200 }}>
@@ -61,19 +61,19 @@ function HymnPane({ himno, fontSize }: { himno: Himno; fontSize: number }) {
   );
 }
 
-// ── 3-pane carousel ────────────────────────────────────────────────────────
+// ── 3-pane absolute carousel (no overflow:hidden — viewport clips edges) ──
 function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   himnos: Himno[];
   currentIndex: number;
   setActiveId: (id: number) => void;
   fontSize: number;
 }) {
-  const centerX = -window.innerWidth;
-  const [translate, setTranslate] = useState(centerX);
+  const [translate, setTranslate] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [animate, setAnimate] = useState(false);
   const startX = useRef(0);
-  const base = useRef(centerX);
+  const startY = useRef(0);
+  const base = useRef(0);
   const navTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null as unknown as ReturnType<typeof setTimeout>);
 
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
@@ -83,10 +83,10 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   useLayoutEffect(() => {
     clearTimeout(navTimeoutRef.current);
     setAnimate(false);
-    setTranslate(centerX);
-    base.current = centerX;
+    setTranslate(0);
+    base.current = 0;
     setDragging(false);
-  }, [currentIndex, centerX]);
+  }, [currentIndex]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -98,59 +98,70 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     clearTimeout(navTimeoutRef.current);
     setDragging(true);
     startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
     base.current = translate;
   }, [translate]);
 
   const onMove = useCallback((e: React.TouchEvent) => {
     if (!dragging || e.touches.length !== 1) return;
     const dx = e.touches[0].clientX - startX.current;
+    const dy = e.touches[0].clientY - startY.current;
+
+    // Mostly vertical → let page scroll through
+    if (Math.abs(dx) < Math.abs(dy) * 1.5) {
+      return;
+    }
+
+    e.preventDefault(); // prevent horizontal scroll/overscroll
     const b = base.current;
-    setTranslate(Math.max(next ? b - 250 : b, Math.min(prev ? b + 250 : b, b + dx)));
-  }, [dragging, prev, next]);
+    setTranslate(Math.max(b - 100, Math.min(b + 100, b + dx)));
+  }, [dragging]);
 
   const onEnd = useCallback(() => {
     if (!dragging) return;
     setDragging(false);
 
-    const offset = translate - centerX;
-    if (offset < -100 && next) {
-      // Swipe left → slide current pane left, next pane enters from right
+    if (translate < -60 && next) {
+      // Swipe left → slide current pane out left, next pane slides in
       setAnimate(true);
-      setTranslate(centerX - window.innerWidth);
-      navTimeoutRef.current = setTimeout(() => {
-        setActiveId(next.id);
-      }, 250);
-    } else if (offset > 100 && prev) {
-      // Swipe right → slide current pane right, prev pane enters from left
+      setTranslate(-window.innerWidth);
+      navTimeoutRef.current = setTimeout(() => { setActiveId(next.id); }, 250);
+    } else if (translate > 60 && prev) {
+      // Swipe right → slide current pane out right, prev pane slides in
       setAnimate(true);
-      setTranslate(0);
-      navTimeoutRef.current = setTimeout(() => {
-        setActiveId(prev.id);
-      }, 250);
+      setTranslate(window.innerWidth);
+      navTimeoutRef.current = setTimeout(() => { setActiveId(prev.id); }, 250);
     } else {
       // Bounce back
       setAnimate(true);
-      setTranslate(centerX);
+      setTranslate(0);
     }
-  }, [dragging, translate, centerX, prev, next, setActiveId]);
+  }, [dragging, translate, prev, next, setActiveId]);
 
   return (
-    <div style={{ overflow: 'hidden', width: '100%', touchAction: 'none', userSelect: 'none' }}
-      onTouchStart={onStart} onTouchMove={onMove} onTouchEnd={onEnd}>
+    <div style={{ width: '100%', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
       <div style={{
-        display: 'flex',
+        position: 'relative',
+        width: '100%',
+        minHeight: 240,
         transform: `translateX(${translate}px)`,
         transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
-        width: '100%',
-      }}>
-        <div style={{ minWidth: '100vw' }}>
-          {prev ? <HymnPane himno={prev} fontSize={fontSize} /> : <div style={{ minWidth: '100vw' }} />}
+      }}
+        onTouchStart={onStart}
+        onTouchMove={onMove}
+        onTouchEnd={onEnd}
+      >
+        {/* Prev pane — absolute, off-screen left */}
+        <div style={{ position: 'absolute', left: '-100vw', top: 0, width: '100vw' }}>
+          {prev ? <HymnPane himno={prev} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
         </div>
-        <div style={{ minWidth: '100vw' }}>
+        {/* Current pane — relative, flows in document */}
+        <div style={{ position: 'relative', width: '100vw' }}>
           <HymnPane himno={himnos[currentIndex]} fontSize={fontSize} />
         </div>
-        <div style={{ minWidth: '100vw' }}>
-          {next ? <HymnPane himno={next} fontSize={fontSize} /> : <div style={{ minWidth: '100vw' }} />}
+        {/* Next pane — absolute, off-screen right */}
+        <div style={{ position: 'absolute', right: '-100vw', top: 0, width: '100vw' }}>
+          {next ? <HymnPane himno={next} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
         </div>
       </div>
     </div>
@@ -197,6 +208,11 @@ export default function HymnDetail() {
   const [showTextSettings, setShowTextSettings] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
+  // Persist font size
+  useEffect(() => {
+    localStorage.setItem('fontSize', fontSize.toString());
+  }, [fontSize]);
+
   const { isFavorite, toggleFavorite } = useFavorites();
   const himnoFav = himno ? isFavorite(himno.id) : false;
   const [favBurst, setFavBurst] = useState(false);
@@ -219,6 +235,101 @@ export default function HymnDetail() {
       setJSON(STORAGE_KEYS.HISTORY, filtered);
     }
   }, [himno]);
+
+  // ── Zoom lightbox state ──────────────────────────────────
+  const [zoomedPage, setZoomedPage] = useState<string | null>(null);
+  const [zoomScale, setZoomScale] = useState(1);
+  const [panX, setPanX] = useState(0);
+  const [panY, setPanY] = useState(0);
+  const [isDraggingZoom, setIsDraggingZoom] = useState(false);
+  const [zoomStartX, setZoomStartX] = useState(0);
+  const [zoomStartY, setZoomStartY] = useState(0);
+  const [pinchStartDist, setPinchStartDist] = useState(0);
+  const [pinchStartScale, setPinchStartScale] = useState(1);
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const clampPan = (x: number, y: number, scale: number) => {
+    const limitX = Math.max(0, window.innerWidth * (scale - 0.5));
+    const limitY = Math.max(0, window.innerHeight * (scale - 0.5));
+    return {
+      x: Math.max(-limitX, Math.min(limitX, x)),
+      y: Math.max(-limitY, Math.min(limitY, y)),
+    };
+  };
+
+  const getTouchDist = (t1: Touch | React.Touch, t2: Touch | React.Touch) => {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleOpenZoom = (pageUrl: string) => {
+    setZoomScale(1);
+    setPanX(0);
+    setPanY(0);
+    setIsDraggingZoom(false);
+    setZoomedPage(pageUrl);
+  };
+
+  // Wheel zoom on the viewport
+  useEffect(() => {
+    const node = viewportRef.current;
+    if (!node || !zoomedPage) return;
+    const handleWheelRaw = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = 0.15;
+      setZoomScale(s => {
+        let newScale = s + (e.deltaY < 0 ? zoomFactor : -zoomFactor);
+        newScale = Math.min(3, Math.max(1, newScale));
+        if (newScale === 1) { setPanX(0); setPanY(0); }
+        return newScale;
+      });
+    };
+    node.addEventListener('wheel', handleWheelRaw, { passive: false });
+    return () => { node.removeEventListener('wheel', handleWheelRaw); };
+  }, [zoomedPage]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomScale <= 1) return;
+    e.preventDefault();
+    setIsDraggingZoom(true);
+    setZoomStartX(e.clientX - panX);
+    setZoomStartY(e.clientY - panY);
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingZoom || zoomScale <= 1) return;
+    const clamped = clampPan(e.clientX - zoomStartX, e.clientY - zoomStartY, zoomScale);
+    setPanX(clamped.x); setPanY(clamped.y);
+  };
+  const handleMouseUp = () => setIsDraggingZoom(false);
+
+  const handleZoomTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && zoomScale > 1) {
+      setIsDraggingZoom(true);
+      setZoomStartX(e.touches[0].clientX - panX);
+      setZoomStartY(e.touches[0].clientY - panY);
+    } else if (e.touches.length === 2) {
+      setIsDraggingZoom(false);
+      setPinchStartDist(getTouchDist(e.touches[0], e.touches[1]));
+      setPinchStartScale(zoomScale);
+    }
+  };
+  const handleZoomTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDraggingZoom && zoomScale > 1) {
+      const clamped = clampPan(e.touches[0].clientX - zoomStartX, e.touches[0].clientY - zoomStartY, zoomScale);
+      setPanX(clamped.x); setPanY(clamped.y);
+    } else if (e.touches.length === 2 && pinchStartDist > 0) {
+      const dist = getTouchDist(e.touches[0], e.touches[1]);
+      const factor = dist / pinchStartDist;
+      let newScale = Math.min(3, Math.max(1, pinchStartScale * factor));
+      setZoomScale(newScale);
+      if (newScale === 1) { setPanX(0); setPanY(0); }
+    }
+  };
+  const handleZoomTouchEnd = () => {
+    setIsDraggingZoom(false);
+    setPinchStartDist(0);
+  };
 
   // ── Presentation mode ────────────────────────────────────
   const [presentationMode, setPresentationMode] = useState(false);
@@ -276,6 +387,8 @@ export default function HymnDetail() {
 
   const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];
   const ytVideos = himno.aud ? himno.aud.filter(a => a.src === 'YT') : [];
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const selectedVideo = ytVideos[selectedVideoIndex] ?? null;
 
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
@@ -297,7 +410,58 @@ export default function HymnDetail() {
         </header>
       </div>
 
-      <main><LyricsCarousel himnos={himnos} currentIndex={currentIndex} setActiveId={setActiveId} fontSize={fontSize} /></main>
+      <main>
+        {/* ── Video Section ── */}
+        {showVideo && ytVideos.length > 0 && (
+          <>
+            {ytVideos.length > 1 && (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 20px 0' }}>
+                {ytVideos.map((v, i) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVideoIndex(i)}
+                    className={`filter-chip ${selectedVideoIndex === i ? 'active' : ''}`}
+                    style={{ fontSize: '13px', padding: '6px 14px' }}
+                  >
+                    Versión {i + 1}{v.lang && v.lang !== 'es' ? ` (${v.lang.toUpperCase()})` : ''}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%', marginBottom: 16, borderRadius: 12, overflow: 'hidden' }}>
+              <iframe
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                key={selectedVideo.id}
+              />
+            </div>
+          </>
+        )}
+
+        {/* ── Score OR Carousel ── */}
+        {showScore && pages.length > 0 ? (
+          <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 200 }}>
+            <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
+              {pages.map(p => (
+                <img
+                  key={p}
+                  src={`/partituras/page_${p.trim()}.png`}
+                  alt={`Partitura página ${p}`}
+                  style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
+                  loading="lazy"
+                  onClick={() => handleOpenZoom(`/partituras/page_${p.trim()}.png`)}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <LyricsCarousel himnos={himnos} currentIndex={currentIndex} setActiveId={setActiveId} fontSize={fontSize} />
+        )}
+      </main>
 
       {(showTextSettings || showOptionsMenu) && (
         <div className="menu-backdrop" onClick={() => { setShowTextSettings(false); setShowOptionsMenu(false); }} />
@@ -364,6 +528,126 @@ export default function HymnDetail() {
             {stanzaIdx < slides.length - 1 && <div className="presentation-touch-area presentation-touch-right" onClick={nextSlide}><ChevronRight size={48} style={{ opacity: 0.5 }} /></div>}
           </div>
           <div className="presentation-progress">{slides.map((_, i) => <div key={i} className={`presentation-dot ${i === stanzaIdx ? 'active' : ''}`} />)}</div>
+        </div>
+      )}
+
+      {/* ── Partitura Lightbox ── */}
+      {zoomedPage && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 90000,
+          backgroundColor: 'rgba(0,0,0,0.97)',
+          display: 'flex', flexDirection: 'column',
+          animation: 'fadeIn 0.2s ease',
+          userSelect: 'none',
+        }}>
+          <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 90002 }}>
+            <button
+              onClick={() => setZoomedPage(null)}
+              style={{
+                background: 'rgba(255,255,255,0.15)', border: 'none',
+                borderRadius: '50%', width: 44, height: 44,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#fff', cursor: 'pointer', fontSize: 20,
+              }}
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+          <div
+            ref={viewportRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleZoomTouchStart}
+            onTouchMove={handleZoomTouchMove}
+            onTouchEnd={handleZoomTouchEnd}
+            style={{
+              flex: 1, overflow: 'hidden',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 16,
+              cursor: zoomScale > 1 ? (isDraggingZoom ? 'grabbing' : 'grab') : 'default',
+              touchAction: 'none',
+            }}
+          >
+            <div style={{
+              transform: `translate(${panX}px, ${panY}px) scale(${zoomScale})`,
+              transformOrigin: 'center center',
+              transition: isDraggingZoom ? 'none' : 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              display: 'inline-block',
+              textAlign: 'center',
+            }}>
+              <img
+                src={zoomedPage}
+                alt="Partitura ampliada"
+                style={{
+                  maxWidth: '100vw', maxHeight: '85vh',
+                  borderRadius: 8, objectFit: 'contain',
+                  display: 'block', pointerEvents: 'none',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+                }}
+              />
+            </div>
+          </div>
+          <div style={{
+            position: 'absolute', bottom: 24, left: '50%',
+            transform: 'translateX(-50%)', zIndex: 90002,
+            display: 'flex', alignItems: 'center', gap: 16,
+            background: 'rgba(20,20,20,0.85)',
+            backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            padding: '8px 16px', borderRadius: 24,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)', color: '#fff',
+          }}>
+            <button
+              onClick={() => setZoomScale(s => {
+                const next = Math.max(1, s - 0.25);
+                if (next === 1) { setPanX(0); setPanY(0); }
+                return next;
+              })}
+              disabled={zoomScale <= 1}
+              style={{
+                background: 'transparent', border: 'none',
+                color: zoomScale <= 1 ? 'rgba(255,255,255,0.3)' : '#fff',
+                fontSize: 22, fontWeight: 'bold',
+                cursor: zoomScale <= 1 ? 'default' : 'pointer',
+                width: 32, height: 32,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              −
+            </button>
+            <span style={{ fontSize: 14, fontWeight: 600, minWidth: 48, textAlign: 'center' }}>
+              {Math.round(zoomScale * 100)}%
+            </span>
+            <button
+              onClick={() => setZoomScale(s => Math.min(3, s + 0.25))}
+              disabled={zoomScale >= 3}
+              style={{
+                background: 'transparent', border: 'none',
+                color: zoomScale >= 3 ? 'rgba(255,255,255,0.3)' : '#fff',
+                fontSize: 22, fontWeight: 'bold',
+                cursor: zoomScale >= 3 ? 'default' : 'pointer',
+                width: 32, height: 32,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              +
+            </button>
+            {zoomScale > 1 && (
+              <button
+                onClick={() => { setZoomScale(1); setPanX(0); setPanY(0); }}
+                style={{
+                  background: 'rgba(255,255,255,0.15)', border: 'none',
+                  borderRadius: 12, color: '#fff', fontSize: 11,
+                  padding: '4px 8px', cursor: 'pointer', fontWeight: 600,
+                }}
+              >
+                Restablecer
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
