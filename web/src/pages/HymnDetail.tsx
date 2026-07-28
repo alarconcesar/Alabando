@@ -71,14 +71,16 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   const centerX = -window.innerWidth;
   const [translate, setTranslate] = useState(centerX);
   const [dragging, setDragging] = useState(false);
+  const [animate, setAnimate] = useState(false);
   const startX = useRef(0);
   const base = useRef(centerX);
 
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const next = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
-  // Jump to center immediately — useLayoutEffect to avoid flash of wrong content
+  // Jump to center immediately — no transition
   useLayoutEffect(() => {
+    setAnimate(false);
     setTranslate(centerX);
     base.current = centerX;
     setDragging(false);
@@ -108,6 +110,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     } else if (offset > 100 && prev) {
       setActiveId(prev.id);
     } else {
+      setAnimate(true);
       setTranslate(centerX);
     }
   }, [dragging, translate, centerX, prev, next, setActiveId]);
@@ -118,7 +121,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
       <div style={{
         display: 'flex',
         transform: `translateX(${translate}px)`,
-        transition: dragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+        transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
         width: '100%',
       }}>
         <div style={{ minWidth: '100vw' }}>
