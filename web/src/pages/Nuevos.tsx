@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { ArrowLeft } from 'lucide-react';
 import HimnoItem from '../components/HimnoItem';
+import { SkeletonHimnoItem } from '../components/Skeletons';
 
 export default function Nuevos() {
   const { himnos, loading } = useHimnos();
@@ -20,7 +21,10 @@ export default function Nuevos() {
 
       <main style={{ marginTop: 8 }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--outline)' }}>Cargando...</div>
+          <div>
+            <div className="himno-item-divider" />
+            {Array.from({ length: 10 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
+          </div>
         ) : (
           <div>
             <div className="himno-item-divider" />

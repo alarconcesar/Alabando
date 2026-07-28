@@ -1,5 +1,6 @@
 import { useHimnos } from '../hooks/useHimnos';
 import { useMemo } from 'react';
+import { SkeletonAlbumes } from '../components/Skeletons';
 import { Link } from 'react-router-dom';
 
 export default function Albumes() {
@@ -22,7 +23,7 @@ export default function Albumes() {
 
       <main>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--outline)' }}>Cargando álbumes...</div>
+          <SkeletonAlbumes />
         ) : (
           categorias.map((cat, index) => {
             const count = himnos.filter(h => h.categoria === cat).length;

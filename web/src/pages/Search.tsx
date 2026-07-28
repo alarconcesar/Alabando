@@ -4,6 +4,7 @@ import { useHimnos } from '../hooks/useHimnos';
 import { useDebounce } from '../hooks/useDebounce';
 import { Search as SearchIcon, ArrowLeft, X, Delete, ChevronLeft } from 'lucide-react';
 import HimnoItem from '../components/HimnoItem';
+import { SkeletonHimnoItem } from '../components/Skeletons';
 
 export default function Search() {
   const { himnos, loading } = useHimnos();
@@ -285,7 +286,10 @@ export default function Search() {
 
           <main style={{ marginTop: 8 }}>
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--outline)' }}>Buscando...</div>
+              <div>
+                <div className="himno-item-divider" />
+                {Array.from({ length: 8 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
+              </div>
             ) : displayedResults.length > 0 ? (
               <div>
                 <div className="himno-item-divider" />

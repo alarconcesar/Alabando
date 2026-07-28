@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useHimnos } from '../hooks/useHimnos';
 import HimnoItem from '../components/HimnoItem';
+import { SkeletonHimnoItem } from '../components/Skeletons';
 import { getJSON, removeKey } from '../lib/storage';
 import { STORAGE_KEYS } from '../lib/constants';
 import type { HistoryItem } from '../types.d';
@@ -47,7 +48,10 @@ export default function History() {
 
       <main style={{ marginTop: 8 }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--outline)' }}>Cargando...</div>
+          <div>
+            <div className="himno-item-divider" />
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
+          </div>
         ) : historyHimnos.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--outline)' }}>
             No has visto ningún himno recientemente.

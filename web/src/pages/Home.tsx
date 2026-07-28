@@ -3,6 +3,7 @@ import { useHimnos } from '../hooks/useHimnos';
 import { Settings, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
 import { useState } from 'react';
 import HimnoItem from '../components/HimnoItem';
+import { SkeletonHimnoItem } from '../components/Skeletons';
 import { getJSON } from '../lib/storage';
 import { STORAGE_KEYS } from '../lib/constants';
 import type { HistoryItem } from '../types.d';
@@ -106,7 +107,9 @@ export default function Home() {
 
       <div className="surface-island">
         {loading ? (
-          <div style={{ padding: '30px 16px', textAlign: 'center', color: 'var(--outline)' }}>Cargando...</div>
+          <div style={{ padding: '30px 16px' }}>
+            {Array.from({ length: 3 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
+          </div>
         ) : historyHimnos.length === 0 ? (
           <div className="empty-view-container" style={{ padding: '40px 20px' }}>
             <Inbox size={48} style={{ opacity: 0.5, marginBottom: 12 }} />

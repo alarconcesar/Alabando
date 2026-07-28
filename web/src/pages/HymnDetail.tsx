@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { getJSON, setJSON } from '../lib/storage';
 import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
 import { useSwipe } from '../hooks/useSwipe';
+import { SkeletonDetail } from '../components/Skeletons';
 
 export default function HymnDetail() {
   const { id } = useParams();
@@ -296,7 +297,7 @@ export default function HymnDetail() {
   }, [presentationMode]);
 
   // Early returns must be after all hooks
-  if (loading) return <div style={{ padding: 20 }}>Cargando...</div>;
+  if (loading) return <SkeletonDetail />;
   if (!himno) return <div style={{ padding: 20 }}>Himno no encontrado</div>;
 
   const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];

@@ -1,0 +1,107 @@
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--surface-variant) 37%,
+    var(--surface) 63%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Hymn list item skeleton ──────────────────────────── */
+.skeleton-himno-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+}
+
+.skeleton-badge {
+  width: 60px;
+  height: 27px;
+  border-radius: 100px;
+  flex-shrink: 0;
+}
+
+.skeleton-text-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-title {
+  height: 18px;
+  width: 65%;
+  border-radius: 6px;
+}
+
+.skeleton-subtitle {
+  height: 14px;
+  width: 40%;
+  border-radius: 6px;
+}
+
+.skeleton-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Hymn detail skeleton ─────────────────────────────── */
+.skeleton-detail-title {
+  height: 36px;
+  width: 70%;
+  border-radius: 8px;
+  margin: 40px auto 32px auto;
+}
+
+.skeleton-line {
+  height: 19px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+
+.skeleton-line:nth-child(odd) {
+  width: 85%;
+}
+
+.skeleton-line:nth-child(even) {
+  width: 70%;
+}
+
+.skeleton-line-short {
+  height: 19px;
+  width: 50%;
+  border-radius: 6px;
+  margin: 0 auto 14px auto;
+}
+
+/* ── Page skeleton ────────────────────────────────────── */
+.skeleton-page {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-card {
+  height: 130px;
+  border-radius: 24px;
+}
+
+.skeleton-header-line {
+  height: 28px;
+  width: 40%;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
