@@ -142,6 +142,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     <div style={{ width: '100%', overflow: 'hidden', touchAction: 'pan-y', userSelect: 'none' }}>
       <div ref={trackRef} style={{
         display: 'flex',
+        alignItems: 'flex-start',
         width: '100%',
         transform: `translateX(calc(-100% + ${translate}px))`,
         transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
@@ -409,9 +410,9 @@ export default function HymnDetail() {
       <main>
         {/* ── Video Section ── */}
         {showVideo && ytVideos.length > 0 && (
-          <>
+          <div style={{ padding: '0 20px' }}>
             {ytVideos.length > 1 && (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 20px 0' }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 0 0' }}>
                 {ytVideos.map((v, i) => (
                   <button
                     key={v.id}
@@ -434,7 +435,7 @@ export default function HymnDetail() {
                 key={selectedVideo.id}
               />
             </div>
-          </>
+          </div>
         )}
 
         {/* ── Score OR Carousel ── */}
