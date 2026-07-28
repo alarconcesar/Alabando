@@ -108,6 +108,14 @@ body {
   min-height: 100vh;
 }
 
+/* Skeleton fallback (for Suspense route loading) — shimmer */
+.skeleton-fallback {
+  animation: shimmer 1.4s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-variant) 37%, var(--surface) 63%);
+  background-size: 800px 100%;
+  border-radius: 8px;
+}
+
 /* Custom scrollbar for WebKit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 6px;
