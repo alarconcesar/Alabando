@@ -433,13 +433,6 @@ export default function HymnDetail() {
     return () => { if (presentationMode) { document.exitFullscreen?.().catch(() => {}); screen.orientation?.unlock?.(); } };
   }, [presentationMode]);
 
-  if (loading) return <SkeletonDetail />;
-  if (!himno) return <div style={{ padding: 20, color: 'var(--outline)' }}>Himno no encontrado</div>;
-
-  const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];
-  const ytVideos = himno.aud ? himno.aud.filter(a => a.src === 'YT') : [];
-  const selectedVideo = ytVideos[selectedVideoIndex] ?? null;
-
   const handleGoPrev = useCallback(() => {
     if (prevHimno) {
       window.scrollTo(0, 0);
@@ -453,6 +446,13 @@ export default function HymnDetail() {
       setActiveId(nextHimno.id);
     }
   }, [nextHimno]);
+
+  if (loading) return <SkeletonDetail />;
+  if (!himno) return <div style={{ padding: 20, color: 'var(--outline)' }}>Himno no encontrado</div>;
+
+  const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];
+  const ytVideos = himno.aud ? himno.aud.filter(a => a.src === 'YT') : [];
+  const selectedVideo = ytVideos[selectedVideoIndex] ?? null;
 
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
