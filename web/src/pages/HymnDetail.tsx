@@ -125,10 +125,12 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     const containerWidth = trackRef.current?.clientWidth ?? window.innerWidth;
     const threshold = containerWidth * 0.2;
     if (translate < -threshold && next) {
+      window.scrollTo(0, 0);
       setAnimate(true);
       setTranslate(-containerWidth);
       navTimeoutRef.current = setTimeout(() => { setActiveId(next.id); }, 250);
     } else if (translate > threshold && prev) {
+      window.scrollTo(0, 0);
       setAnimate(true);
       setTranslate(containerWidth);
       navTimeoutRef.current = setTimeout(() => { setActiveId(prev.id); }, 250);
