@@ -294,10 +294,41 @@ export default function HymnDetail() {
   const [pinchStartScale, setPinchStartScale] = useState(1);
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  // Cerrar zoom al cambiar de himno
-  useEffect(() => {
+  // All pages loaded in the lightbox + current index for multi-page navigation
+  const [zoomedPages, setZoomedPages] = useState<string[]>([]);
+  const [zoomedPageIndex, setZoomedPageIndex] = useState(0);
+
+  // Reset solo los parámetros de transformación (escala, pan) sin cerrar el lightbox
+  const resetZoomTransform = useCallback(() => {
+    setZoomScale(1);
+    setPanX(0);
+    setPanY(0);
+    setIsDraggingZoom(false);
+    setZoomStartX(0);
+    setZoomStartY(0);
+    setPinchStartDist(0);
+    setPinchStartScale(1);
+  }, []);
+
+  // Resetear TODO el estado del zoom limpiamente (incluye cerrar lightbox)
+  const resetZoomState = useCallback(() => {
     setZoomedPage(null);
-  }, [activeId]);
+    setZoomedPages([]);
+    setZoomedPageIndex(0);
+    setZoomScale(1);
+    setPanX(0);
+    setPanY(0);
+    setIsDraggingZoom(false);
+    setZoomStartX(0);
+    setZoomStartY(0);
+    setPinchStartDist(0);
+    setPinchStartScale(1);
+  }, []);
+
+  // Cerrar zoom al cambiar de himno — reset completo
+  useEffect(() => {
+    resetZoomState();
+  }, [activeId, resetZoomState]);
 
   const clampPan = (x: number, y: number, scale: number) => {
     const limitX = Math.max(0, window.innerWidth * (scale - 0.5));
@@ -315,11 +346,11 @@ export default function HymnDetail() {
   };
 
   const handleOpenZoom = (pageUrl: string) => {
-    setZoomScale(1);
-    setPanX(0);
-    setPanY(0);
-    setIsDraggingZoom(false);
-    setZoomedPage(pageUrl);
+    const index = pages.indexOf(pageUrl.replace('/partituras/page_', '').replace('.png', ''));
+    resetZoomState();
+    setZoomedPages(pages.map(p => `/partituras/page_${p.trim()}.png`));
+    setZoomedPageIndex(index >= 0 ? index : 0);
+    setZoomedPage(pageUrl); // resetZoomState setea null, esto lo sobreescribe
   };
 
   // Wheel zoom on the viewport
@@ -604,9 +635,10 @@ export default function HymnDetail() {
           animation: 'fadeIn 0.2s ease',
           userSelect: 'none',
         }}>
+          {/* Close button */}
           <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 90002 }}>
             <button
-              onClick={() => setZoomedPage(null)}
+              onClick={() => resetZoomState()}
               style={{
                 background: 'rgba(255,255,255,0.15)', border: 'none',
                 borderRadius: '50%', width: 44, height: 44,
@@ -618,6 +650,8 @@ export default function HymnDetail() {
               ✕
             </button>
           </div>
+
+          {/* Main viewport with zoom/pan — sin botones flotantes */}
           <div
             ref={viewportRef}
             onMouseDown={handleMouseDown}
@@ -635,6 +669,7 @@ export default function HymnDetail() {
               touchAction: 'none',
             }}
           >
+            {/* The zoomable image */}
             <div style={{
               transform: `translate(${panX}px, ${panY}px) scale(${zoomScale})`,
               transformOrigin: 'center center',
@@ -654,16 +689,71 @@ export default function HymnDetail() {
               />
             </div>
           </div>
+
+          {/* Bottom controls bar — layout fijo, nada se mueve */}
           <div style={{
             position: 'absolute', bottom: 24, left: '50%',
             transform: 'translateX(-50%)', zIndex: 90002,
-            display: 'flex', alignItems: 'center', gap: 16,
+            display: 'flex', alignItems: 'center', gap: 4,
             background: 'rgba(20,20,20,0.85)',
             backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid rgba(255,255,255,0.15)',
-            padding: '8px 16px', borderRadius: 24,
+            padding: '6px 10px', borderRadius: 24,
             boxShadow: '0 8px 32px rgba(0,0,0,0.5)', color: '#fff',
           }}>
+            {/* ── Page navigation (always occupy space) ── */}
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              visibility: zoomedPages.length > 1 ? 'visible' : 'hidden',
+              pointerEvents: zoomedPages.length > 1 ? 'auto' : 'none',
+            }}>
+              <button
+                onClick={() => {
+                  resetZoomTransform();
+                  setZoomedPageIndex(i => i - 1);
+                  setZoomedPage(zoomedPages[zoomedPageIndex - 1]);
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.1)', border: 'none',
+                  borderRadius: '50%', width: 36, height: 36,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: zoomedPageIndex > 0 ? '#fff' : 'rgba(255,255,255,0.2)',
+                  cursor: zoomedPageIndex > 0 ? 'pointer' : 'default',
+                  flexShrink: 0,
+                }}
+                aria-label="Página anterior"
+              >
+                <ChevronLeft size={22} />
+              </button>
+              <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.7, minWidth: 36, textAlign: 'center' }}>
+                {zoomedPageIndex + 1}/{zoomedPages.length}
+              </span>
+              <button
+                onClick={() => {
+                  resetZoomTransform();
+                  setZoomedPageIndex(i => i + 1);
+                  setZoomedPage(zoomedPages[zoomedPageIndex + 1]);
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.1)', border: 'none',
+                  borderRadius: '50%', width: 36, height: 36,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: zoomedPageIndex < zoomedPages.length - 1 ? '#fff' : 'rgba(255,255,255,0.2)',
+                  cursor: zoomedPageIndex < zoomedPages.length - 1 ? 'pointer' : 'default',
+                  flexShrink: 0,
+                }}
+                aria-label="Página siguiente"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </span>
+
+            {/* Separator (always occupies space when multi-page) */}
+            {zoomedPages.length > 1 && (
+              <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+            )}
+
+            {/* ── Zoom controls ── */}
             <button
               onClick={() => setZoomScale(s => {
                 const next = Math.max(1, s - 0.25);
@@ -674,15 +764,16 @@ export default function HymnDetail() {
               style={{
                 background: 'transparent', border: 'none',
                 color: zoomScale <= 1 ? 'rgba(255,255,255,0.3)' : '#fff',
-                fontSize: 22, fontWeight: 'bold',
+                fontSize: 20, fontWeight: 'bold',
                 cursor: zoomScale <= 1 ? 'default' : 'pointer',
                 width: 32, height: 32,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
               }}
             >
               −
             </button>
-            <span style={{ fontSize: 14, fontWeight: 600, minWidth: 48, textAlign: 'center' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, minWidth: 40, textAlign: 'center' }}>
               {Math.round(zoomScale * 100)}%
             </span>
             <button
@@ -691,26 +782,30 @@ export default function HymnDetail() {
               style={{
                 background: 'transparent', border: 'none',
                 color: zoomScale >= 3 ? 'rgba(255,255,255,0.3)' : '#fff',
-                fontSize: 22, fontWeight: 'bold',
+                fontSize: 20, fontWeight: 'bold',
                 cursor: zoomScale >= 3 ? 'default' : 'pointer',
                 width: 32, height: 32,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
               }}
             >
               +
             </button>
-            {zoomScale > 1 && (
-              <button
-                onClick={() => { setZoomScale(1); setPanX(0); setPanY(0); }}
-                style={{
-                  background: 'rgba(255,255,255,0.15)', border: 'none',
-                  borderRadius: 12, color: '#fff', fontSize: 11,
-                  padding: '4px 8px', cursor: 'pointer', fontWeight: 600,
-                }}
-              >
-                Restablecer
-              </button>
-            )}
+
+            {/* Restablecer (always occupies space, disabled by style when zoom=1) */}
+            <button
+              onClick={() => resetZoomTransform()}
+              style={{
+                background: zoomScale > 1 ? 'rgba(255,255,255,0.15)' : 'transparent',
+                border: 'none',
+                borderRadius: 12, color: zoomScale > 1 ? '#fff' : 'rgba(255,255,255,0.2)',
+                fontSize: 11, padding: '4px 8px',
+                cursor: zoomScale > 1 ? 'pointer' : 'default',
+                fontWeight: 600, flexShrink: 0,
+              }}
+            >
+              Rest.
+            </button>
           </div>
         </div>
       )}
