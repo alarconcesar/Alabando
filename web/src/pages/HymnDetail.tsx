@@ -158,14 +158,14 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
   return (
     <>
-      {/* Invisible height driver — solo el himno actual define la altura */}
-      <div style={{ width: '100%', overflow: 'hidden', visibility: 'hidden', height: 0 }}>
-        <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 130 }}>
-          <HymnLyricsBody himno={himnos[currentIndex]} fontSize={fontSize} />
-        </div>
-      </div>
       {/* Track animado */}
       <div style={{ width: '100%', overflow: 'hidden', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
+        {/* Invisible height driver — solo el himno actual define la altura */}
+        <div style={{ visibility: 'hidden' }}>
+          <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 130 }}>
+            <HymnLyricsBody himno={himnos[currentIndex]} fontSize={fontSize} />
+          </div>
+        </div>
         <div ref={trackRef} style={{
           position: 'absolute',
           top: 0,
