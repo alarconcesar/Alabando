@@ -78,8 +78,16 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   const animatingRef = useRef(false);
   const navTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null as unknown as ReturnType<typeof setTimeout>);
 
+  // Refs para evitar stale closures en event handlers durante swipes rápidos
+  const translateRef = useRef(0);
+  const prevRef = useRef<Himno | null>(null);
+  const nextRef = useRef<Himno | null>(null);
+
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const next = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
+  // Sincronizar refs en cada render (antes de event handlers)
+  prevRef.current = prev;
+  nextRef.current = next;
 
   // Jump to center immediately — no transition
   useLayoutEffect(() => {
@@ -87,6 +95,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     animatingRef.current = false;
     setAnimate(false);
     setTranslate(0);
+    translateRef.current = 0;
     base.current = 0;
     setDragging(false);
   }, [currentIndex]);
@@ -98,19 +107,34 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
   const onStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length !== 1) return;
-    // If animation is in progress, cancel it and snap new himno
+    // If animation is in progress, cancel it and read current visual position from DOM
     if (animatingRef.current) {
       clearTimeout(navTimeoutRef.current);
       animatingRef.current = false;
       setAnimate(false);
-      setTranslate(0);
-      base.current = 0;
+      // Leer la posición visual REAL del DOM, no el target del state
+      // La CSS transition está mid-flight, el state ya saltó al target final
+      const el = trackRef.current;
+      if (el) {
+        const style = window.getComputedStyle(el);
+        const matrix = new DOMMatrixReadOnly(style.transform);
+        const fullTx = matrix.m41 || 0;  // translateX total en píxeles
+        const w = el.clientWidth;
+        // transform: translateX(calc(-100% + Npx)) → matrix.m41 = -w + N
+        // Despejamos N para obtener el translate "real" en ese instante
+        const currentN = fullTx + w;
+        base.current = currentN;
+        setTranslate(currentN);
+        translateRef.current = currentN;
+      } else {
+        base.current = 0;
+      }
     }
     setDragging(true);
     startX.current = e.touches[0].clientX;
     startY.current = e.touches[0].clientY;
-    base.current = translate;
-  }, [translate]);
+    base.current = translateRef.current;
+  }, []);
 
   const onMove = useCallback((e: React.TouchEvent) => {
     if (!dragging || e.touches.length !== 1) return;
@@ -123,7 +147,9 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     e.preventDefault();
     const b = base.current;
     const maxDist = trackRef.current?.clientWidth ?? 300;
-    setTranslate(Math.max(-maxDist, Math.min(maxDist, b + dx)));
+    const newVal = Math.max(-maxDist, Math.min(maxDist, b + dx));
+    setTranslate(newVal);
+    translateRef.current = newVal;
   }, [dragging]);
 
   // Helper para animar navegación desde swipe o botones
@@ -132,8 +158,12 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     window.scrollTo(0, 0);
     animatingRef.current = true;
     setAnimate(true);
+    setDragging(false);
     const containerWidth = trackRef.current?.clientWidth ?? window.innerWidth;
-    setTranslate(direction === 1 ? -containerWidth : containerWidth);
+    const newTranslate = direction === 1 ? -containerWidth : containerWidth;
+    setTranslate(newTranslate);
+    translateRef.current = newTranslate;
+    clearTimeout(navTimeoutRef.current);
     navTimeoutRef.current = setTimeout(() => {
       animatingRef.current = false;
       setActiveId(targetId);
@@ -146,15 +176,17 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
     const containerWidth = trackRef.current?.clientWidth ?? window.innerWidth;
     const threshold = containerWidth * 0.2;
-    if (translate < -threshold && next) {
-      animateTo(1, next.id);
-    } else if (translate > threshold && prev) {
-      animateTo(-1, prev.id);
+    const t = translateRef.current;
+    if (t < -threshold && nextRef.current) {
+      animateTo(1, nextRef.current.id);
+    } else if (t > threshold && prevRef.current) {
+      animateTo(-1, prevRef.current.id);
     } else {
       setAnimate(true);
       setTranslate(0);
+      translateRef.current = 0;
     }
-  }, [dragging, translate, prev, next, animateTo]);
+  }, [dragging, animateTo]);
 
   return (
     <>
@@ -701,57 +733,58 @@ export default function HymnDetail() {
             padding: '6px 10px', borderRadius: 24,
             boxShadow: '0 8px 32px rgba(0,0,0,0.5)', color: '#fff',
           }}>
-            {/* ── Page navigation (always occupy space) ── */}
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              visibility: zoomedPages.length > 1 ? 'visible' : 'hidden',
-              pointerEvents: zoomedPages.length > 1 ? 'auto' : 'none',
-            }}>
-              <button
-                onClick={() => {
-                  resetZoomTransform();
-                  setZoomedPageIndex(i => i - 1);
-                  setZoomedPage(zoomedPages[zoomedPageIndex - 1]);
-                }}
-                style={{
-                  background: 'rgba(255,255,255,0.1)', border: 'none',
-                  borderRadius: '50%', width: 36, height: 36,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: zoomedPageIndex > 0 ? '#fff' : 'rgba(255,255,255,0.2)',
-                  cursor: zoomedPageIndex > 0 ? 'pointer' : 'default',
-                  flexShrink: 0,
-                }}
-                aria-label="Página anterior"
-              >
-                <ChevronLeft size={22} />
-              </button>
-              <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.7, minWidth: 36, textAlign: 'center' }}>
-                {zoomedPageIndex + 1}/{zoomedPages.length}
+            {/* ── Page navigation (solo si hay múltiples páginas) ── */}
+            {zoomedPages.length > 1 && (<>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+              }}>
+                <button
+                  onClick={() => {
+                    resetZoomTransform();
+                    setZoomedPageIndex(i => i - 1);
+                    setZoomedPage(zoomedPages[zoomedPageIndex - 1]);
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.1)', border: 'none',
+                    borderRadius: '50%', width: 36, height: 36,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: zoomedPageIndex > 0 ? '#fff' : 'rgba(255,255,255,0.2)',
+                    cursor: zoomedPageIndex > 0 ? 'pointer' : 'default',
+                    flexShrink: 0,
+                  }}
+                  aria-label="Página anterior"
+                >
+                  <ChevronLeft size={22} />
+                </button>
+                <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.7, minWidth: 36, textAlign: 'center' }}>
+                  {zoomedPageIndex + 1}/{zoomedPages.length}
+                </span>
+                <button
+                  onClick={() => {
+                    resetZoomTransform();
+                    setZoomedPageIndex(i => i + 1);
+                    setZoomedPage(zoomedPages[zoomedPageIndex + 1]);
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.1)', border: 'none',
+                    borderRadius: '50%', width: 36, height: 36,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: zoomedPageIndex < zoomedPages.length - 1 ? '#fff' : 'rgba(255,255,255,0.2)',
+                    cursor: zoomedPageIndex < zoomedPages.length - 1 ? 'pointer' : 'default',
+                    flexShrink: 0,
+                  }}
+                  aria-label="Página siguiente"
+                >
+                  <ChevronRight size={22} />
+                </button>
               </span>
-              <button
-                onClick={() => {
-                  resetZoomTransform();
-                  setZoomedPageIndex(i => i + 1);
-                  setZoomedPage(zoomedPages[zoomedPageIndex + 1]);
-                }}
-                style={{
-                  background: 'rgba(255,255,255,0.1)', border: 'none',
-                  borderRadius: '50%', width: 36, height: 36,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: zoomedPageIndex < zoomedPages.length - 1 ? '#fff' : 'rgba(255,255,255,0.2)',
-                  cursor: zoomedPageIndex < zoomedPages.length - 1 ? 'pointer' : 'default',
-                  flexShrink: 0,
-                }}
-                aria-label="Página siguiente"
-              >
-                <ChevronRight size={22} />
-              </button>
-            </span>
 
-            {/* Separator (always occupies space when multi-page) */}
-            {zoomedPages.length > 1 && (
+              {/* Separator */}
               <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
-            )}
+            </>)}
+
+            {/* spacer invisible para mantener centrado cuando no hay navegación */}
+            {zoomedPages.length <= 1 && <div style={{ width: 1, flexShrink: 0 }} />}
 
             {/* ── Zoom controls ── */}
             <button
