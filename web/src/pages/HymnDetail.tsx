@@ -75,6 +75,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   const startX = useRef(0);
   const startY = useRef(0);
   const base = useRef(0);
+  const animatingRef = useRef(false);
   const navTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null as unknown as ReturnType<typeof setTimeout>);
 
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
@@ -83,6 +84,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
   // Jump to center immediately — no transition
   useLayoutEffect(() => {
     clearTimeout(navTimeoutRef.current);
+    animatingRef.current = false;
     setAnimate(false);
     setTranslate(0);
     base.current = 0;
@@ -96,7 +98,14 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
   const onStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length !== 1) return;
-    clearTimeout(navTimeoutRef.current);
+    // If animation is in progress, cancel it and snap new himno
+    if (animatingRef.current) {
+      clearTimeout(navTimeoutRef.current);
+      animatingRef.current = false;
+      setAnimate(false);
+      setTranslate(0);
+      base.current = 0;
+    }
     setDragging(true);
     startX.current = e.touches[0].clientX;
     startY.current = e.touches[0].clientY;
@@ -113,10 +122,23 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
     e.preventDefault();
     const b = base.current;
-    // Clamp so we don't overscroll when at edges
     const maxDist = trackRef.current?.clientWidth ?? 300;
     setTranslate(Math.max(-maxDist, Math.min(maxDist, b + dx)));
   }, [dragging]);
+
+  // Helper para animar navegación desde swipe o botones
+  const animateTo = useCallback((direction: -1 | 1, targetId: number) => {
+    if (animatingRef.current) return;
+    window.scrollTo(0, 0);
+    animatingRef.current = true;
+    setAnimate(true);
+    const containerWidth = trackRef.current?.clientWidth ?? window.innerWidth;
+    setTranslate(direction === 1 ? -containerWidth : containerWidth);
+    navTimeoutRef.current = setTimeout(() => {
+      animatingRef.current = false;
+      setActiveId(targetId);
+    }, 250);
+  }, [setActiveId]);
 
   const onEnd = useCallback(() => {
     if (!dragging) return;
@@ -125,53 +147,51 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     const containerWidth = trackRef.current?.clientWidth ?? window.innerWidth;
     const threshold = containerWidth * 0.2;
     if (translate < -threshold && next) {
-      window.scrollTo(0, 0);
-      setAnimate(true);
-      setTranslate(-containerWidth);
-      navTimeoutRef.current = setTimeout(() => { setActiveId(next.id); }, 250);
+      animateTo(1, next.id);
     } else if (translate > threshold && prev) {
-      window.scrollTo(0, 0);
-      setAnimate(true);
-      setTranslate(containerWidth);
-      navTimeoutRef.current = setTimeout(() => { setActiveId(prev.id); }, 250);
+      animateTo(-1, prev.id);
     } else {
       setAnimate(true);
       setTranslate(0);
     }
-  }, [dragging, translate, prev, next, setActiveId]);
+  }, [dragging, translate, prev, next, animateTo]);
 
   return (
-    <div style={{ width: '100%', overflow: 'hidden', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
+    <>
       {/* Invisible height driver — solo el himno actual define la altura */}
-      <div style={{ visibility: 'hidden' }}>
-        <HymnPane himno={himnos[currentIndex]} fontSize={fontSize} />
-      </div>
-      {/* Track animado en absolute sobre el driver */}
-      <div ref={trackRef} style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        display: 'flex',
-        alignItems: 'flex-start',
-        transform: `translateX(calc(-100% + ${translate}px))`,
-        transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
-      }}
-        onTouchStart={onStart}
-        onTouchMove={onMove}
-        onTouchEnd={onEnd}
-      >
-        <div style={{ flex: '0 0 100%', minWidth: 0 }}>
-          {prev ? <HymnPane himno={prev} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
-        </div>
-        <div style={{ flex: '0 0 100%', minWidth: 0 }}>
-          <HymnPane himno={himnos[currentIndex]} fontSize={fontSize} />
-        </div>
-        <div style={{ flex: '0 0 100%', minWidth: 0 }}>
-          {next ? <HymnPane himno={next} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
+      <div style={{ width: '100%', overflow: 'hidden', visibility: 'hidden', height: 0 }}>
+        <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 130 }}>
+          <HymnLyricsBody himno={himnos[currentIndex]} fontSize={fontSize} />
         </div>
       </div>
-    </div>
+      {/* Track animado */}
+      <div style={{ width: '100%', overflow: 'hidden', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
+        <div ref={trackRef} style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          display: 'flex',
+          alignItems: 'flex-start',
+          transform: `translateX(calc(-100% + ${translate}px))`,
+          transition: dragging || !animate ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+        }}
+          onTouchStart={onStart}
+          onTouchMove={onMove}
+          onTouchEnd={onEnd}
+        >
+          <div style={{ flex: '0 0 100%', minWidth: 0 }}>
+            {prev ? <HymnPane himno={prev} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
+          </div>
+          <div style={{ flex: '0 0 100%', minWidth: 0 }}>
+            <HymnPane himno={himnos[currentIndex]} fontSize={fontSize} />
+          </div>
+          <div style={{ flex: '0 0 100%', minWidth: 0 }}>
+            {next ? <HymnPane himno={next} fontSize={fontSize} /> : <div style={{ height: 1 }} />}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -205,9 +225,6 @@ export default function HymnDetail() {
   const prevHimno = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const nextHimno = currentIndex >= 0 && currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
 
-  const goNext = useCallback(() => nextHimno && setActiveId(nextHimno.id), [nextHimno]);
-  const goPrev = useCallback(() => prevHimno && setActiveId(prevHimno.id), [prevHimno]);
-
   // ── UI state ─────────────────────────────────────────────
   const [showScore, setShowScore] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
@@ -220,6 +237,13 @@ export default function HymnDetail() {
   useEffect(() => {
     localStorage.setItem('fontSize', fontSize.toString());
   }, [fontSize]);
+
+  // Reset per-himno state when hymn changes
+  useEffect(() => {
+    setSelectedVideoIndex(0);
+    setShowScore(false);
+    setShowVideo(false);
+  }, [activeId]);
 
   const { isFavorite, toggleFavorite } = useFavorites();
   const himnoFav = himno ? isFavorite(himno.id) : false;
@@ -244,6 +268,20 @@ export default function HymnDetail() {
     }
   }, [himno]);
 
+  // ── Keyboard navigation between hymns ────────────────────
+  useEffect(() => {
+    const fn = (e: KeyboardEvent) => {
+      if (document.querySelector('.presentation-overlay')) return;
+      if (e.key === 'ArrowLeft' && prevHimno) {
+        setActiveId(prevHimno.id);
+      } else if (e.key === 'ArrowRight' && nextHimno) {
+        setActiveId(nextHimno.id);
+      }
+    };
+    window.addEventListener('keydown', fn);
+    return () => window.removeEventListener('keydown', fn);
+  }, [prevHimno, nextHimno]);
+
   // ── Zoom lightbox state ──────────────────────────────────
   const [zoomedPage, setZoomedPage] = useState<string | null>(null);
   const [zoomScale, setZoomScale] = useState(1);
@@ -255,6 +293,11 @@ export default function HymnDetail() {
   const [pinchStartDist, setPinchStartDist] = useState(0);
   const [pinchStartScale, setPinchStartScale] = useState(1);
   const viewportRef = useRef<HTMLDivElement>(null);
+
+  // Cerrar zoom al cambiar de himno
+  useEffect(() => {
+    setZoomedPage(null);
+  }, [activeId]);
 
   const clampPan = (x: number, y: number, scale: number) => {
     const limitX = Math.max(0, window.innerWidth * (scale - 0.5));
@@ -397,6 +440,20 @@ export default function HymnDetail() {
   const ytVideos = himno.aud ? himno.aud.filter(a => a.src === 'YT') : [];
   const selectedVideo = ytVideos[selectedVideoIndex] ?? null;
 
+  const handleGoPrev = useCallback(() => {
+    if (prevHimno) {
+      window.scrollTo(0, 0);
+      setActiveId(prevHimno.id);
+    }
+  }, [prevHimno]);
+
+  const handleGoNext = useCallback(() => {
+    if (nextHimno) {
+      window.scrollTo(0, 0);
+      setActiveId(nextHimno.id);
+    }
+  }, [nextHimno]);
+
   return (
     <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
       {/* Top Bar */}
@@ -501,13 +558,13 @@ export default function HymnDetail() {
         )}
         <div className="detail-bottom-bar-divider" />
         <div className="detail-bottom-bar">
-          <button className="detail-bottom-bar-btn" onClick={goPrev} style={{ opacity: prevHimno ? 1 : 0.3 }} disabled={!prevHimno}><ChevronLeft size={28} /></button>
+          <button className="detail-bottom-bar-btn" onClick={handleGoPrev} style={{ opacity: prevHimno ? 1 : 0.3 }} disabled={!prevHimno}><ChevronLeft size={28} /></button>
           <div className="detail-bottom-center-buttons">
             <button className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`} onClick={() => setShowScore(s => !s)} style={{ opacity: pages.length > 0 ? 1 : 0.3 }} disabled={pages.length === 0}><FileMusic size={20} /></button>
             <button className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`} onClick={() => setShowVideo(s => !s)} style={{ opacity: ytVideos.length > 0 ? 1 : 0.3 }} disabled={ytVideos.length === 0}><Music size={20} /></button>
             <button className={`detail-bottom-action-btn ${showOptionsMenu ? 'active' : ''}`} onClick={() => setShowOptionsMenu(s => !s)} title="Más opciones"><MoreVertical size={20} /></button>
           </div>
-          <button className="detail-bottom-bar-btn" onClick={goNext} style={{ opacity: nextHimno ? 1 : 0.3 }} disabled={!nextHimno}><ChevronRight size={28} /></button>
+          <button className="detail-bottom-bar-btn" onClick={handleGoNext} style={{ opacity: nextHimno ? 1 : 0.3 }} disabled={!nextHimno}><ChevronRight size={28} /></button>
         </div>
       </div>
 
