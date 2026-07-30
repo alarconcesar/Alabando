@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { useFavorites } from '../hooks/useFavorites';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
@@ -632,7 +633,7 @@ export default function HymnDetail() {
       </div>
 
       {/* Presentation */}
-      {presentationMode && (
+      {presentationMode && createPortal(
         <div className="presentation-overlay">
           <button className="presentation-close-btn" onClick={exitPresentation} aria-label="Salir"><X size={24} /></button>
           <div className="presentation-content-area">
@@ -655,11 +656,12 @@ export default function HymnDetail() {
             {stanzaIdx < slides.length - 1 && <div className="presentation-touch-area presentation-touch-right" onClick={nextSlide}><ChevronRight size={48} style={{ opacity: 0.5 }} /></div>}
           </div>
           <div className="presentation-progress">{slides.map((_, i) => <div key={i} className={`presentation-dot ${i === stanzaIdx ? 'active' : ''}`} />)}</div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* ── Partitura Lightbox ── */}
-      {zoomedPage && (
+      {/* ── Partitura Lightbox (Portal to document.body) ── */}
+      {zoomedPage && createPortal(
         <div style={{
           position: 'fixed', inset: 0, zIndex: 99999,
           backgroundColor: 'rgba(0,0,0,0.97)',
@@ -840,7 +842,8 @@ export default function HymnDetail() {
               Rest.
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
