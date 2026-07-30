@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Himno } from '../types.d';
 
 // ── Module-level cache singleton ─────────────────────────
@@ -17,25 +17,32 @@ export function getCachedHimnos(): Himno[] | null {
 export function useHimnos() {
   const [himnos, setHimnos] = useState<Himno[]>(cachedHimnos ?? []);
   const [loading, setLoading] = useState(!cachedHimnos);
+  const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    // Already cached — use it
+  const fetchHimnos = useCallback(() => {
     if (cachedHimnos) {
       setHimnos(cachedHimnos);
       setLoading(false);
+      setError(null);
       return;
     }
 
-    // Fetch in progress — wait for it
+    setLoading(true);
+    setError(null);
+
     if (currentFetch) {
-      currentFetch.then(() => {
-        if (cachedHimnos) setHimnos(cachedHimnos);
-        setLoading(false);
-      });
+      currentFetch
+        .then((data) => {
+          setHimnos(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
+        });
       return;
     }
 
-    // Start new fetch
     currentFetch = fetch('/data/himnos.json')
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -54,19 +61,27 @@ export function useHimnos() {
       });
 
     currentFetch
-      .then(() => {
-        if (cachedHimnos) setHimnos(cachedHimnos);
+      .then((data) => {
+        setHimnos(data);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        setError(err instanceof Error ? err : new Error(String(err)));
         setLoading(false);
       });
   }, []);
 
+  useEffect(() => {
+    fetchHimnos();
+  }, [fetchHimnos]);
+
   // Subscribe to cache updates (in case parallel hooks resolve)
   useEffect(() => {
     const bump = () => {
-      if (cachedHimnos) setHimnos(cachedHimnos);
+      if (cachedHimnos) {
+        setHimnos(cachedHimnos);
+        setError(null);
+      }
       setLoading(!cachedHimnos);
     };
     listeners.add(bump);
@@ -75,5 +90,5 @@ export function useHimnos() {
     };
   }, []);
 
-  return { himnos, loading };
+  return { himnos, loading, error, retry: fetchHimnos };
 }

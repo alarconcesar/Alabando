@@ -38,7 +38,7 @@ const MAX_DISMISSALS = 3;
 function isStandalone(): boolean {
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
-    (navigator as any).standalone === true
+    navigator.standalone === true
   );
 }
 
@@ -51,7 +51,7 @@ function isMarkedInstalled(): boolean {
 }
 
 function isIOS(): boolean {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
 
 // ── Exported hook for Settings page ─────────────────────────────────────────

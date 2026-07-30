@@ -2,6 +2,16 @@
 /// <reference types="vite-plugin-pwa/client" />
 declare module 'lucide-react';
 
+declare global {
+  interface Navigator {
+    standalone?: boolean;
+  }
+
+  interface Window {
+    MSStream?: unknown;
+  }
+}
+
 export interface SeccionLetra {
   t: 'e' | 'c' | 'p' | 'b' | 'n' | 's';
   n?: number;

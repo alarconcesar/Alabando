@@ -472,7 +472,7 @@ export default function HymnDetail() {
     setStanzaIdx(0); setPresentationMode(true);
     try {
       if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-      if (screen.orientation && 'lock' in screen.orientation) await (screen.orientation as any).lock('landscape').catch(() => {});
+      if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape').catch(() => {});
     } catch (_) { /* silent */ }
   };
   const exitPresentation = async () => {
