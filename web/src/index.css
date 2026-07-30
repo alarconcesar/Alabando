@@ -1179,6 +1179,14 @@ body {
     display: none !important;
   }
 
+  /* Hide sidebar when presentation mode is active */
+  .app-layout:has(.presentation-overlay) .main-content-wrapper {
+    margin-left: 0;
+  }
+  .app-layout:has(.presentation-overlay) .bottom-nav {
+    display: none !important;
+  }
+
   /* Cap and center the actual page content beautifully */
   .main-content-wrapper > div {
     max-width: 850px;
