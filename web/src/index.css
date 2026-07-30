@@ -1196,6 +1196,11 @@ body {
     box-sizing: border-box;
   }
 
+  /* When score view is active, allow div to stretch to full width without max-width constraint */
+  .app-layout:has(.score-standalone-fullscreen) .main-content-wrapper > div {
+    max-width: 100%;
+  }
+
   /* Hymn Detail — desktop adjustments */
   .detail-top-bar-wrapper {
     position: sticky;
