@@ -1175,6 +1175,7 @@ body {
   }
 
   /* Hide sidebar when score view is active */
+  .app-layout:has(.score-standalone-fullscreen) nav,
   .app-layout:has(.score-standalone-fullscreen) .bottom-nav {
     display: none !important;
   }
@@ -1183,6 +1184,7 @@ body {
   .app-layout:has(.presentation-overlay) .main-content-wrapper {
     margin-left: 0;
   }
+  .app-layout:has(.presentation-overlay) nav,
   .app-layout:has(.presentation-overlay) .bottom-nav {
     display: none !important;
   }
