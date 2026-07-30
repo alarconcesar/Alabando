@@ -568,24 +568,24 @@ export default function HymnDetail() {
           </div>
         )}
 
-        {/* ── Score OR Carousel ── */}
-        {showScore && pages.length > 0 ? (
-          <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 130 }}>
-            <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
-              {pages.map(p => (
-                <img
-                  key={p}
-                  src={`/partituras/page_${p.trim()}.png`}
-                  alt={`Partitura página ${p}`}
-                  style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
-                  loading="lazy"
-                  onClick={() => handleOpenZoom(`/partituras/page_${p.trim()}.png`)}
-                />
-              ))}
+          {/* ── Score OR Carousel ── */}
+          {showScore && pages.length > 0 ? (
+            <div className="score-standalone-fullscreen">
+              <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
+                {pages.map(p => (
+                  <img
+                    key={p}
+                    src={`/partituras/page_${p.trim()}.png`}
+                    alt={`Partitura página ${p}`}
+                    style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
+                    loading="lazy"
+                    onClick={() => handleOpenZoom(`/partituras/page_${p.trim()}.png`)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ) : (
+          ) : (
           <LyricsCarousel himnos={himnos} currentIndex={currentIndex} setActiveId={setActiveId} fontSize={fontSize} />
         )}
       </main>
