@@ -1169,17 +1169,6 @@ body {
     background-color: var(--background);
   }
 
-  /* When score view is active, collapse main-content-wrapper margin */
-  .app-layout:has(.score-standalone-fullscreen) .main-content-wrapper {
-    margin-left: 0;
-  }
-
-  /* Hide sidebar when score view is active */
-  .app-layout:has(.score-standalone-fullscreen) nav,
-  .app-layout:has(.score-standalone-fullscreen) .bottom-nav {
-    display: none !important;
-  }
-
   /* Hide sidebar when presentation mode is active */
   .app-layout:has(.presentation-overlay) .main-content-wrapper {
     margin-left: 0;
@@ -1196,11 +1185,6 @@ body {
     width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
-  }
-
-  /* When score view is active, allow div to stretch to full width without max-width constraint */
-  .app-layout:has(.score-standalone-fullscreen) .main-content-wrapper > div {
-    max-width: 100%;
   }
 
   /* Hymn Detail — desktop adjustments */
