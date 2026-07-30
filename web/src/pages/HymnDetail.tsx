@@ -661,7 +661,7 @@ export default function HymnDetail() {
       {/* ── Partitura Lightbox ── */}
       {zoomedPage && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 90000,
+          position: 'fixed', inset: 0, zIndex: 99999,
           backgroundColor: 'rgba(0,0,0,0.97)',
           display: 'flex', flexDirection: 'column',
           animation: 'fadeIn 0.2s ease',
