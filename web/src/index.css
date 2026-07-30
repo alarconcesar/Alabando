@@ -1169,6 +1169,16 @@ body {
     background-color: var(--background);
   }
 
+  /* When score view is active, collapse main-content-wrapper margin */
+  .app-layout:has(.score-standalone-fullscreen) .main-content-wrapper {
+    margin-left: 0;
+  }
+
+  /* Hide sidebar when score view is active */
+  .app-layout:has(.score-standalone-fullscreen) .bottom-nav {
+    display: none !important;
+  }
+
   /* Cap and center the actual page content beautifully */
   .main-content-wrapper > div {
     max-width: 850px;
