@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Home, Search, Disc, Heart } from 'lucide-react';
-import { NAV_HIDE_THRESHOLD } from '../lib/constants';
 import styles from './Navigation.module.css';
 
 const cn = (...classes: (string | false | undefined | null)[]) =>
@@ -9,18 +7,9 @@ const cn = (...classes: (string | false | undefined | null)[]) =>
 
 export default function Navigation() {
   const location = useLocation();
-  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= NAV_HIDE_THRESHOLD);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= NAV_HIDE_THRESHOLD);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Hide bottom nav on detail page on mobile
-  if (location.pathname.startsWith('/himno/') && !isDesktop) {
+  // Hide bottom nav / sidebar on detail page (himno view)
+  if (location.pathname.startsWith('/himno/')) {
     return null;
   }
 
