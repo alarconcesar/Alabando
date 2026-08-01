@@ -252,7 +252,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 60px;
+  min-width: 60px;
   flex-shrink: 0;
 }
 
@@ -261,14 +261,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
+  min-width: 60px;
+  width: auto;
   height: 27px;
+  padding: 0 14px;
   border-radius: 100px;
   background-color: var(--primary-container);
   color: var(--neutral);
   font-size: 13px;
   font-weight: 600;
   border: none;
+  white-space: nowrap;
 }
 
 .himno-item-icons {
