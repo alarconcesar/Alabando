@@ -241,10 +241,14 @@ export default function HymnDetail() {
   const navigate = useNavigate();
   const { himnos, loading, error, retry } = useHimnos();
 
-  // Active hymn (local state keeps component mounted on swipe)
-  const [activeId, setActiveId] = useState<number | null>(null);
-
   const urlId = Number(id);
+
+  // Active hymn (local state keeps component mounted on swipe)
+  // Se inicializa con el id de la URL para que la carga directa de /himno/:id
+  // funcione (el ajuste durante render solo se dispara cuando la URL cambia)
+  const [activeId, setActiveId] = useState<number | null>(() =>
+    isNaN(urlId) ? null : urlId,
+  );
 
   // Sync from URL (link / back navigation) — ajuste de estado durante render
   // solo cuando el id de la URL realmente cambia (nunca revierte swipes)

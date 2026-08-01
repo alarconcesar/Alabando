@@ -95,8 +95,10 @@ export default function Search() {
   };
 
   // Al entrar con ?cat=... se activa el modo texto — ajuste de estado
-  // durante render (patrón recomendado por React en vez de useEffect)
-  const [prevCatFilter, setPrevCatFilter] = useState(catFilter);
+  // durante render (patrón recomendado por React en vez de useEffect).
+  // prevCatFilter arranca en null para que el montaje directo con ?cat=
+  // dispare la sincronización (igual que el useEffect original)
+  const [prevCatFilter, setPrevCatFilter] = useState<string | null>(null);
   if (prevCatFilter !== catFilter) {
     setPrevCatFilter(catFilter);
     if (catFilter) {

@@ -16,7 +16,13 @@ export default function PageTransition({ children }: Props) {
   // Ajuste de estado durante render cuando cambia el tipo de navegación
   // (patrón recomendado por React en vez de useEffect)
   const [prevType, setPrevType] = useState(type);
-  const [animClass, setAnimClass] = useState('');
+  const [animClass, setAnimClass] = useState(() =>
+    type === 'PUSH'
+      ? 'page-slide-right'
+      : type === 'POP'
+        ? 'page-slide-left'
+        : 'page-fade-in',
+  );
 
   if (prevType !== type) {
     setPrevType(type);
