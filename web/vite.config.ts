@@ -11,6 +11,7 @@ export default defineConfig({
       includeAssets: [
         'data/himnos.json',
         'img/*.jpg',
+        'fonts/*.ttf',
         'favicon.svg',
         'pwa-192x192.png',
         'pwa-512x512.png'
