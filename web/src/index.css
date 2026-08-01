@@ -289,6 +289,7 @@ body {
 
 .himno-item-middle {
   flex: 1;
+  min-width: 0; /* clave: permite que el título largo se trunque con ellipsis en vez de desbordar el row */
   margin-left: 12px;
   display: flex;
   flex-direction: column;
@@ -316,6 +317,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   margin-left: 8px;
+  flex-shrink: 0; /* el botón de favorito nunca se aplasta aunque el título sea largo */
 }
 
 .himno-item-fav-btn {
