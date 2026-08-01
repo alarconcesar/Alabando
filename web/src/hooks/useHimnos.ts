@@ -72,7 +72,12 @@ export function useHimnos() {
   }, []);
 
   useEffect(() => {
-    fetchHimnos();
+    // Si el cache ya está lleno el estado inicial ya lo refleja; solo
+    // hace falta fetch cuando no hay datos
+    if (!cachedHimnos) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch con caché en módulo: el setState síncrono solo ocurre en el camino cacheado
+      fetchHimnos();
+    }
   }, [fetchHimnos]);
 
   // Subscribe to cache updates (in case parallel hooks resolve)

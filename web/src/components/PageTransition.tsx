@@ -1,5 +1,5 @@
 import { useNavigationType } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -13,19 +13,21 @@ interface Props {
  */
 export default function PageTransition({ children }: Props) {
   const type = useNavigationType();
+  // Ajuste de estado durante render cuando cambia el tipo de navegación
+  // (patrón recomendado por React en vez de useEffect)
+  const [prevType, setPrevType] = useState(type);
   const [animClass, setAnimClass] = useState('');
-  const prevType = useRef(type);
 
-  useEffect(() => {
-    if (type === 'PUSH') {
-      setAnimClass('page-slide-right');
-    } else if (type === 'POP') {
-      setAnimClass('page-slide-left');
-    } else {
-      setAnimClass('page-fade-in');
-    }
-    prevType.current = type;
-  }, [type]);
+  if (prevType !== type) {
+    setPrevType(type);
+    setAnimClass(
+      type === 'PUSH'
+        ? 'page-slide-right'
+        : type === 'POP'
+          ? 'page-slide-left'
+          : 'page-fade-in',
+    );
+  }
 
   return (
     <div className={animClass} style={{ minHeight: '100vh' }}>

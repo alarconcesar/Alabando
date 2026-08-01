@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, CheckCircle, Monitor, Sun, Moon } from 'lucide-react';
-import { useInstallPrompt } from '../components/InstallPrompt';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { useTheme } from '../hooks/useTheme';
 import { getJSON, setJSON } from '../lib/storage';
 import { STORAGE_KEYS } from '../lib/constants';

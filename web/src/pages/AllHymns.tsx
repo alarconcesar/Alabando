@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Music, FileMusic } from 'lucide-react';
 import { useHimnos } from '../hooks/useHimnos';
 import VirtualHymnList from '../components/VirtualHymnList';
+import DataError from '../components/DataError';
 import { SkeletonHimnoItem } from '../components/Skeletons';
 
 export default function AllHymns() {
-  const { himnos, loading } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -148,6 +149,8 @@ export default function AllHymns() {
             <div className="himno-item-divider" />
             {Array.from({ length: 10 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
           </div>
+        ) : error ? (
+          <DataError onRetry={retry} />
         ) : filteredHimnos.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--outline)' }}>
             <p style={{ fontSize: '16px', marginBottom: 8 }}>No se encontraron himnos</p>

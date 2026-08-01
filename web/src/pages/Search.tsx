@@ -4,10 +4,11 @@ import { useHimnos } from '../hooks/useHimnos';
 import { useDebounce } from '../hooks/useDebounce';
 import { Search as SearchIcon, ArrowLeft, X, Delete, ChevronLeft } from 'lucide-react';
 import HimnoItem from '../components/HimnoItem';
+import DataError from '../components/DataError';
 import { SkeletonHimnoItem } from '../components/Skeletons';
 
 export default function Search() {
-  const { himnos, loading } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
   const [searchParams] = useSearchParams();
   const catFilter = searchParams.get('cat');
   const navigate = useNavigate();
@@ -27,7 +28,8 @@ export default function Search() {
       .replace(/[éëèê]/g, 'e')
       .replace(/[íïìî]/g, 'i')
       .replace(/[óöòô]/g, 'o')
-      .replace(/[úüùû]/g, 'u');
+      .replace(/[úüùû]/g, 'u')
+      .replace(/ñ/g, 'n');
   };
 
   const searchableHimnos = useMemo(() => {
@@ -92,12 +94,16 @@ export default function Search() {
     }
   };
 
-  useEffect(() => {
+  // Al entrar con ?cat=... se activa el modo texto — ajuste de estado
+  // durante render (patrón recomendado por React en vez de useEffect)
+  const [prevCatFilter, setPrevCatFilter] = useState(catFilter);
+  if (prevCatFilter !== catFilter) {
+    setPrevCatFilter(catFilter);
     if (catFilter) {
       setSearchMode('text');
       setTextQuery('');
     }
-  }, [catFilter]);
+  }
 
   const finalResults = useMemo(() => {
     if (catFilter) {
@@ -290,6 +296,8 @@ export default function Search() {
                 <div className="himno-item-divider" />
                 {Array.from({ length: 8 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
               </div>
+            ) : error ? (
+              <DataError onRetry={retry} />
             ) : displayedResults.length > 0 ? (
               <div>
                 <div className="himno-item-divider" />

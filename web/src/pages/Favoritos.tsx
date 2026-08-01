@@ -2,9 +2,11 @@ import { Heart } from 'lucide-react';
 import { useHimnos } from '../hooks/useHimnos';
 import { useFavorites } from '../hooks/useFavorites';
 import HimnoItem from '../components/HimnoItem';
+import DataError from '../components/DataError';
+import { SkeletonHimnoItem } from '../components/Skeletons';
 
 export default function Favoritos() {
-  const { himnos } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
   const { favorites } = useFavorites();
 
   const favoriteHymns = himnos.filter(h => favorites.includes(h.id));
@@ -32,7 +34,14 @@ export default function Favoritos() {
       <div className="himno-item-divider" style={{ marginBottom: 8 }} />
 
       <main>
-        {favoriteHymns.length === 0 ? (
+        {loading ? (
+          <div>
+            <div className="himno-item-divider" />
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
+          </div>
+        ) : error ? (
+          <DataError onRetry={retry} />
+        ) : favoriteHymns.length === 0 ? (
           <div className="empty-view-container">
             <div className="empty-view-icon" style={{ marginBottom: 16 }} />
             <p>Aún no tienes himnos favoritos.</p>

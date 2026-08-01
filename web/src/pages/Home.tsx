@@ -3,13 +3,14 @@ import { useHimnos } from '../hooks/useHimnos';
 import { Settings, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import HimnoItem from '../components/HimnoItem';
+import DataError from '../components/DataError';
 import { SkeletonHimnoItem } from '../components/Skeletons';
 import { getJSON } from '../lib/storage';
 import { STORAGE_KEYS } from '../lib/constants';
 import type { HistoryItem } from '../types.d';
 
 export default function Home() {
-  const { himnos, loading } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
   const navigate = useNavigate();
   const [history, setHistory] = useState<HistoryItem[]>(() =>
     getJSON<HistoryItem[]>(STORAGE_KEYS.HISTORY, []),
@@ -119,6 +120,8 @@ export default function Home() {
           <div style={{ padding: '30px 16px' }}>
             {Array.from({ length: 3 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
           </div>
+        ) : error ? (
+          <DataError onRetry={retry} />
         ) : historyHimnos.length === 0 ? (
           <div className="empty-view-container" style={{ padding: '40px 20px' }}>
             <Inbox size={48} style={{ opacity: 0.5, marginBottom: 12 }} />
