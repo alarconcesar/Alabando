@@ -296,6 +296,10 @@ body {
   font-weight: 600;
   color: var(--on-background);
   line-height: 1.25;
+  /* Títulos largos en listas virtualizadas (rowHeight fijo) no se cortan */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .himno-item-category {
@@ -868,6 +872,16 @@ body {
   to {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* fadeIn simple — usado por menu-backdrop, presentation-slide y zoom lightbox */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

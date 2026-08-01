@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react
 import { getJSON, setJSON } from '../lib/storage';
 import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
 import { SkeletonDetail } from '../components/Skeletons';
+import DataError from '../components/DataError';
 import type { Himno } from '../types.d';
 
 // ── Lyrics body (shared) ──────────────────────────────────────────────────
@@ -86,11 +87,16 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 
   const prev = currentIndex > 0 ? himnos[currentIndex - 1] : null;
   const next = currentIndex < himnos.length - 1 ? himnos[currentIndex + 1] : null;
-  // Sincronizar refs en cada render (antes de event handlers)
-  prevRef.current = prev;
-  nextRef.current = next;
+
+  // Sincronizar refs tras cada render (antes de pintar) para que los handlers
+  // de swipe nunca lean closures viejos
+  useLayoutEffect(() => {
+    prevRef.current = prev;
+    nextRef.current = next;
+  }, [prev, next]);
 
   // Jump to center immediately — no transition
+  /* eslint-disable react-hooks/set-state-in-effect -- reset pre-pintado intencional: debe matar la transición CSS mid-flight antes del paint (usa useLayoutEffect a propósito) */
   useLayoutEffect(() => {
     clearTimeout(navTimeoutRef.current);
     animatingRef.current = false;
@@ -100,6 +106,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
     base.current = 0;
     setDragging(false);
   }, [currentIndex]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -232,19 +239,22 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
 export default function HymnDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { himnos, loading } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
 
   // Active hymn (local state keeps component mounted on swipe)
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const urlId = Number(id);
 
-  // Sync from URL (link / back navigation)
-  useEffect(() => {
+  // Sync from URL (link / back navigation) — ajuste de estado durante render
+  // solo cuando el id de la URL realmente cambia (nunca revierte swipes)
+  const [prevUrlId, setPrevUrlId] = useState(urlId);
+  if (prevUrlId !== urlId) {
+    setPrevUrlId(urlId);
     if (!isNaN(urlId)) {
       setActiveId(urlId);
     }
-  }, [urlId]);
+  }
 
   // Sync URL silently after swipe changes
   useEffect(() => {
@@ -270,13 +280,6 @@ export default function HymnDetail() {
   useEffect(() => {
     localStorage.setItem('fontSize', fontSize.toString());
   }, [fontSize]);
-
-  // Reset per-himno state when hymn changes
-  useEffect(() => {
-    setSelectedVideoIndex(0);
-    setShowScore(false);
-    setShowVideo(false);
-  }, [activeId]);
 
   const { isFavorite, toggleFavorite } = useFavorites();
   const himnoFav = himno ? isFavorite(himno.id) : false;
@@ -304,7 +307,7 @@ export default function HymnDetail() {
   // ── Keyboard navigation between hymns ────────────────────
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
-      if (document.querySelector('.presentation-overlay')) return;
+      if (document.querySelector('.presentation-overlay') || document.querySelector('.zoom-lightbox')) return;
       if (e.key === 'ArrowLeft' && prevHimno) {
         setActiveId(prevHimno.id);
       } else if (e.key === 'ArrowRight' && nextHimno) {
@@ -316,7 +319,6 @@ export default function HymnDetail() {
   }, [prevHimno, nextHimno]);
 
   // ── Zoom lightbox state ──────────────────────────────────
-  const [zoomedPage, setZoomedPage] = useState<string | null>(null);
   const [zoomScale, setZoomScale] = useState(1);
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
@@ -330,6 +332,10 @@ export default function HymnDetail() {
   // All pages loaded in the lightbox + current index for multi-page navigation
   const [zoomedPages, setZoomedPages] = useState<string[]>([]);
   const [zoomedPageIndex, setZoomedPageIndex] = useState(0);
+
+  // Página activa del lightbox — derivada del índice para que imagen y
+  // contador nunca se desincronicen
+  const zoomedPage = zoomedPages[zoomedPageIndex] ?? null;
 
   // Reset solo los parámetros de transformación (escala, pan) sin cerrar el lightbox
   const resetZoomTransform = useCallback(() => {
@@ -345,7 +351,6 @@ export default function HymnDetail() {
 
   // Resetear TODO el estado del zoom limpiamente (incluye cerrar lightbox)
   const resetZoomState = useCallback(() => {
-    setZoomedPage(null);
     setZoomedPages([]);
     setZoomedPageIndex(0);
     setZoomScale(1);
@@ -358,10 +363,16 @@ export default function HymnDetail() {
     setPinchStartScale(1);
   }, []);
 
-  // Cerrar zoom al cambiar de himno — reset completo
-  useEffect(() => {
+  // Reset per-himno (vídeo, partitura y zoom) al cambiar de himno — ajuste de
+  // estado durante render (patrón recomendado por React: you-might-not-need-an-effect)
+  const [prevActiveId, setPrevActiveId] = useState(activeId);
+  if (prevActiveId !== activeId) {
+    setPrevActiveId(activeId);
+    setSelectedVideoIndex(0);
+    setShowScore(false);
+    setShowVideo(false);
     resetZoomState();
-  }, [activeId, resetZoomState]);
+  }
 
   const clampPan = (x: number, y: number, scale: number) => {
     const limitX = Math.max(0, window.innerWidth * (scale - 0.5));
@@ -383,7 +394,6 @@ export default function HymnDetail() {
     resetZoomState();
     setZoomedPages(pages.map(p => `/partituras/page_${p.trim()}.png`));
     setZoomedPageIndex(index >= 0 ? index : 0);
-    setZoomedPage(pageUrl); // resetZoomState setea null, esto lo sobreescribe
   };
 
   // Wheel zoom on the viewport
@@ -436,7 +446,7 @@ export default function HymnDetail() {
     } else if (e.touches.length === 2 && pinchStartDist > 0) {
       const dist = getTouchDist(e.touches[0], e.touches[1]);
       const factor = dist / pinchStartDist;
-      let newScale = Math.min(3, Math.max(1, pinchStartScale * factor));
+      const newScale = Math.min(3, Math.max(1, pinchStartScale * factor));
       setZoomScale(newScale);
       if (newScale === 1) { setPanX(0); setPanY(0); }
     }
@@ -473,11 +483,11 @@ export default function HymnDetail() {
     try {
       if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
       if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape').catch(() => {});
-    } catch (_) { /* silent */ }
+    } catch { /* silent */ }
   };
   const exitPresentation = async () => {
     setPresentationMode(false);
-    try { document.exitFullscreen?.(); screen.orientation?.unlock?.(); } catch (_) { /* silent */ }
+    try { document.exitFullscreen?.(); screen.orientation?.unlock?.(); } catch { /* silent */ }
   };
   const nextSlide = useCallback(() => setStanzaIdx(i => Math.min(i + 1, slides.length - 1)), [slides.length]);
   const prevSlide = useCallback(() => setStanzaIdx(i => Math.max(i - 1, 0)), []);
@@ -512,6 +522,7 @@ export default function HymnDetail() {
   }, [nextHimno]);
 
   if (loading) return <SkeletonDetail />;
+  if (error) return <DataError onRetry={retry} />;
   if (!himno) return <div style={{ padding: 20, color: 'var(--outline)' }}>Himno no encontrado</div>;
 
   const pages = himno.page && himno.page !== 'none' ? himno.page.split(',') : [];
@@ -662,7 +673,7 @@ export default function HymnDetail() {
 
       {/* ── Partitura Lightbox (Portal to document.body) ── */}
       {zoomedPage && createPortal(
-        <div style={{
+        <div className="zoom-lightbox" style={{
           position: 'fixed', inset: 0, zIndex: 99999,
           backgroundColor: 'rgba(0,0,0,0.97)',
           display: 'flex', flexDirection: 'column',
@@ -743,15 +754,16 @@ export default function HymnDetail() {
                 <button
                   onClick={() => {
                     resetZoomTransform();
-                    setZoomedPageIndex(i => i - 1);
-                    setZoomedPage(zoomedPages[zoomedPageIndex - 1]);
+                    setZoomedPageIndex(i => Math.max(0, i - 1));
                   }}
+                  disabled={zoomedPageIndex <= 0}
                   style={{
                     background: 'rgba(255,255,255,0.1)', border: 'none',
                     borderRadius: '50%', width: 36, height: 36,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: zoomedPageIndex > 0 ? '#fff' : 'rgba(255,255,255,0.2)',
                     cursor: zoomedPageIndex > 0 ? 'pointer' : 'default',
+                    opacity: zoomedPageIndex > 0 ? 1 : 0.4,
                     flexShrink: 0,
                   }}
                   aria-label="Página anterior"
@@ -764,15 +776,16 @@ export default function HymnDetail() {
                 <button
                   onClick={() => {
                     resetZoomTransform();
-                    setZoomedPageIndex(i => i + 1);
-                    setZoomedPage(zoomedPages[zoomedPageIndex + 1]);
+                    setZoomedPageIndex(i => Math.min(zoomedPages.length - 1, i + 1));
                   }}
+                  disabled={zoomedPageIndex >= zoomedPages.length - 1}
                   style={{
                     background: 'rgba(255,255,255,0.1)', border: 'none',
                     borderRadius: '50%', width: 36, height: 36,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: zoomedPageIndex < zoomedPages.length - 1 ? '#fff' : 'rgba(255,255,255,0.2)',
                     cursor: zoomedPageIndex < zoomedPages.length - 1 ? 'pointer' : 'default',
+                    opacity: zoomedPageIndex < zoomedPages.length - 1 ? 1 : 0.4,
                     flexShrink: 0,
                   }}
                   aria-label="Página siguiente"
