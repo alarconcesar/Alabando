@@ -38,7 +38,7 @@ function HymnLyricsBody({ himno, fontSize }: { himno: Himno; fontSize: number })
           );
         })
       ) : (
-        himno.letra.split('\n \n').map((stanza, i) => {
+        himno.letra.split(/\n\s*\n/).map((stanza, i) => {
           const isChorus = stanza.trim().startsWith('CORO');
           let content = stanza.trim();
           if (isChorus) content = content.replace(/^CORO\s*/i, '');
@@ -275,7 +275,11 @@ export default function HymnDetail() {
   // ── UI state ─────────────────────────────────────────────
   const [showScore, setShowScore] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const [fontSize, setFontSize] = useState(() => Number(localStorage.getItem('fontSize')) || 19);
+  const [fontSize, setFontSize] = useState(() => {
+    const raw = Number(localStorage.getItem('fontSize'));
+    if (Number.isNaN(raw)) return 19;
+    return Math.min(30, Math.max(14, raw));
+  });
   const [showTextSettings, setShowTextSettings] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
@@ -474,7 +478,7 @@ export default function HymnDetail() {
         slides.push({ type: typeMap[sec.t], label: sec.lbl, number: sec.n, lines: sec.l });
       });
     } else {
-      himno.letra.split('\n \n').filter(s => s.trim()).forEach(s => {
+      himno.letra.split(/\n\s*\n/).filter(s => s.trim()).forEach(s => {
         const isChorus = s.trim().toUpperCase().startsWith('CORO');
         const text = isChorus ? s.trim().replace(/^CORO\s*/i, '').trim() : s.trim();
         slides.push({ type: isChorus ? 'coro' : 'estrofa', lines: text.split('\n').map(l => l.trim()).filter(Boolean) });
@@ -558,7 +562,7 @@ export default function HymnDetail() {
         {showVideo && ytVideos.length > 0 && (
           <div style={{ padding: '0 20px' }}>
             {ytVideos.length > 1 && (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 0 0' }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 0 0', marginBottom: 12 }}>
                 {ytVideos.map((v, i) => (
                   <button
                     key={v.id}
