@@ -8,6 +8,7 @@ import { getJSON, setJSON } from '../lib/storage';
 import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
 import { SkeletonDetail } from '../components/Skeletons';
 import DataError from '../components/DataError';
+import MidiPlayer from '../components/MidiPlayer';
 import type { Himno } from '../types.d';
 
 // ── Lyrics body (shared) ──────────────────────────────────────────────────
@@ -558,8 +559,8 @@ export default function HymnDetail() {
       </div>
 
       <main>
-        {/* ── Video Section ── */}
-        {showVideo && ytVideos.length > 0 && (
+        {/* ── Video / Audio Guide Section ── */}
+        {showVideo && (ytVideos.length > 0 || (himno.midi && !showScore)) && (
           <div style={{ padding: '0 20px' }}>
             {ytVideos.length > 1 && (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 0 0', marginBottom: 12 }}>
@@ -575,16 +576,21 @@ export default function HymnDetail() {
                 ))}
               </div>
             )}
-            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%', marginBottom: 16, borderRadius: 12, overflow: 'hidden' }}>
-              <iframe
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                key={selectedVideo.id}
-              />
-            </div>
+            {ytVideos.length > 0 && selectedVideo && (
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%', marginBottom: 16, borderRadius: 12, overflow: 'hidden' }}>
+                <iframe
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                  src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  key={selectedVideo.id}
+                />
+              </div>
+            )}
+            {himno.midi && !showScore && (
+              <MidiPlayer url={himno.midi} title={himno.nombre} />
+            )}
           </div>
         )}
 
@@ -592,6 +598,11 @@ export default function HymnDetail() {
           {showScore && pages.length > 0 ? (
             <div className="score-standalone-fullscreen">
               <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
+              {himno.midi && (
+                <div style={{ width: '100%' }}>
+                  <MidiPlayer url={himno.midi} title={himno.nombre} />
+                </div>
+              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
                 {pages.map(p => (
                   <img
@@ -644,7 +655,7 @@ export default function HymnDetail() {
           <button className="detail-bottom-bar-btn" onClick={handleGoPrev} style={{ opacity: prevHimno ? 1 : 0.3 }} disabled={!prevHimno}><ChevronLeft size={28} /></button>
           <div className="detail-bottom-center-buttons">
             <button className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`} onClick={() => setShowScore(s => !s)} style={{ opacity: pages.length > 0 ? 1 : 0.3 }} disabled={pages.length === 0}><FileMusic size={20} /></button>
-            <button className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`} onClick={() => setShowVideo(s => !s)} style={{ opacity: ytVideos.length > 0 ? 1 : 0.3 }} disabled={ytVideos.length === 0}><Music size={20} /></button>
+            <button className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`} onClick={() => setShowVideo(s => !s)} style={{ opacity: ytVideos.length > 0 || himno.midi ? 1 : 0.3 }} disabled={ytVideos.length === 0 && !himno.midi} aria-label={himno.midi && ytVideos.length === 0 ? 'Audio guía MIDI' : 'Video o audio'}><Music size={20} /></button>
             <button className={`detail-bottom-action-btn ${showOptionsMenu ? 'active' : ''}`} onClick={() => setShowOptionsMenu(s => !s)} title="Más opciones"><MoreVertical size={20} /></button>
           </div>
           <button className="detail-bottom-bar-btn" onClick={handleGoNext} style={{ opacity: nextHimno ? 1 : 0.3 }} disabled={!nextHimno}><ChevronRight size={28} /></button>
