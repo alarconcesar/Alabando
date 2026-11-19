@@ -116,7 +116,7 @@ export default function MidiPlayer({ url, title }: MidiPlayerProps) {
             flexShrink: 0,
           }}
         >
-          Prueba OMR
+          Referencia
         </span>
       </div>
 
