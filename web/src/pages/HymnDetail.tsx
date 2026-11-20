@@ -575,7 +575,7 @@ export default function HymnDetail() {
         </div>
         {/* ── Video / Audio Guide Section ── */}
         {showVideo && !showScore && ytVideos.length > 0 && (
-          <div style={{ padding: '0 20px' }}>
+          <div style={{ width: '100%', marginBottom: 24 }}>
             {ytVideos.length > 1 && (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 0 0', marginBottom: 12 }}>
                 {ytVideos.map((v, i) => (
@@ -639,9 +639,9 @@ export default function HymnDetail() {
                 ))}
               </div>
               {himno.midi && (
-                <div style={{ width: '100%', order: -1 }}>
-                  {/* En el DOM va después de las hojas para que la partitura tenga
-                      prioridad de red; `order` lo muestra arriba, entre el título y la hoja. */}
+                <div className="score-audio-guide">
+                  {/* En el DOM va después de las hojas para priorizar su red;
+                      el orden visual lo pone encima, entre el título y la hoja. */}
                   <MidiPlayer url={himno.midi} title={himno.nombre} loadEnabled={scoreImageReady} />
                 </div>
               )}
