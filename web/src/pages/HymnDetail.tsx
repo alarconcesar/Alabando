@@ -271,6 +271,8 @@ export default function HymnDetail() {
 
   // ── UI state ─────────────────────────────────────────────
   const [showScore, setShowScore] = useState(false);
+  const scoreRef = useRef<HTMLDivElement>(null);
+  const [scoreImageReady, setScoreImageReady] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [fontSize, setFontSize] = useState(getStoredFontSize);
   const [showTextSettings, setShowTextSettings] = useState(false);
@@ -386,6 +388,7 @@ export default function HymnDetail() {
     setPrevActiveId(activeId);
     setSelectedVideoIndex(0);
     setShowScore(false);
+    setScoreImageReady(false);
     setShowVideo(false);
     resetZoomState();
   }
@@ -609,12 +612,7 @@ export default function HymnDetail() {
 
           {/* ── Score OR Carousel ── */}
           {showScore && pages.length > 0 ? (
-            <div className="score-standalone-fullscreen">
-              {himno.midi && (
-                <div style={{ width: '100%' }}>
-                  <MidiPlayer url={himno.midi} title={himno.nombre} />
-                </div>
-              )}
+            <div className="score-standalone-fullscreen" ref={scoreRef}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
                 {pages.map(p => (
                   <img
@@ -623,11 +621,30 @@ export default function HymnDetail() {
                     alt={`Partitura página ${p}`}
                     style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
                     loading="eager"
+                    fetchPriority="high"
                     decoding="async"
+                    onLoad={e => {
+                      if (p !== pages[0]) return;
+                      const score = scoreRef.current;
+                      if (score && e.currentTarget.complete && e.currentTarget.naturalWidth > 0) {
+                        void e.currentTarget.decode().then(() => {
+                          requestAnimationFrame(() => {
+                            requestAnimationFrame(() => setScoreImageReady(true));
+                          });
+                        }).catch(() => setScoreImageReady(true));
+                      }
+                    }}
                     onClick={() => handleOpenZoom(`/partituras/page_${p.trim()}.png`)}
                   />
                 ))}
               </div>
+              {himno.midi && (
+                <div style={{ width: '100%', order: -1 }}>
+                  {/* En el DOM va después de las hojas para que la partitura tenga
+                      prioridad de red; `order` lo muestra arriba, entre el título y la hoja. */}
+                  <MidiPlayer url={himno.midi} title={himno.nombre} loadEnabled={scoreImageReady} />
+                </div>
+              )}
             </div>
           ) : (
           <LyricsCarousel himnos={himnos} currentIndex={currentIndex} setActiveId={setActiveId} fontSize={fontSize} />
@@ -667,7 +684,7 @@ export default function HymnDetail() {
         <div className="detail-bottom-bar">
           <button className="detail-bottom-bar-btn" onClick={handleGoPrev} aria-label="Himno anterior" style={{ opacity: prevHimno ? 1 : 0.3 }} disabled={!prevHimno}><ChevronLeft size={28} /></button>
           <div className="detail-bottom-center-buttons">
-            <button className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`} onClick={() => setShowScore(s => !s)} aria-label="Ver partitura" aria-pressed={showScore} style={{ opacity: pages.length > 0 ? 1 : 0.3 }} disabled={pages.length === 0}><FileMusic size={20} /></button>
+            <button className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`} onClick={() => { setScoreImageReady(false); setShowScore(s => !s); }} aria-label="Ver partitura" aria-pressed={showScore} style={{ opacity: pages.length > 0 ? 1 : 0.3 }} disabled={pages.length === 0}><FileMusic size={20} /></button>
             <button className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`} onClick={() => setShowVideo(s => !s)} aria-pressed={showVideo} style={{ opacity: ytVideos.length > 0 || himno.midi ? 1 : 0.3 }} disabled={ytVideos.length === 0 && !himno.midi} aria-label={himno.midi && ytVideos.length === 0 ? 'Audio guía MIDI' : 'Video o audio'}><Music size={20} /></button>
             <button className={`detail-bottom-action-btn ${showOptionsMenu ? 'active' : ''}`} onClick={() => setShowOptionsMenu(s => !s)} aria-label="Más opciones" aria-expanded={showOptionsMenu}><MoreVertical size={20} /></button>
           </div>

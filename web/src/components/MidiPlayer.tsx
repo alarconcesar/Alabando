@@ -5,6 +5,8 @@ import { parseMidiBuffer, WebAudioMidiPlayer } from '../lib/midiPlayer';
 interface MidiPlayerProps {
   url: string;
   title?: string;
+  /** Start downloading only after the primary visual content has painted. */
+  loadEnabled?: boolean;
 }
 
 function formatSec(sec: number): string {
@@ -14,7 +16,7 @@ function formatSec(sec: number): string {
   return `${m}:${r.toString().padStart(2, '0')}`;
 }
 
-export default function MidiPlayer({ url, title }: MidiPlayerProps) {
+export default function MidiPlayer({ url, title, loadEnabled = true }: MidiPlayerProps) {
   const playerRef = useRef<WebAudioMidiPlayer | null>(null);
   const [prevUrl, setPrevUrl] = useState(url);
   const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
@@ -37,8 +39,15 @@ export default function MidiPlayer({ url, title }: MidiPlayerProps) {
   }
 
   const loading = loadedUrl !== url && error === null;
+  const playerAvailable = loadEnabled && loadedUrl === url && error === null;
 
   useEffect(() => {
+    if (!loadEnabled) {
+      playerRef.current?.dispose();
+      playerRef.current = null;
+      return;
+    }
+
     let cancelled = false;
     const ctrl = new AbortController();
 
@@ -69,7 +78,7 @@ export default function MidiPlayer({ url, title }: MidiPlayerProps) {
       playerRef.current?.dispose();
       playerRef.current = null;
     };
-  }, [url]);
+  }, [url, loadEnabled]);
 
   useEffect(() => {
     playerRef.current?.setRate(rate);
@@ -106,10 +115,14 @@ export default function MidiPlayer({ url, title }: MidiPlayerProps) {
         )}
       </div>
 
-      {loading ? (
-        <p className="midi-note">Cargando partitura MIDI…</p>
+      {!loadEnabled ? (
+        <p className="midi-note">Preparando partitura…</p>
+      ) : loading ? (
+        <p className="midi-note">Preparando audio guía…</p>
       ) : error ? (
         <p className="midi-note">{error}</p>
+      ) : !playerAvailable ? (
+        <p className="midi-note">Disponible en breve…</p>
       ) : (
         <>
           <div className="midi-main">
