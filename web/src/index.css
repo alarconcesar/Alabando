@@ -1667,7 +1667,17 @@ body {
 /* Titulo antes del video/audio y la vista de contenido */
 .hymn-content-title {
   width: min(680px, calc(100% - 40px));
-  margin: 24px auto 20px;
+  margin: 24px auto 0;
+}
+
+/* Reemplaza el margen superior original de la tarjeta de letra, no suma encima */
+.hymn-main-lyrics .hymn-detail-lyrics-container,
+.hymn-main-video .hymn-detail-lyrics-container {
+  margin-top: 0;
+}
+
+.hymn-main-score .score-standalone-fullscreen {
+  padding-top: 0;
 }
 
 .hymn-content-title .hymn-detail-title-main {
@@ -1680,7 +1690,7 @@ body {
 @media (min-width: 1025px) {
   .hymn-content-title {
     margin-top: 36px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
 }
 

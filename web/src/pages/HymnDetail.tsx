@@ -565,7 +565,7 @@ export default function HymnDetail() {
         </header>
       </div>
 
-      <main>
+      <main className={showScore ? 'hymn-main hymn-main-score' : showVideo ? 'hymn-main hymn-main-video' : 'hymn-main hymn-main-lyrics'}>
         {/* Título antes del contenido activo */}
         <div className="hymn-content-title">
           <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
