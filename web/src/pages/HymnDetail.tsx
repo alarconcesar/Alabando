@@ -610,6 +610,11 @@ export default function HymnDetail() {
           {/* ── Score OR Carousel ── */}
           {showScore && pages.length > 0 ? (
             <div className="score-standalone-fullscreen">
+              {himno.midi && (
+                <div style={{ width: '100%' }}>
+                  <MidiPlayer url={himno.midi} title={himno.nombre} />
+                </div>
+              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
                 {pages.map(p => (
                   <img
@@ -623,11 +628,6 @@ export default function HymnDetail() {
                   />
                 ))}
               </div>
-              {himno.midi && (
-                <div style={{ width: '100%' }}>
-                  <MidiPlayer url={himno.midi} title={himno.nombre} />
-                </div>
-              )}
             </div>
           ) : (
           <LyricsCarousel himnos={himnos} currentIndex={currentIndex} setActiveId={setActiveId} fontSize={fontSize} />
