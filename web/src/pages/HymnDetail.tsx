@@ -712,7 +712,10 @@ export default function HymnDetail() {
             <button
               onClick={() => resetZoomState()}
               style={{
-                background: 'rgba(255,255,255,0.15)', border: 'none',
+                background: 'rgba(20,20,20,0.9)',
+                border: '1px solid rgba(255,255,255,0.3)',
+                backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.5)',
                 borderRadius: '50%', width: 44, height: 44,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: '#fff', cursor: 'pointer', fontSize: 20,
