@@ -93,6 +93,7 @@ export default function AllHymns() {
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
+              aria-label="Limpiar filtros activos"
               style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
             >
               Limpiar filtros
@@ -105,6 +106,7 @@ export default function AllHymns() {
             <button
               key={cat}
               onClick={() => toggleCategory(cat)}
+              aria-pressed={selectedCategory === cat}
               className={`filter-chip ${selectedCategory === cat ? 'active' : ''}`}
             >
               {cat}
@@ -115,6 +117,7 @@ export default function AllHymns() {
         <div style={{ display: 'flex', gap: 12, padding: '8px 20px 0 20px' }}>
           <button
             onClick={() => setFilterHasAudio(!filterHasAudio)}
+            aria-pressed={filterHasAudio}
             className={`toggle-filter-btn ${filterHasAudio ? 'active' : ''}`}
           >
             <Music size={18} />
@@ -122,6 +125,7 @@ export default function AllHymns() {
           </button>
           <button
             onClick={() => setFilterHasPartitura(!filterHasPartitura)}
+            aria-pressed={filterHasPartitura}
             className={`toggle-filter-btn ${filterHasPartitura ? 'active' : ''}`}
           >
             <FileMusic size={18} />

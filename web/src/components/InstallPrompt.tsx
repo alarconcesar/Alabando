@@ -52,7 +52,6 @@ export default function InstallPrompt() {
   const overlay: React.CSSProperties = {
     position: 'fixed',
     bottom: 80, // above the 80px nav bar
-    left: 0,
     right: 0,
     zIndex: 999,
     display: 'flex',
@@ -160,7 +159,7 @@ export default function InstallPrompt() {
         }
       `}</style>
 
-      <div style={overlay}>
+      <div className="install-overlay" style={overlay}>
         <div style={banner}>
           <img
             src="/pwa-192x192.png"

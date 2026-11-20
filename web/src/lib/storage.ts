@@ -1,6 +1,6 @@
-/**
- * Safe localStorage helpers with validation
- */
+import { STORAGE_KEYS, DEFAULT_FONT_SIZE, FONT_SIZE_MIN, FONT_SIZE_MAX } from './constants';
+
+/** Safe localStorage helpers with validation */
 
 export function getJSON<T>(key: string, fallback: T): T {
   try {
@@ -25,5 +25,17 @@ export function removeKey(key: string): void {
     localStorage.removeItem(key);
   } catch {
     // silent
+  }
+}
+
+export function getStoredFontSize(): number {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.FONT_SIZE);
+    if (raw === null) return DEFAULT_FONT_SIZE;
+    const size = Number(raw);
+    if (!Number.isFinite(size)) return DEFAULT_FONT_SIZE;
+    return Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, size));
+  } catch {
+    return DEFAULT_FONT_SIZE;
   }
 }

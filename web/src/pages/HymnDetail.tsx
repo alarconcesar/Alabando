@@ -4,7 +4,7 @@ import { useHimnos } from '../hooks/useHimnos';
 import { useFavorites } from '../hooks/useFavorites';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
-import { getJSON, setJSON } from '../lib/storage';
+import { getJSON, setJSON, getStoredFontSize } from '../lib/storage';
 import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
 import { SkeletonDetail } from '../components/Skeletons';
 import DataError from '../components/DataError';
@@ -57,7 +57,7 @@ function HymnLyricsBody({ himno, fontSize }: { himno: Himno; fontSize: number })
 // ── Full hymn pane (title + lyrics) ───────────────────────────────────────
 function HymnPane({ himno, fontSize }: { himno: Himno; fontSize: number }) {
   return (
-    <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 130 }}>
+    <div className="hymn-detail-lyrics-container">
       <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
       <HymnLyricsBody himno={himno} fontSize={fontSize} />
     </div>
@@ -203,7 +203,7 @@ function LyricsCarousel({ himnos, currentIndex, setActiveId, fontSize }: {
       <div style={{ width: '100%', overflow: 'hidden', position: 'relative', touchAction: 'pan-y', userSelect: 'none' }}>
         {/* Invisible height driver — solo el himno actual define la altura */}
         <div style={{ visibility: 'hidden' }}>
-          <div className="hymn-detail-lyrics-container" style={{ paddingBottom: 130 }}>
+          <div className="hymn-detail-lyrics-container">
             <HymnLyricsBody himno={himnos[currentIndex]} fontSize={fontSize} />
           </div>
         </div>
@@ -242,28 +242,25 @@ export default function HymnDetail() {
   const navigate = useNavigate();
   const { himnos, loading, error, retry } = useHimnos();
 
-  const urlId = Number(id);
+  const parsedId = id === undefined ? Number.NaN : Number(id);
+  const urlId = Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
 
   // Active hymn (local state keeps component mounted on swipe)
   // Se inicializa con el id de la URL para que la carga directa de /himno/:id
   // funcione (el ajuste durante render solo se dispara cuando la URL cambia)
-  const [activeId, setActiveId] = useState<number | null>(() =>
-    isNaN(urlId) ? null : urlId,
-  );
+  const [activeId, setActiveId] = useState<number | null>(() => urlId);
 
   // Sync from URL (link / back navigation) — ajuste de estado durante render
   // solo cuando el id de la URL realmente cambia (nunca revierte swipes)
   const [prevUrlId, setPrevUrlId] = useState(urlId);
   if (prevUrlId !== urlId) {
     setPrevUrlId(urlId);
-    if (!isNaN(urlId)) {
-      setActiveId(urlId);
-    }
+    setActiveId(urlId);
   }
 
   // Sync URL silently after swipe changes
   useEffect(() => {
-    if (activeId && activeId !== urlId && !isNaN(urlId)) {
+    if (activeId && activeId !== urlId && urlId !== null) {
       navigate(`/himno/${activeId}`, { replace: true });
     }
   }, [activeId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -276,18 +273,14 @@ export default function HymnDetail() {
   // ── UI state ─────────────────────────────────────────────
   const [showScore, setShowScore] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const [fontSize, setFontSize] = useState(() => {
-    const raw = Number(localStorage.getItem('fontSize'));
-    if (Number.isNaN(raw)) return 19;
-    return Math.min(30, Math.max(14, raw));
-  });
+  const [fontSize, setFontSize] = useState(getStoredFontSize);
   const [showTextSettings, setShowTextSettings] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
 
   // Persist font size
   useEffect(() => {
-    localStorage.setItem('fontSize', fontSize.toString());
+    localStorage.setItem(STORAGE_KEYS.FONT_SIZE, fontSize.toString());
   }, [fontSize]);
 
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -345,6 +338,21 @@ export default function HymnDetail() {
   // Página activa del lightbox — derivada del índice para que imagen y
   // contador nunca se desincronicen
   const zoomedPage = zoomedPages[zoomedPageIndex] ?? null;
+
+  // La app reserva `scrollbar-gutter: stable` en <html>: al abrir el lightbox
+  // ese carril de 6px queda descubierto y se ve como una linea blanca a la
+  // derecha del visor oscuro. Se desactiva solo mientras dura el zoom.
+  useEffect(() => {
+    if (!zoomedPage) return;
+    const prevOverflow = document.body.style.overflow;
+    const prevGutter = document.documentElement.style.scrollbarGutter;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.scrollbarGutter = 'auto';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.documentElement.style.scrollbarGutter = prevGutter;
+    };
+  }, [zoomedPage]);
 
   // Reset solo los parámetros de transformación (escala, pan) sin cerrar el lightbox
   const resetZoomTransform = useCallback(() => {
@@ -652,13 +660,13 @@ export default function HymnDetail() {
         )}
         <div className="detail-bottom-bar-divider" />
         <div className="detail-bottom-bar">
-          <button className="detail-bottom-bar-btn" onClick={handleGoPrev} style={{ opacity: prevHimno ? 1 : 0.3 }} disabled={!prevHimno}><ChevronLeft size={28} /></button>
+          <button className="detail-bottom-bar-btn" onClick={handleGoPrev} aria-label="Himno anterior" style={{ opacity: prevHimno ? 1 : 0.3 }} disabled={!prevHimno}><ChevronLeft size={28} /></button>
           <div className="detail-bottom-center-buttons">
-            <button className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`} onClick={() => setShowScore(s => !s)} style={{ opacity: pages.length > 0 ? 1 : 0.3 }} disabled={pages.length === 0}><FileMusic size={20} /></button>
-            <button className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`} onClick={() => setShowVideo(s => !s)} style={{ opacity: ytVideos.length > 0 || himno.midi ? 1 : 0.3 }} disabled={ytVideos.length === 0 && !himno.midi} aria-label={himno.midi && ytVideos.length === 0 ? 'Audio guía MIDI' : 'Video o audio'}><Music size={20} /></button>
-            <button className={`detail-bottom-action-btn ${showOptionsMenu ? 'active' : ''}`} onClick={() => setShowOptionsMenu(s => !s)} title="Más opciones"><MoreVertical size={20} /></button>
+            <button className={`detail-bottom-action-btn ${showScore ? 'active' : ''}`} onClick={() => setShowScore(s => !s)} aria-label="Ver partitura" aria-pressed={showScore} style={{ opacity: pages.length > 0 ? 1 : 0.3 }} disabled={pages.length === 0}><FileMusic size={20} /></button>
+            <button className={`detail-bottom-action-btn ${showVideo ? 'active' : ''}`} onClick={() => setShowVideo(s => !s)} aria-pressed={showVideo} style={{ opacity: ytVideos.length > 0 || himno.midi ? 1 : 0.3 }} disabled={ytVideos.length === 0 && !himno.midi} aria-label={himno.midi && ytVideos.length === 0 ? 'Audio guía MIDI' : 'Video o audio'}><Music size={20} /></button>
+            <button className={`detail-bottom-action-btn ${showOptionsMenu ? 'active' : ''}`} onClick={() => setShowOptionsMenu(s => !s)} aria-label="Más opciones" aria-expanded={showOptionsMenu}><MoreVertical size={20} /></button>
           </div>
-          <button className="detail-bottom-bar-btn" onClick={handleGoNext} style={{ opacity: nextHimno ? 1 : 0.3 }} disabled={!nextHimno}><ChevronRight size={28} /></button>
+          <button className="detail-bottom-bar-btn" onClick={handleGoNext} aria-label="Siguiente himno" style={{ opacity: nextHimno ? 1 : 0.3 }} disabled={!nextHimno}><ChevronRight size={28} /></button>
         </div>
       </div>
 

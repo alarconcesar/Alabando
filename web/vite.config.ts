@@ -17,6 +17,12 @@ export default defineConfig({
         'pwa-512x512.png'
       ],
       workbox: {
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json,ttf,jpg}'],
+        globIgnores: ['partituras/**'],
+        globDirectory: 'dist',
+        navigateFallback: 'index.html',
+        cacheId: 'himnario-eav',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\/partituras\/.*\.png$|^\/partituras\/.*\.png$/,
@@ -24,7 +30,7 @@ export default defineConfig({
             options: {
               cacheName: 'partituras-cache',
               expiration: {
-                maxEntries: 100,
+                maxEntries: 1000,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
               },
               cacheableResponse: {
@@ -40,6 +46,7 @@ export default defineConfig({
         description: 'Himnario PWA con soporte offline',
         theme_color: '#FFFFFF',
         background_color: '#FFFFFF',
+        lang: 'es',
         display: 'standalone',
         icons: [
           {

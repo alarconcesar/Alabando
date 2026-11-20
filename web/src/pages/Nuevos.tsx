@@ -3,12 +3,13 @@ import { useHimnos } from '../hooks/useHimnos';
 import { ArrowLeft } from 'lucide-react';
 import HimnoItem from '../components/HimnoItem';
 import { SkeletonHimnoItem } from '../components/Skeletons';
+import DataError from '../components/DataError';
 
 export default function Nuevos() {
-  const { himnos, loading } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
   const navigate = useNavigate();
 
-  const ultimos = [...himnos].reverse().slice(0, 50);
+  const ultimos = himnos.filter(h => h.nuevo).reverse();
 
   return (
     <div className="page-fade-in" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 80 }}>
@@ -25,6 +26,8 @@ export default function Nuevos() {
             <div className="himno-item-divider" />
             {Array.from({ length: 10 }).map((_, i) => <SkeletonHimnoItem key={i} />)}
           </div>
+        ) : error ? (
+          <DataError onRetry={retry} />
         ) : (
           <div>
             <div className="himno-item-divider" />

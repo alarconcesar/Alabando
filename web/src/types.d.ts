@@ -34,6 +34,7 @@ export interface Himno {
   page: string;
   info: string;
   midi?: string;
+  nuevo?: number;
   aud?: AudioSource[];
   letra_estructurada?: SeccionLetra[];
 }

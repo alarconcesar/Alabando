@@ -181,19 +181,20 @@ export default function Search() {
             {keypadQuery || ' '}
           </div>
 
-          <button
-            className="btn-tonal"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 24px', borderRadius: 100,
-              color: 'var(--neutral)', fontSize: '0.95rem',
-              fontWeight: 600, cursor: 'pointer', marginBottom: 24,
-            }}
-            onClick={() => setSearchMode('text')}
-          >
-            <SearchIcon size={18} />
-            Buscar por Texto
-          </button>
+            <button
+              className="btn-tonal"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 24px', borderRadius: 100,
+                color: 'var(--neutral)', fontSize: '0.95rem',
+                fontWeight: 600, cursor: 'pointer', marginBottom: 24,
+              }}
+              onClick={() => setSearchMode('text')}
+              aria-label="Buscar por texto"
+            >
+              <SearchIcon size={18} aria-hidden="true" />
+              Buscar por Texto
+            </button>
 
           <div style={{ width: '100%', minHeight: 95, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             {keypadResult.length > 0 ? (
@@ -209,39 +210,45 @@ export default function Search() {
           </div>
 
           <div className="keypad-grid" style={{ marginTop: 'auto' }}>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('1')}>1</button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('2')}>2</button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('3')}>3</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 1" onClick={() => handleKeyPress('1')}>1</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 2" onClick={() => handleKeyPress('2')}>2</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 3" onClick={() => handleKeyPress('3')}>3</button>
             <button
               className="keypad-btn keypad-btn-special"
               style={{
                 backgroundColor: text1 === 'C-' ? 'var(--primary)' : 'var(--primary-container)',
                 color: text1 === 'C-' ? 'var(--on-primary)' : 'var(--primary)',
               }}
+              aria-label="Prefijo C"
+              aria-pressed={text1 === 'C-'}
               onClick={() => handleKeyPress('C')}
             >C</button>
 
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('4')}>4</button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('5')}>5</button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('6')}>6</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 4" onClick={() => handleKeyPress('4')}>4</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 5" onClick={() => handleKeyPress('5')}>5</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 6" onClick={() => handleKeyPress('6')}>6</button>
             <button
               className="keypad-btn keypad-btn-special"
               style={{
                 backgroundColor: text1 === 'S-' ? 'var(--primary)' : 'var(--primary-container)',
                 color: text1 === 'S-' ? 'var(--on-primary)' : 'var(--primary)',
               }}
+              aria-label="Prefijo S"
+              aria-pressed={text1 === 'S-'}
               onClick={() => handleKeyPress('S')}
             >S</button>
 
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('7')}>7</button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('8')}>8</button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('9')}>9</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 7" onClick={() => handleKeyPress('7')}>7</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 8" onClick={() => handleKeyPress('8')}>8</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 9" onClick={() => handleKeyPress('9')}>9</button>
             <button
               className="keypad-btn keypad-btn-special"
               style={{
                 backgroundColor: text1 === 'N-' ? 'var(--primary)' : 'var(--primary-container)',
                 color: text1 === 'N-' ? 'var(--on-primary)' : 'var(--primary)',
               }}
+              aria-label="Prefijo N"
+              aria-pressed={text1 === 'N-'}
               onClick={() => handleKeyPress('N')}
             >N</button>
 
@@ -251,9 +258,9 @@ export default function Search() {
               onClick={() => handleKeyPress('delete')}
               aria-label="Borrar"
             >
-              <Delete size={24} />
+              <Delete size={24} aria-hidden="true" />
             </button>
-            <button className="keypad-btn keypad-btn-number" onClick={() => handleKeyPress('0')}>0</button>
+            <button className="keypad-btn keypad-btn-number" aria-label="Número 0" onClick={() => handleKeyPress('0')}>0</button>
           </div>
         </div>
       )}

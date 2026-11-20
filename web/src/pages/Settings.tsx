@@ -4,7 +4,7 @@ import { ArrowLeft, Download, CheckCircle, Monitor, Sun, Moon } from 'lucide-rea
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { useTheme } from '../hooks/useTheme';
 import { getJSON, setJSON } from '../lib/storage';
-import { STORAGE_KEYS } from '../lib/constants';
+import { STORAGE_KEYS, DEFAULT_FONT_SIZE, FONT_SIZE_MIN, FONT_SIZE_MAX } from '../lib/constants';
 import type { ThemeMode } from '../lib/constants';
 
 export default function Settings() {
@@ -12,9 +12,11 @@ export default function Settings() {
   const { canInstall, triggerInstall, isInstalled } = useInstallPrompt();
   const { mode, setMode } = useTheme();
 
-  const [fontSize, setFontSize] = useState(() =>
-    getJSON<number>(STORAGE_KEYS.FONT_SIZE, 19),
-  );
+  const [fontSize, setFontSize] = useState(() => {
+    const stored = getJSON<number | null>(STORAGE_KEYS.FONT_SIZE, null);
+    if (stored === null || !Number.isFinite(stored)) return DEFAULT_FONT_SIZE;
+    return Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, stored));
+  });
 
   const handleFontSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const size = Number(e.target.value);

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useHimnos } from '../hooks/useHimnos';
 import { Settings, Inbox, Heart, Share2, Check, Library, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -75,20 +75,20 @@ export default function Home() {
       </div>
 
       <div style={{ display: 'flex', gap: 16, padding: '12px 20px' }}>
-        <div onClick={() => navigate('/all-hymns')} className="home-action-card">
-          <Library size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
+        <Link to="/all-hymns" className="home-action-card">
+          <Library size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} aria-hidden="true" />
           <div className="home-action-card-content">
-            <Library size={28} style={{ color: 'var(--primary)' }} />
+            <Library size={28} style={{ color: 'var(--primary)' }} aria-hidden="true" />
             <h2 className="home-action-card-title">Todos los<br/>Himnos</h2>
           </div>
-        </div>
-        <div onClick={() => navigate('/search')} className="home-action-card">
-          <Search size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} />
+        </Link>
+        <Link to="/search" className="home-action-card">
+          <Search size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} aria-hidden="true" />
           <div className="home-action-card-content">
-            <Search size={28} style={{ color: 'var(--primary)' }} />
+            <Search size={28} style={{ color: 'var(--primary)' }} aria-hidden="true" />
             <h2 className="home-action-card-title">Buscar</h2>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div style={{ padding: '16px 20px' }}>

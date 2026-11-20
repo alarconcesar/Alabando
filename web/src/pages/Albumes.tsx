@@ -4,9 +4,10 @@ import { SkeletonAlbumes } from '../components/Skeletons';
 import { Link } from 'react-router-dom';
 import { getAlbumGradient, getAlbumTint } from '../lib/constants';
 import { ChevronRight } from 'lucide-react';
+import DataError from '../components/DataError';
 
 export default function Albumes() {
-  const { himnos, loading } = useHimnos();
+  const { himnos, loading, error, retry } = useHimnos();
 
   const categorias = useMemo(() => {
     const cats = new Map<string, number>();
@@ -27,6 +28,8 @@ export default function Albumes() {
       <main style={{ padding: '0 16px' }}>
         {loading ? (
           <SkeletonAlbumes />
+        ) : error ? (
+          <DataError onRetry={retry} />
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
             {categorias.map(([cat, count]) => {

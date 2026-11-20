@@ -26,25 +26,25 @@ export default function Navigation() {
 
   return (
     <nav className={styles['bottom-nav']}>
-      <NavLink to="/" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
+      <NavLink to="/" title="Inicio" aria-label="Inicio" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
         <div className={styles['nav-icon-container']}>
           <Home size={24} />
         </div>
         <span>Inicio</span>
       </NavLink>
-      <NavLink to="/search" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
+      <NavLink to="/search" title="Buscar" aria-label="Buscar" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
         <div className={styles['nav-icon-container']}>
           <Search size={24} />
         </div>
         <span>Buscar</span>
       </NavLink>
-      <NavLink to="/albumes" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
+      <NavLink to="/albumes" title="Álbumes" aria-label="Álbumes" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
         <div className={styles['nav-icon-container']}>
           <Disc size={24} />
         </div>
         <span>Álbumes</span>
       </NavLink>
-      <NavLink to="/favoritos" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
+      <NavLink to="/favoritos" title="Favoritos" aria-label="Favoritos" className={({ isActive }) => cn(styles['nav-item'], isActive && styles.active)}>
         <div className={styles['nav-icon-container']}>
           <Heart size={24} style={{ fill: location.pathname === '/favoritos' ? 'currentColor' : 'none' }} />
         </div>

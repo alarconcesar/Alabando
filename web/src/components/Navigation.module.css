@@ -113,3 +113,27 @@
     text-align: left;
   }
 }
+
+/* Tablet: rail estrecho con solo iconos */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .bottom-nav {
+    width: var(--sidebar-w, 76px);
+    align-items: center;
+    padding-top: 28px;
+  }
+
+  .nav-item {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 0;
+    margin-bottom: 12px;
+  }
+
+  .nav-item span {
+    display: none;
+  }
+
+  .nav-icon-container {
+    margin-right: 0;
+  }
+}
