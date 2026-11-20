@@ -1652,3 +1652,13 @@ body {
     margin: 24px auto 200px auto;
   }
 }
+
+/* Escritorio: la letra se lee directo sobre el fondo, sin tarjeta */
+@media (min-width: 768px) {
+  .hymn-detail-lyrics-container {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
