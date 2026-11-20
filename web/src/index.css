@@ -1662,3 +1662,11 @@ body {
     box-shadow: none;
   }
 }
+
+/* Titulo más arriba en escritorio: se eliminó el espacio que dejaba la tarjeta */
+@media (min-width: 1025px) {
+  .hymn-detail-lyrics-container {
+    margin-top: 8px;
+    padding-top: 16px;
+  }
+}
