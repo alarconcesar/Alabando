@@ -1432,3 +1432,174 @@ body {
   pointer-events: auto;
 }
 
+/* ===== Audio guía MIDI: tarjeta compacta ===== */
+.midi-player-card {
+  background-color: var(--surface);
+  border: 1px solid var(--surface-variant);
+  border-radius: 18px;
+  padding: 12px 14px 13px;
+  margin-bottom: 16px;
+}
+
+.midi-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+
+.midi-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--on-surface);
+}
+
+.midi-reference {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--outline);
+}
+
+.midi-adjust-btn {
+  width: 30px;
+  height: 30px;
+  margin-left: 2px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--outline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.midi-adjust-btn:hover {
+  background-color: var(--surface-variant);
+  color: var(--on-surface);
+}
+
+.midi-adjust-btn:active {
+  transform: scale(0.94);
+}
+
+.midi-adjust-btn[aria-expanded="true"] {
+  background-color: var(--surface-variant);
+  color: var(--primary);
+}
+
+.midi-note {
+  margin: 10px 0 2px;
+  font-size: 0.8rem;
+  color: var(--outline);
+}
+
+.midi-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.midi-play {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.15s;
+}
+
+.midi-play:hover {
+  filter: brightness(1.08);
+}
+
+.midi-play:active {
+  transform: scale(0.95);
+}
+
+.midi-seek {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.midi-time {
+  flex: none;
+  font-size: 0.72rem;
+  color: var(--outline);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.midi-time-sep {
+  opacity: 0.5;
+  margin: 0 1px;
+}
+
+.midi-adjust-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--surface-variant);
+}
+
+.midi-adjust-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.midi-adjust-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--outline);
+}
+
+.midi-adjust-options {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.midi-adjust-options .filter-chip {
+  font-size: 0.72rem;
+  padding: 4px 10px;
+}
+
+.midi-step {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--surface-variant);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--on-surface);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.midi-step:hover {
+  background-color: var(--surface-variant);
+}
+
+.midi-value {
+  min-width: 30px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  font-variant-numeric: tabular-nums;
+}
+
