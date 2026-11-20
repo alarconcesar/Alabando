@@ -58,7 +58,6 @@ function HymnLyricsBody({ himno, fontSize }: { himno: Himno; fontSize: number })
 function HymnPane({ himno, fontSize }: { himno: Himno; fontSize: number }) {
   return (
     <div className="hymn-detail-lyrics-container">
-      <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
       <HymnLyricsBody himno={himno} fontSize={fontSize} />
     </div>
   );
@@ -567,6 +566,10 @@ export default function HymnDetail() {
       </div>
 
       <main>
+        {/* Título principal encima de la vista actual; el video/audio queda debajo */}
+        <div className="hymn-content-title">
+          <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
+        </div>
         {/* ── Video / Audio Guide Section ── */}
         {showVideo && (ytVideos.length > 0 || (himno.midi && !showScore)) && (
           <div style={{ padding: '0 20px' }}>
@@ -605,7 +608,6 @@ export default function HymnDetail() {
           {/* ── Score OR Carousel ── */}
           {showScore && pages.length > 0 ? (
             <div className="score-standalone-fullscreen">
-              <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
               {himno.midi && (
                 <div style={{ width: '100%' }}>
                   <MidiPlayer url={himno.midi} title={himno.nombre} />

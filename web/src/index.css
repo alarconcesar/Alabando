@@ -477,6 +477,7 @@ body {
 }
 
 .hymn-detail-title-main {
+  margin-top: 0;
   font-family: 'Lobster', cursive;
   font-size: 32px;
   text-align: center;
@@ -1663,10 +1664,29 @@ body {
   }
 }
 
-/* Titulo más arriba en escritorio: se eliminó el espacio que dejaba la tarjeta */
+/* Titulo antes del video/audio y la vista de contenido */
+.hymn-content-title {
+  width: min(680px, calc(100% - 40px));
+  margin: 8px auto 12px;
+}
+
+.hymn-content-title .hymn-detail-title-main {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.2;
+}
+
+/* Escritorio: quitar el hueco superior heredado de la tarjeta de letra */
 @media (min-width: 1025px) {
-  .hymn-detail-lyrics-container {
+  .hymn-content-title {
     margin-top: 8px;
-    padding-top: 16px;
+    margin-bottom: 12px;
+  }
+}
+
+/* Tablet: respetar el espacio del rail */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hymn-content-title {
+    width: min(680px, calc(100% - 32px));
   }
 }
