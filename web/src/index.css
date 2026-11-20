@@ -1667,7 +1667,7 @@ body {
 /* Titulo antes del video/audio y la vista de contenido */
 .hymn-content-title {
   width: min(680px, calc(100% - 40px));
-  margin: 8px auto 12px;
+  margin: 24px auto 20px;
 }
 
 .hymn-content-title .hymn-detail-title-main {
@@ -1679,8 +1679,8 @@ body {
 /* Escritorio: quitar el hueco superior heredado de la tarjeta de letra */
 @media (min-width: 1025px) {
   .hymn-content-title {
-    margin-top: 8px;
-    margin-bottom: 12px;
+    margin-top: 36px;
+    margin-bottom: 20px;
   }
 }
 

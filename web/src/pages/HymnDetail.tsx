@@ -566,12 +566,12 @@ export default function HymnDetail() {
       </div>
 
       <main>
-        {/* Título principal encima de la vista actual; el video/audio queda debajo */}
+        {/* Título antes del contenido activo */}
         <div className="hymn-content-title">
           <h1 className="hymn-detail-title-main">{himno.nombre}</h1>
         </div>
         {/* ── Video / Audio Guide Section ── */}
-        {showVideo && (ytVideos.length > 0 || (himno.midi && !showScore)) && (
+        {showVideo && !showScore && ytVideos.length > 0 && (
           <div style={{ padding: '0 20px' }}>
             {ytVideos.length > 1 && (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', padding: '16px 0 0', marginBottom: 12 }}>
@@ -599,20 +599,17 @@ export default function HymnDetail() {
                 />
               </div>
             )}
-            {himno.midi && !showScore && (
-              <MidiPlayer url={himno.midi} title={himno.nombre} />
-            )}
+          </div>
+        )}
+        {showVideo && !showScore && ytVideos.length === 0 && himno.midi && (
+          <div style={{ padding: '0 20px' }}>
+            <MidiPlayer url={himno.midi} title={himno.nombre} />
           </div>
         )}
 
           {/* ── Score OR Carousel ── */}
           {showScore && pages.length > 0 ? (
             <div className="score-standalone-fullscreen">
-              {himno.midi && (
-                <div style={{ width: '100%' }}>
-                  <MidiPlayer url={himno.midi} title={himno.nombre} />
-                </div>
-              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 32 }}>
                 {pages.map(p => (
                   <img
@@ -620,11 +617,17 @@ export default function HymnDetail() {
                     src={`/partituras/page_${p.trim()}.png`}
                     alt={`Partitura página ${p}`}
                     style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'zoom-in' }}
-                    loading="lazy"
+                    loading="eager"
+                    decoding="async"
                     onClick={() => handleOpenZoom(`/partituras/page_${p.trim()}.png`)}
                   />
                 ))}
               </div>
+              {himno.midi && (
+                <div style={{ width: '100%' }}>
+                  <MidiPlayer url={himno.midi} title={himno.nombre} />
+                </div>
+              )}
             </div>
           ) : (
           <LyricsCarousel himnos={himnos} currentIndex={currentIndex} setActiveId={setActiveId} fontSize={fontSize} />
