@@ -1161,9 +1161,10 @@ body {
   font-family: var(--font-editorial);
   font-size: clamp(1.85rem, 6.2vw, 2.25rem);
   font-weight: 600;
-  line-height: 1.08;
+  line-height: 1.16;
   letter-spacing: -0.025em;
   text-wrap: balance;
+  padding-block: 2px;
 }
 
 .home-header-greeting {
@@ -1173,7 +1174,7 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--outline);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .home-top-actions {

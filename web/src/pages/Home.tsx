@@ -59,7 +59,7 @@ export default function Home() {
 
   return (
     <div className="page-fade-in" style={{ paddingBottom: 100, backgroundColor: 'var(--background)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 20px 16px 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 20px 20px 20px' }}>
         <div>
           <div className="home-header-greeting">Himnario EAV</div>
           <h1 className="home-header-title" style={{ color: 'var(--on-background)' }}>¡Es hora de Alabar!</h1>
