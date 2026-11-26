@@ -5,7 +5,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import { Heart, Share2, ChevronLeft, ChevronRight, FileMusic, Music, Type, ArrowLeft, Monitor, X, MoreVertical } from 'lucide-react';
 import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { getJSON, setJSON, getStoredFontSize } from '../lib/storage';
-import { STORAGE_KEYS, MAX_HISTORY } from '../lib/constants';
+import { STORAGE_KEYS, MAX_HISTORY, FONT_SIZE_MIN, FONT_SIZE_MAX } from '../lib/constants';
 import { SkeletonDetail } from '../components/Skeletons';
 import DataError from '../components/DataError';
 import MidiPlayer from '../components/MidiPlayer';
@@ -665,7 +665,7 @@ export default function HymnDetail() {
               <span style={{ fontSize: `${fontSize}px`, fontWeight: 600, color: 'var(--primary)' }}>Aa</span>
               <span style={{ fontSize: '30px', fontWeight: 600 }}>Aa</span>
             </div>
-            <input type="range" min="14" max="30" value={fontSize} onChange={e => setFontSize(Number(e.target.value))} className="text-size-slider" />
+            <input type="range" min={FONT_SIZE_MIN} max={FONT_SIZE_MAX} value={fontSize} onChange={e => setFontSize(Number(e.target.value))} className="text-size-slider" aria-label="Tamaño de lectura" style={{ ['--fill' as string]: `${((fontSize - FONT_SIZE_MIN) / (FONT_SIZE_MAX - FONT_SIZE_MIN)) * 100}%` }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--outline)' }}>{fontSize === 19 ? 'Tamaño original' : 'Tamaño modificado'}</span>
               {fontSize !== 19 && <button onClick={() => setFontSize(19)} style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem', padding: 0 }}>Restaurar original</button>}

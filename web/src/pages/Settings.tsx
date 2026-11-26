@@ -90,12 +90,16 @@ export default function Settings() {
             </div>
             <input
               type="range"
-              min="14"
-              max="30"
+              min={FONT_SIZE_MIN}
+              max={FONT_SIZE_MAX}
               value={fontSize}
               onChange={handleFontSizeChange}
               className="text-size-slider"
-              style={{ width: '100%' }}
+              style={{
+                width: '100%',
+                ['--fill' as string]: `${((fontSize - FONT_SIZE_MIN) / (FONT_SIZE_MAX - FONT_SIZE_MIN)) * 100}%`,
+              }}
+              aria-label="Tamaño de lectura"
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--outline)' }}>

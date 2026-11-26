@@ -774,15 +774,27 @@ body {
 }
 
 .text-size-slider {
-  width: 100%;
-  height: 6px;
   -webkit-appearance: none;
   appearance: none;
-  background: var(--surface-variant);
+  width: 100%;
+  min-height: 44px;
+  background: transparent;
+  background-image: linear-gradient(
+    to right,
+    var(--primary) 0,
+    var(--primary) var(--fill, 31%),
+    var(--surface-variant) var(--fill, 31%),
+    var(--surface-variant) 100%
+  );
+  background-size: 100% 6px;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 999px;
-  margin: 14px 0;
+  margin: 0;
   padding: 0;
   cursor: pointer;
+  touch-action: pan-x;
+  font-variant-numeric: tabular-nums;
 }
 
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
