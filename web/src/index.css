@@ -30,53 +30,53 @@
 }
 
 :root {
-  /* Default Theme (Naranja Light) */
-  --primary: #FC7124;
+  /* Default Theme (Warm Paper Light) */
+  --primary: #C2410C;
   --on-primary: #FFFFFF;
-  --primary-container: #FFF1E9;
-  --on-primary-container: #3A0B01;
-  --secondary: #77574E;
+  --primary-container: #F9EDE5;
+  --on-primary-container: #9A3412;
+  --secondary: #706964;
   --on-secondary: #FFFFFF;
-  --secondary-container: #FFF1E9;
-  --on-secondary-container: #FC7124;
-  --background: #FFFFFF;
-  --on-background: #231917;
-  --surface: #FFF8F6;
-  --on-surface: #231917;
-  --surface-variant: #F5DED8;
-  --on-surface-variant: #53433F;
-  --outline: #85736E;
-  --fondo-principal: #FFFFFF;
-  --barra: #EBEBEB;
-  --neutral: #000000;
-  
-  --shadow-color: rgba(252, 113, 36, 0.15);
+  --secondary-container: #F9EDE5;
+  --on-secondary-container: #9A3412;
+  --background: #FAF7F2;
+  --on-background: #1C1917;
+  --surface: #FFFFFF;
+  --on-surface: #1C1917;
+  --surface-variant: #EDE6DA;
+  --on-surface-variant: #44403C;
+  --outline: #6A635E;
+  --fondo-principal: #FAF7F2;
+  --barra: #EAE2D6;
+  --neutral: #1C1917;
+
+  --shadow-color: rgba(28, 25, 23, 0.08);
   --transition-speed: 0.25s;
 }
 
 
 [data-theme='dark'] {
-  /* Naranja Dark (Oscuro) */
-  --primary: #FC7124;
-  --on-primary: #561F0F;
-  --primary-container: #38261E;
-  --on-primary-container: #FFDBD1;
-  --secondary: #E7BDB2;
-  --on-secondary: #442A22;
-  --secondary-container: #38261E;
-  --on-secondary-container: #FC7124;
-  --background: #0A0A0A;
-  --on-background: #F1DFDA;
-  --surface: #151110;
-  --on-surface: #F1DFDA;
-  --surface-variant: #53433F;
-  --on-surface-variant: #D8C2BC;
-  --outline: #A08C87;
-  --fondo-principal: #0A0A0A;
-  --barra: #1F1B1A;
-  --neutral: #FFFFFF;
-  
-  --shadow-color: rgba(0, 0, 0, 0.5);
+  /* Warm Charcoal Dark (Oscuro) */
+  --primary: #FB923C;
+  --on-primary: #1C1917;
+  --primary-container: #332215;
+  --on-primary-container: #FDBA74;
+  --secondary: #D6CFC4;
+  --on-secondary: #1C1917;
+  --secondary-container: #332215;
+  --on-secondary-container: #FB923C;
+  --background: #12100E;
+  --on-background: #F5F0E8;
+  --surface: #1B1815;
+  --on-surface: #F5F0E8;
+  --surface-variant: #342D27;
+  --on-surface-variant: #D6CFC4;
+  --outline: #A8A095;
+  --fondo-principal: #12100E;
+  --barra: #26211D;
+  --neutral: #F5F0E8;
+
+  --shadow-color: rgba(0, 0, 0, 0.45);
 }
 
 html {
@@ -587,12 +587,12 @@ body {
 .lyrics-voice-badge.voice-todos {
   background-color: var(--primary-container);
   color: var(--primary);
-  border: 1px solid rgba(252, 113, 36, 0.15);
+  border: 1px solid rgba(194, 65, 12, 0.22);
 }
 [data-theme='dark'] .lyrics-voice-badge.voice-todos {
-  background-color: rgba(252, 113, 36, 0.15);
+  background-color: var(--primary-container);
   color: var(--primary);
-  border: 1px solid rgba(252, 113, 36, 0.2);
+  border: 1px solid rgba(251, 146, 60, 0.25);
 }
 
 .lyrics-voice-badge.voice-generic {
@@ -696,7 +696,8 @@ body {
 
 /* Drawer de Tamaño de Texto */
 .text-size-drawer {
-  background-color: var(--barra);
+  background-color: var(--surface);
+  border-top: 1px solid var(--barra);
   border-radius: 20px 20px 0 0;
   padding: 20px 24px;
   width: 100%;

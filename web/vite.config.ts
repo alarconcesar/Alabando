@@ -44,8 +44,8 @@ export default defineConfig({
         name: 'Himnario EAV',
         short_name: 'Himnario',
         description: 'Himnario PWA con soporte offline',
-        theme_color: '#FFFFFF',
-        background_color: '#FFFFFF',
+        theme_color: '#FAF7F2',
+        background_color: '#FAF7F2',
         lang: 'es',
         display: 'standalone',
         icons: [

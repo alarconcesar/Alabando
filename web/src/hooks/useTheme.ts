@@ -19,7 +19,7 @@ function applyTheme(mode: ThemeMode) {
 
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#0A0A0A' : '#FFFFFF');
+    meta.setAttribute('content', isDark ? '#12100E' : '#FAF7F2');
   }
 }
 
