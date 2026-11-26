@@ -61,15 +61,15 @@ export default function Home() {
     <div className="page-fade-in" style={{ paddingBottom: 100, backgroundColor: 'var(--background)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 20px 16px 20px' }}>
         <div>
-          <div className="home-header-greeting">Hola,</div>
+          <div className="home-header-greeting">Himnario EAV</div>
           <h1 className="home-header-title" style={{ color: 'var(--on-background)' }}>¡Es hora de Alabar!</h1>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={handleShare} className="icon-btn" aria-label="Compartir" style={{ backgroundColor: 'var(--surface)' }}>
-            <Share2 size={24} />
+        <div className="home-top-actions">
+          <button onClick={handleShare} className="icon-btn" aria-label="Compartir">
+            <Share2 size={22} strokeWidth={1.75} />
           </button>
-          <button onClick={() => navigate('/settings')} className="icon-btn" aria-label="Ajustes" style={{ backgroundColor: 'var(--surface)' }}>
-            <Settings size={24} />
+          <button onClick={() => navigate('/settings')} className="icon-btn" aria-label="Ajustes">
+            <Settings size={22} strokeWidth={1.75} />
           </button>
         </div>
       </div>

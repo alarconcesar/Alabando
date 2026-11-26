@@ -53,14 +53,14 @@
   --on-secondary: #FFFFFF;
   --secondary-container: #F9EDE5;
   --on-secondary-container: #9A3412;
-  --background: #FAF7F2;
+  --background: #FCFAF6;
   --on-background: #1C1917;
   --surface: #FFFFFF;
   --on-surface: #1C1917;
   --surface-variant: #EDE6DA;
   --on-surface-variant: #44403C;
   --outline: #6A635E;
-  --fondo-principal: #FAF7F2;
+  --fondo-principal: #FCFAF6;
   --barra: #EAE2D6;
   --field: #F3EDE4;
   --neutral: #1C1917;
@@ -1161,11 +1161,42 @@ body {
 
 .home-header-greeting {
   font-family: var(--font-ui);
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--outline);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.home-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: -2px;
+}
+
+.home-top-actions .icon-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--outline);
+  background: transparent;
+  border-radius: 999px;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.home-top-actions .icon-btn:active {
+  background-color: var(--primary-container);
+  color: var(--on-primary-container);
+  transform: scale(0.94);
+}
+
+@media (hover: hover) {
+  .home-top-actions .icon-btn:hover {
+    background-color: var(--surface-variant);
+    color: var(--on-background);
+  }
 }
 
 .home-section-heading {
