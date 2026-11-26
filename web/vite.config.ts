@@ -11,9 +11,7 @@ export default defineConfig({
       includeAssets: [
         'data/himnos.json',
         'img/*.jpg',
-        'fonts/*.ttf',
         'fonts/*.woff2',
-        'favicon.svg',
         'pwa-192x192.png',
         'pwa-512x512.png'
       ],
@@ -32,6 +30,22 @@ export default defineConfig({
               cacheName: 'partituras-cache',
               expiration: {
                 maxEntries: 1000,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            // Los MIDI también deben quedar disponibles sin conexión:
+            // sin esto la app abre offline pero el reproductor no tiene audio.
+            urlPattern: /^https:\/\/.*\/midi\/.*\.mid$|^\/midi\/.*\.mid$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'midi-cache',
+              expiration: {
+                maxEntries: 800,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
               },
               cacheableResponse: {

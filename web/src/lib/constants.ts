@@ -41,19 +41,21 @@ export function isTheme(value: string): value is Theme {
 }
 
 // ── Album Card Gradients ──────────────────────────────────
+// Gama cálida derivada de la paleta (terracota, arcilla, ámbar, oliva, tuétano).
+// Se usan como tinte al 6%, así que la variación debe quedarse en tierras.
 export const ALBUM_GRADIENTS: string[] = [
-  'linear-gradient(135deg, #FC7124, #FF9A5C)',
-  'linear-gradient(135deg, #667eea, #764ba2)',
-  'linear-gradient(135deg, #f093fb, #f5576c)',
-  'linear-gradient(135deg, #4facfe, #00f2fe)',
-  'linear-gradient(135deg, #43e97b, #38f9d7)',
-  'linear-gradient(135deg, #fa709a, #fee140)',
-  'linear-gradient(135deg, #a18cd1, #fbc2eb)',
-  'linear-gradient(135deg, #f83600, #f9d423)',
-  'linear-gradient(135deg, #0fd850, #0cbaba)',
-  'linear-gradient(135deg, #e65c00, #F9D423)',
-  'linear-gradient(135deg, #2b5876, #4e4376)',
-  'linear-gradient(135deg, #e8198b, #c7eafd)',
+  'linear-gradient(135deg, #C2410C, #E8895A)',
+  'linear-gradient(135deg, #9A3412, #D9A87A)',
+  'linear-gradient(135deg, #6B7A3A, #A8B77A)',
+  'linear-gradient(135deg, #B45309, #E9B267)',
+  'linear-gradient(135deg, #7C2D12, #C99A6B)',
+  'linear-gradient(135deg, #A16207, #DEC37A)',
+  'linear-gradient(135deg, #4D7C0F, #A3C46A)',
+  'linear-gradient(135deg, #78350F, #B98A5A)',
+  'linear-gradient(135deg, #B8451B, #EEB08A)',
+  'linear-gradient(135deg, #7C3A4D, #C79BA6)',
+  'linear-gradient(135deg, #6A635E, #C9BEB1)',
+  'linear-gradient(135deg, #92400E, #D6A96B)',
 ];
 
 /** Deterministically picks a gradient for a category name */
@@ -68,7 +70,7 @@ export function getAlbumGradient(category: string): string {
 /** Extracts the first hex color from a gradient string */
 function extractFirstColor(gradient: string): string {
   const match = gradient.match(/#[0-9a-fA-F]{6}/);
-  return match ? match[0] : '#FC7124';
+  return match ? match[0] : '#C2410C';
 }
 
 /** Converts hex color to rgba with given opacity */
