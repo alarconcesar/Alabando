@@ -12,13 +12,14 @@ export default defineConfig({
         'data/himnos.json',
         'img/*.jpg',
         'fonts/*.ttf',
+        'fonts/*.woff2',
         'favicon.svg',
         'pwa-192x192.png',
         'pwa-512x512.png'
       ],
       workbox: {
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json,ttf,jpg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json,ttf,woff2,jpg}'],
         globIgnores: ['partituras/**'],
         globDirectory: 'dist',
         navigateFallback: 'index.html',

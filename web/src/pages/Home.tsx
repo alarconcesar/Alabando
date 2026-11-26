@@ -74,7 +74,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 16, padding: '12px 20px' }}>
+      <div className="home-action-grid">
         <Link to="/all-hymns" className="home-action-card">
           <Library size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} aria-hidden="true" />
           <div className="home-action-card-content">
@@ -82,35 +82,25 @@ export default function Home() {
             <h2 className="home-action-card-title">Todos los<br/>Himnos</h2>
           </div>
         </Link>
-        <Link to="/search" className="home-action-card">
-          <Search size={80} className="home-action-card-bg-icon" style={{ color: 'var(--primary)' }} aria-hidden="true" />
+        <Link to="/search" className="home-action-card home-action-card--accent">
+          <Search size={80} className="home-action-card-bg-icon" aria-hidden="true" />
           <div className="home-action-card-content">
-            <Search size={28} style={{ color: 'var(--primary)' }} aria-hidden="true" />
+            <Search size={28} className="home-action-card-icon" aria-hidden="true" />
             <h2 className="home-action-card-title">Buscar</h2>
           </div>
         </Link>
       </div>
 
       <div style={{ padding: '16px 20px' }}>
-        <div style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.35)), url(/img/img1.jpg)',
-          backgroundSize: 'cover', backgroundPosition: 'center',
-          borderRadius: 24, height: 160,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
-        }}>
-          <div>
-            <h2 style={{
-              color: '#FFFFFF', textAlign: 'center', fontSize: '1.25rem',
-              fontWeight: 700, lineHeight: 1.3, textShadow: '0 2px 4px rgba(0,0,0,0.4)',
-            }}>
-              Cada Alabanza es una Bendición Especial
-            </h2>
-          </div>
+        <div className="home-quote-card">
+          <h2 className="home-quote-text">
+            Cada Alabanza es una Bendición Especial
+          </h2>
         </div>
       </div>
 
       <div style={{ padding: '24px 20px 12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--on-background)' }}>
+        <h2 className="home-section-heading">
           Mis Últimas Alabanzas
         </h2>
       </div>

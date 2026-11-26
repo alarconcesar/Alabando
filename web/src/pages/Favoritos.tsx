@@ -22,7 +22,7 @@ export default function Favoritos() {
           <Heart size={45} style={{ fill: 'var(--on-primary)', color: 'var(--on-primary)' }} />
         </div>
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--on-background)', lineHeight: 1.2, marginBottom: '4px' }}>
+          <h1 className="favorites-page-title">
             Mis Alabanzas<br/>Favoritas
           </h1>
           <div style={{ fontSize: '15px', color: 'var(--outline)' }}>

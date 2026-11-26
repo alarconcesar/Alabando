@@ -46,22 +46,19 @@ export default function Settings() {
 
       <main style={{ padding: 20 }}>
         <div className="settings-group">
-          <h3>Tema de la Aplicación</h3>
+          <h3 className="settings-section-title">Tema de la Aplicación</h3>
           <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
             Elige entre claro, oscuro o que siga la configuración de tu dispositivo.
           </p>
 
-          <div className="theme-selector" style={{ display: 'flex', gap: 10 }}>
+          <div className="theme-selector">
             {themeOptions.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => setMode(opt.value)}
                 className={`filter-chip ${mode === opt.value ? 'active' : ''}`}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '10px 18px', borderRadius: 100,
-                }}
                 title={opt.label}
+                aria-pressed={mode === opt.value}
               >
                 {opt.icon}
                 <span>{opt.label}</span>
@@ -71,12 +68,21 @@ export default function Settings() {
         </div>
 
         <div className="settings-group" style={{ marginTop: 40 }}>
-          <h3>Tamaño de Lectura</h3>
+          <h3 className="settings-section-title">Tamaño de Lectura</h3>
           <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
             Ajusta el tamaño del texto para las letras de los himnos.
           </p>
 
-          <div style={{ background: 'var(--surface)', padding: '20px 16px', borderRadius: 12, border: '1px solid var(--surface-variant)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{
+            padding: '20px 16px',
+            borderRadius: 20,
+            border: '1px solid var(--barra)',
+            background: 'var(--surface)',
+            boxShadow: '0 1px 2px rgba(28,25,23,0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '14px', fontWeight: 600 }}>Aa</span>
               <span style={{ fontSize: `${fontSize}px`, fontWeight: 600, color: 'var(--primary)' }}>Aa</span>
@@ -108,11 +114,11 @@ export default function Settings() {
         </div>
 
         <div className="settings-group" style={{ marginTop: 40 }}>
-          <h3>Instalar Aplicación</h3>
+          <h3 className="settings-section-title">Instalar Aplicación</h3>
           <p style={{ marginBottom: 16, color: 'var(--on-surface)', opacity: 0.8, fontSize: '0.9rem' }}>
             Instala Himnario EAV en tu dispositivo para acceder sin conexión.
           </p>
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--surface-variant)' }}>
+          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 20, border: '1px solid var(--barra)', boxShadow: '0 1px 2px rgba(28,25,23,0.03)' }}>
             {isInstalled ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <CheckCircle size={24} style={{ color: '#4CAF50', flexShrink: 0 }} />
@@ -150,8 +156,8 @@ export default function Settings() {
         </div>
 
         <div className="settings-group" style={{ marginTop: 40 }}>
-          <h3>Acerca de</h3>
-          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 12, border: '1px solid var(--surface-variant)', marginTop: 12 }}>
+          <h3 className="settings-section-title">Acerca de</h3>
+          <div style={{ background: 'var(--surface)', padding: 16, borderRadius: 20, border: '1px solid var(--barra)', boxShadow: '0 1px 2px rgba(28,25,23,0.03)', marginTop: 12 }}>
             <p style={{ fontWeight: 600, marginBottom: 4 }}>Himnario EAV</p>
             <p style={{ fontSize: '0.9rem', color: 'var(--outline)', marginBottom: 12 }}>Versión PWA 1.0.0</p>
             <p style={{ fontSize: '0.85rem' }}>

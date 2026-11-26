@@ -80,7 +80,7 @@ export default function AllHymns() {
         <button onClick={() => navigate(-1)} className="icon-btn" aria-label="Atrás">
           <ArrowLeft size={24} />
         </button>
-        <h1 style={{ flex: 1, fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-background)' }}>
+        <h1 style={{ flex: 1, color: 'var(--on-background)' }}>
           Todos los Himnos
         </h1>
       </header>

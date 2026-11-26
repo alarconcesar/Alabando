@@ -20,7 +20,7 @@ export default function Albumes() {
   return (
     <div className="page-fade-in" style={{ backgroundColor: 'var(--background)', minHeight: '100vh', paddingBottom: 100 }}>
       <header className="app-bar" style={{ padding: '16px 20px', borderBottom: 'none' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--on-background)' }}>Categorías</h1>
+        <h1>Categorías</h1>
       </header>
 
       <div className="himno-item-divider" style={{ margin: '0 16px 16px 16px' }} />
@@ -43,9 +43,9 @@ export default function Albumes() {
                   <div
                     className="album-card"
                     style={{
-                      borderRadius: 16,
-                      padding: '20px 16px',
-                      minHeight: 110,
+                      borderRadius: 20,
+                      padding: '18px 16px 18px 22px',
+                      minHeight: 112,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
@@ -58,12 +58,7 @@ export default function Albumes() {
                     }}
                   >
                     <div>
-                      <h3 style={{
-                        color: 'var(--on-background)',
-                        fontSize: '1rem',
-                        fontWeight: 700,
-                        lineHeight: 1.25,
-                      }}>
+                      <h3 className="album-card-title">
                         {cat}
                       </h3>
                     </div>

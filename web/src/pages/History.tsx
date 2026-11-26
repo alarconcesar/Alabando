@@ -31,7 +31,7 @@ export default function History() {
         <button onClick={() => navigate(-1)} className="icon-btn" aria-label="Atrás">
           <ArrowLeft size={24} />
         </button>
-        <h1 style={{ flex: 1, marginLeft: 12, fontSize: '1.25rem', fontWeight: 700 }}>Vistos Recientemente</h1>
+        <h1 style={{ flex: 1, marginLeft: 12 }}>Vistos Recientemente</h1>
         {history.length > 0 && (
           <button
             onClick={clearHistory}

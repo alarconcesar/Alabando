@@ -157,7 +157,7 @@ export default function Search() {
             <ArrowLeft size={24} />
           </button>
         )}
-        <h1 style={{ flex: 1, marginLeft: catFilter ? 12 : 0, fontSize: '1.5rem', fontWeight: 800, color: 'var(--on-background)' }}>
+        <h1 style={{ flex: 1, marginLeft: catFilter ? 12 : 0, color: 'var(--on-background)' }}>
           {catFilter ? catFilter : 'Buscar'}
         </h1>
         {searchMode === 'text' && !catFilter && (
@@ -172,10 +172,11 @@ export default function Search() {
           <div
             id="messageTextView"
             style={{
-              width: 230, height: 50, backgroundColor: 'var(--barra)',
+              width: 230, height: 50, backgroundColor: 'var(--field)',
               borderRadius: 25, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: '22px', fontWeight: 700,
-              color: 'var(--neutral)', letterSpacing: 2, marginBottom: 16,
+              justifyContent: 'center', fontSize: '26px', fontWeight: 500,
+              fontFamily: 'var(--font-editorial)', fontVariantNumeric: 'tabular-nums',
+              color: 'var(--neutral)', letterSpacing: '0.06em', marginBottom: 16,
             }}
           >
             {keypadQuery || ' '}
@@ -271,7 +272,7 @@ export default function Search() {
             <div style={{ position: 'relative', margin: '16px 16px 16px 16px' }}>
               <div style={{
                 display: 'flex', alignItems: 'center',
-                backgroundColor: 'var(--barra)', borderRadius: 28,
+                backgroundColor: 'var(--field)', borderRadius: 28,
                 padding: '8px 16px', height: 52,
               }}>
                 <SearchIcon size={20} style={{ color: 'var(--outline)', marginRight: 12 }} />
