@@ -1525,11 +1525,15 @@ body {
 }
 
 .presentation-slide {
-  font-size: clamp(18px, 3.5vw, 60px);
-  font-weight: 700;
-  line-height: 1.35;
-  text-shadow: 0 4px 16px rgba(0,0,0,0.8);
-  max-width: 90%;
+  font-family: var(--font-editorial);
+  font-size: clamp(18px, 5.2vw, 60px);
+  font-weight: 400;
+  line-height: 1.38;
+  letter-spacing: -0.015em;
+  color: #F5F0E8;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.48);
+  max-width: min(88vw, 28ch);
+  white-space: pre-line;
   animation: fadeIn 0.3s ease-out forwards;
 }
 
